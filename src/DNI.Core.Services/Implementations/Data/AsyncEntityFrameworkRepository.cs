@@ -1,0 +1,47 @@
+﻿using DNI.Core.Contracts;
+using DNI.Core.Shared.Constants;
+using DNI.Core.Shared;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace DNI.Core.Services.Implementations.Data
+{
+    internal class AsyncEntityFrameworkRepository<TDbContext, TEntity> : 
+        EntityFrameworkRepository<TDbContext, TEntity>, 
+        IAsyncRepository<TEntity>
+        where TDbContext : DbContext
+        where TEntity : class
+    {
+        protected AsyncEntityFrameworkRepository(TDbContext dbContext) 
+            : base(dbContext)
+        {
+        }
+
+        public Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            if(TryRemove(entity, out var entry)){   
+                entry.State = EntityState.Deleted;
+                return DbContext.SaveChangesAsync(cancellationToken);
+            }
+
+            return Task.FromResult(Shared.Constants.Data.DatabaseOperationFailed);
+        }
+
+        public Task<TEntity> FindAsync(CancellationToken cancellationToken = default, params object[] keys)
+        {
+            return DbSet.FindAsync(keys, cancellationToken).AsTask();
+        }
+
+        public Task<int> SaveChangesAsync(TEntity entity, CancellationToken cancellationToken = default)
+        {
+            AddOrUpdate(entity);
+            return DbContext.SaveChangesAsync(cancellationToken);
+        }
+    }
+}
