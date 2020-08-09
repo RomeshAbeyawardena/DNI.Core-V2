@@ -8,6 +8,6 @@ namespace DNI.Core.Contracts
 {
     public interface IValueGenerator
     {
-        Func<object> GenerateValue { get; }
+        Func<object, object> GenerateValue { get; }
     }
 }

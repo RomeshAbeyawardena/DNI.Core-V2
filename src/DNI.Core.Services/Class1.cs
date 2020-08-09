@@ -1,8 +1,13 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace DNI.Core.Services
 {
-    public class Class1
+    public static class ServiceRegistration
     {
+        public static IServiceCollection RegisterServices(IServiceCollection services)
+        {
+            return services;
+        }
     }
 }

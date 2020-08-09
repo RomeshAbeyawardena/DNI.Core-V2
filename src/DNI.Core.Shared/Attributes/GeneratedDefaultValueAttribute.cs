@@ -9,13 +9,15 @@ namespace DNI.Core.Shared.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class GeneratedDefaultValueAttribute : Attribute
     {
-        public GeneratedDefaultValueAttribute(string generatorName, bool usesDefaultServiceInjector = true)
+        public GeneratedDefaultValueAttribute(string generatorName, object defaultValue = default, bool usesDefaultServiceInjector = true)
         {
             GeneratorName = generatorName;
+            DefaultValue = defaultValue;
             UsesDefaultServiceInjector = usesDefaultServiceInjector;
         }
 
         public string GeneratorName { get; }
+        public object DefaultValue { get; }
         public bool UsesDefaultServiceInjector { get; }
     }
 }

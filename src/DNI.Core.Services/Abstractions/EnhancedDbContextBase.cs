@@ -33,7 +33,7 @@ namespace DNI.Core.Services.Abstractions
             return base.Update(entity);
         }
         
-        private void PrepareForAddOrUpdate<TEntity>(TEntity entity)
+        internal void PrepareForAddOrUpdate<TEntity>(TEntity entity)
         {
             var entityType = typeof(TEntity);
 
@@ -48,7 +48,8 @@ namespace DNI.Core.Services.Abstractions
             {
                 if(valueGenerator != null) 
                 {
-                    property.SetValue(entity, valueGenerator.GenerateValue());
+                    var currentValue = property.GetValue(entity);
+                    property.SetValue(entity, valueGenerator.GenerateValue(currentValue));
                 }
             }
         }

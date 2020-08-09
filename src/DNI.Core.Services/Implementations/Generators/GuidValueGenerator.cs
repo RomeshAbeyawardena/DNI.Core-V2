@@ -15,8 +15,8 @@ namespace DNI.Core.Services.Implementations.Generators
             this.guidService = guidService;
         }
 
-        public Func<object> GenerateValue => () => guidService.GenerateGuid();
-
+        public Func<object, object> GenerateValue => (value) => guidService.GenerateGuid(); 
+        
         private readonly IGuidService guidService;
     }
 }
