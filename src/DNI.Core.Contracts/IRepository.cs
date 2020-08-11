@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace DNI.Core.Contracts
@@ -11,7 +12,7 @@ namespace DNI.Core.Contracts
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        int SaveChanges(TEntity entity);
+        int SaveChanges(TEntity entity, bool detachAfterCommit = true);
 
         /// <summary>
         /// Deletes <see cref="TEntity"/>
@@ -29,5 +30,10 @@ namespace DNI.Core.Contracts
         /// Returns the IQueryable <see cref="TEntity"/> object available by the store
         /// </summary>
         IQueryable<TEntity> Query { get; }
+
+        /// <summary>
+        /// Returns the last entity state
+        /// </summary>
+        EntityState LastEntityState { get; }
     }
 }

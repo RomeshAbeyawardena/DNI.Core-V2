@@ -28,10 +28,17 @@ namespace DNI.Core.Services.Implementations.Data
             return DbSet.Find(keys);
         }
 
-        public int SaveChanges(TEntity entity)
+        public int SaveChanges(TEntity entity, bool detachAfterCommit = true)
         {
             AddOrUpdate(entity);
-            return DbContext.SaveChanges();
+            var result = DbContext.SaveChanges();
+
+            if (detachAfterCommit)
+            {
+                DbContext.Entry(entity).State = EntityState.Detached;
+            }
+
+            return result;
         }
 
         public int Delete(TEntity entity)
@@ -58,7 +65,9 @@ namespace DNI.Core.Services.Implementations.Data
             foreach (var property in primaryKey.Properties)
             {
                 var entityProperty = entityType.GetProperty(property.Name);
-                if(entityProperty.GetValue(entity).IsDefault())
+                var entityPropertyValue = entityProperty.GetValue(entity);
+
+                if(entityPropertyValue.IsDefault())
                 {
                     entry.State = EntityState.Added;
                 }
@@ -67,6 +76,8 @@ namespace DNI.Core.Services.Implementations.Data
                     entry.State = EntityState.Modified;
                 }
             }
+
+            LastEntityState = entry.State;
         }
 
         protected EntityEntry<TEntity> AddOrUpdate(TEntity entity)
@@ -92,5 +103,7 @@ namespace DNI.Core.Services.Implementations.Data
         protected DbSet<TEntity> DbSet { get; }
         
         protected TDbContext DbContext { get; }
+
+        public EntityState LastEntityState { get; private set; }
     }
 }

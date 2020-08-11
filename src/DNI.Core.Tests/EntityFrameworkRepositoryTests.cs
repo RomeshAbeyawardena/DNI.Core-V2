@@ -26,7 +26,15 @@ namespace DNI.Core.Tests
         [Test]
         public void SaveChanges()
         {
-            sut.SaveChanges(new User());
+            var user = new User();
+            sut.SaveChanges(user);
+            Assert.AreEqual(EntityState.Added, sut.LastEntityState);
+            Assert.AreNotEqual(default(int), user.Id);
+            user.Created = DateTimeOffset.Now;
+
+            sut.SaveChanges(user);
+            Assert.AreEqual(EntityState.Modified, sut.LastEntityState);
+
         }
 
         private TestDbContext testDbContext;
