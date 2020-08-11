@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Shared;
+using DNI.Core.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
@@ -14,7 +15,7 @@ namespace DNI.Core.Services.Implementations.Data
         where TDbContext : DbContext
         where TEntity : class
     {
-        protected EntityFrameworkRepository(TDbContext dbContext)
+        public EntityFrameworkRepository(TDbContext dbContext)
         {
             DbContext = dbContext;
             DbSet = dbContext.Set<TEntity>();
@@ -57,7 +58,7 @@ namespace DNI.Core.Services.Implementations.Data
             foreach (var property in primaryKey.Properties)
             {
                 var entityProperty = entityType.GetProperty(property.Name);
-                if(entityProperty.GetValue(entity) == default(TEntity))
+                if(entityProperty.GetValue(entity).IsDefault())
                 {
                     entry.State = EntityState.Added;
                 }
@@ -83,6 +84,8 @@ namespace DNI.Core.Services.Implementations.Data
                 return false;
             }
 
+
+            entry.State = EntityState.Deleted;
             return true;
         }
 

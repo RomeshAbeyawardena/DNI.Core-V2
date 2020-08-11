@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DNI.Core.Contracts\DNI.Core.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
