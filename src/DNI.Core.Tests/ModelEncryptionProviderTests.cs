@@ -58,6 +58,26 @@ namespace DNI.Core.Tests
 
             Assert.AreEqual("decrypted-test@gmail.com", decrypted.EmailAddress);
         }
+
+        [Test]
+        public void Encrypt()
+        {
+            mapperProviderMock.Setup(mapper => mapper.Map<UserDto>(It.IsAny<User>()))
+                .Returns(new UserDto { EmailAddress = "encrypted-test@gmail.com" });
+
+            encryptionProfileManagerMock.Setup(epm => epm
+                .TryGetValue(EncryptionClassification.Personal, out It.Ref<IEncryptionProfile>.IsAny))
+                .Returns(true);
+
+            encryptionServiceMock.Setup(encryptionService => encryptionService.Encrypt("test@gmail.com", It.IsAny<IEncryptionProfile>()))
+                .Returns("decrypted-test@gmail.com");
+
+            var originalUser = new User { EmailAddress = "test@gmail.com" };
+            var decrypted = sut.Encrypt<User, UserDto>(originalUser);
+
+            Assert.AreEqual("decrypted-test@gmail.com", decrypted.EmailAddress);
+        }
+
         private Mock<IEncryptionService> encryptionServiceMock;
         private Mock<IMapperProvider> mapperProviderMock;
         private Mock<IEncryptionProfileManager> encryptionProfileManagerMock;
