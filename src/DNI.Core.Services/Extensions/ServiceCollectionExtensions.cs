@@ -59,7 +59,20 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
-            return services.Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
+            return services
+                .AddSingleton(new Dictionary<string, Type>(ScanGenerators<RepositoryOptions>()))
+                .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
+        }
+
+        public static IEnumerable<KeyValuePair<string, Type>> ScanGenerators<T>()
+        {
+            var valueGeneratorConcreteTypes = typeof(T)
+                .Assembly.GetTypes()
+                .Where(type => type.GetInterface(nameof(IValueGenerator)) != null);
+
+            return valueGeneratorConcreteTypes
+                .Select(valueGenerator => new KeyValuePair<string, Type>(valueGenerator.FullName, valueGenerator));
+
         }
     }
 }

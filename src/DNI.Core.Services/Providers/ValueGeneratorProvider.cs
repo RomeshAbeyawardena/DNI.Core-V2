@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,20 +14,20 @@ namespace DNI.Core.Services.Providers
         public ValueGeneratorProvider(IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
+            valueGeneratorTypeDictionary = serviceProvider.GetRequiredService<Dictionary<string, Type>>();
         }
 
         public IValueGenerator GetValueGeneratorByName(string generatorName, bool usesDefaultServiceInjector = true)
         {
-            if (usesDefaultServiceInjector)
+            if (usesDefaultServiceInjector && valueGeneratorTypeDictionary.TryGetValue(generatorName, out var generatorType))
             {
-                var generatorType = Type.GetType(generatorName);
-
                 return (IValueGenerator)serviceProvider.GetService(generatorType);
             }
 
             throw new NotSupportedException();
         }
         
+        private readonly Dictionary<string, Type> valueGeneratorTypeDictionary;
         private readonly IServiceProvider serviceProvider;
     }
 }
