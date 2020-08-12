@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Generators
 {
-    public class GuidValueGenerator : IValueGenerator
+    internal class GuidValueGenerator : IValueGenerator
     {
         public GuidValueGenerator(IGuidService guidService)
         {

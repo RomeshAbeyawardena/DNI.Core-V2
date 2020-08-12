@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 [assembly: InternalsVisibleTo("DNI.Core.Tests", AllInternalsVisible = true)]
 namespace DNI.Core.Services.Abstractions
 {
-    public class EnhancedDbContextBase : DbContext
+    public abstract class EnhancedDbContextBase : DbContext
     {
         protected EnhancedDbContextBase(DbContextOptions dbContextOptions)
             : base(dbContextOptions)

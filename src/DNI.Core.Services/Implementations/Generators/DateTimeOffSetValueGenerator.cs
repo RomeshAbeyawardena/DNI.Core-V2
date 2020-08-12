@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Generators
 {
-    public sealed class DateTimeOffSetValueGenerator : IValueGenerator
+    internal sealed class DateTimeOffSetValueGenerator : IValueGenerator
     {
         public DateTimeOffSetValueGenerator(ISystemClock systemClock)
         {

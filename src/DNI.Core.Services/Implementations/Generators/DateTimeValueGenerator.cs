@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Generators
 {
-    public sealed class DateTimeValueGenerator : IValueGenerator
+    internal sealed class DateTimeValueGenerator : IValueGenerator
     {
         public DateTimeValueGenerator(ISystemClock systemClock)
         {

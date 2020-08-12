@@ -56,5 +56,10 @@ namespace DNI.Core.Services.Extensions
                 RepositoryOptionsBuilder.Build(repositoryOptions ?? RepositoryOptionsBuilder.Default),
                 entities.ToArray());
         }
+
+        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        {
+            return services.Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
+        }
     }
 }
