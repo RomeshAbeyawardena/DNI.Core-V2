@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNI.Core.Contracts.Factories
+namespace DNI.Core.Contracts.Managers
 {
-    public interface IValueGeneratorFactory : IReadOnlyDictionary<string, Type>
+    public interface IValueGeneratorManager: IReadOnlyDictionary<string, Type>
     {
         
     }

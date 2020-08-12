@@ -9,4 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DNI.Core.Shared\DNI.Core.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
