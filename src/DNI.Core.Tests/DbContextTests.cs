@@ -16,6 +16,9 @@ namespace DNI.Core.Tests
         [System.ComponentModel.DataAnnotations.Key]
         public int Id { get; set; }
 
+        [Encrypt(Shared.Enumerations.EncryptionMethod.TwoWay, Shared.Enumerations.EncryptionClassification.Personal)]
+        public string EmailAddress { get; set; }
+
         [GeneratedDefaultValue(nameof(DateTimeOffSetValueGenerator))]
         public DateTimeOffset Created { get; set; }
     }
