@@ -12,10 +12,10 @@ namespace DNI.Core.Services.Providers
 {
     public class ValueGeneratorProvider : IValueGeneratorProvider
     {
-        public ValueGeneratorProvider(IServiceProvider serviceProvider)
+        public ValueGeneratorProvider(IServiceProvider serviceProvider, IValueGeneratorManager valueGeneratorManager)
         {
             this.serviceProvider = serviceProvider;
-            valueGeneratorFactory = serviceProvider.GetRequiredService<IValueGeneratorManager>();
+            valueGeneratorFactory = valueGeneratorManager;
         }
 
         public IValueGenerator GetValueGeneratorByName(string generatorName, bool usesDefaultServiceInjector = true)
@@ -27,6 +27,7 @@ namespace DNI.Core.Services.Providers
 
             throw new NotSupportedException();
         }
+        
         
         private readonly IValueGeneratorManager valueGeneratorFactory;
         private readonly IServiceProvider serviceProvider;

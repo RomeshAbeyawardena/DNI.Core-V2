@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Shared.Attributes;
@@ -17,11 +18,11 @@ namespace DNI.Core.Services.Providers
         public ModelEncryptionProvider(
             IEncryptionService encryptionService, 
             IMapperProvider mapperProvider,
-            IDictionary<EncryptionClassification, IEncryptionProfile> encryptionProfiles)
+            IEncryptionProfileManager encryptionProfileManager)
         {
             this.encryptionService = encryptionService;
             this.mapperProvider = mapperProvider;
-            this.encryptionProfiles = encryptionProfiles;
+            this.encryptionProfileManager = encryptionProfileManager;
         }
 
         public TDestination Decrypt<T, TDestination>(T model)
@@ -95,7 +96,7 @@ namespace DNI.Core.Services.Providers
 
         private IEncryptionProfile GetEncryptionProfile(EncryptionClassification encryptionClassification)
         {
-            if(encryptionProfiles.TryGetValue(encryptionClassification, out var encryptionProfile))
+            if(encryptionProfileManager.TryGetValue(encryptionClassification, out var encryptionProfile))
             {
                 return encryptionProfile;
             }
@@ -105,6 +106,6 @@ namespace DNI.Core.Services.Providers
 
         private readonly IEncryptionService encryptionService;
         private readonly IMapperProvider mapperProvider;
-        private readonly IDictionary<EncryptionClassification, IEncryptionProfile> encryptionProfiles;
+        private readonly IEncryptionProfileManager encryptionProfileManager;
     }
 }
