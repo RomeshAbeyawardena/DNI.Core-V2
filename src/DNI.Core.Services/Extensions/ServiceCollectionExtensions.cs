@@ -1,4 +1,6 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Factories;
+using DNI.Core.Services.Factories;
 using DNI.Core.Services.Implementations.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,7 +62,7 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             return services
-                .AddSingleton(new Dictionary<string, Type>(ScanGenerators<RepositoryOptions>(services)))
+                .AddSingleton<IValueGeneratorFactory>(serviceProvider => new ValueGeneratorFactory(ScanGenerators<RepositoryOptions>(services)))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
         }
 
