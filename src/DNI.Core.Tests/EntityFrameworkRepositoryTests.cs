@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Services;
 using DNI.Core.Services.Implementations.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,7 @@ namespace DNI.Core.Tests
             dbContextOptions = DbContextOptionsTestBuilder
                 .Build(services => services);
             testDbContext = new TestDbContext(dbContextOptions);
-            sut = new EntityFrameworkRepository<TestDbContext, User>(testDbContext);
+            sut = new EntityFrameworkRepository<TestDbContext, User>(testDbContext, RepositoryOptionsBuilder.Build(RepositoryOptionsBuilder.Default));
         }
 
         [Test]

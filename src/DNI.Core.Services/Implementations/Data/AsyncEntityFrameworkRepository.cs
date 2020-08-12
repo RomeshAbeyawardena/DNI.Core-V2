@@ -18,8 +18,8 @@ namespace DNI.Core.Services.Implementations.Data
         where TDbContext : DbContext
         where TEntity : class
     {
-        protected AsyncEntityFrameworkRepository(TDbContext dbContext) 
-            : base(dbContext)
+        protected AsyncEntityFrameworkRepository(TDbContext dbContext, IRepositoryOptions repositoryOptions) 
+            : base(dbContext, repositoryOptions)
         {
         }
 

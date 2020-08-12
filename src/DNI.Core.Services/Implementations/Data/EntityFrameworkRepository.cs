@@ -15,13 +15,26 @@ namespace DNI.Core.Services.Implementations.Data
         where TDbContext : DbContext
         where TEntity : class
     {
-        public EntityFrameworkRepository(TDbContext dbContext)
+        public EntityFrameworkRepository(TDbContext dbContext, IRepositoryOptions repositoryOptions)
         {
+            if(dbContext == null)
+            {
+                throw new ArgumentNullException(nameof(dbContext));
+            }
+
+            if(repositoryOptions == null)
+            {
+                throw new ArgumentNullException(nameof(repositoryOptions));
+            }
+
+            this.repositoryOptions = repositoryOptions;
             DbContext = dbContext;
             DbSet = dbContext.Set<TEntity>();
         }
 
-        public IQueryable<TEntity> Query => DbSet;
+        public IQueryable<TEntity> Query => repositoryOptions.EnableTracking
+            ? DbSet 
+            : DbSet.AsNoTracking();
 
         public TEntity Find(params object[] keys)
         {
@@ -105,5 +118,7 @@ namespace DNI.Core.Services.Implementations.Data
         protected TDbContext DbContext { get; }
 
         public EntityState LastEntityState { get; private set; }
+
+        private readonly IRepositoryOptions repositoryOptions;
     }
 }
