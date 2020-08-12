@@ -15,7 +15,7 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterRepositories<TDbContext>(
             this IServiceCollection services, 
             IRepositoryOptions repositoryOptions, 
-            params object[] entities)
+            params Type[] entityTypes)
         {
             services.AddSingleton(repositoryOptions);
 
@@ -24,13 +24,12 @@ namespace DNI.Core.Services.Extensions
             var concreteRepositoryType = typeof(EntityFrameworkRepository<,>);
             var concreteAsyncRepositoryType = typeof(AsyncEntityFrameworkRepository<,>);
 
-            foreach(var entity in entities)
+            foreach(var entityType in entityTypes)
             {
-                var entityType = entity.GetType();
-                var entityRepositoryType = repositoryType.MakeGenericType(entity.GetType());
+                var entityRepositoryType = repositoryType.MakeGenericType(entityType);
                 var concreteEntityRepositoryType = concreteRepositoryType.MakeGenericType(typeof(TDbContext), entityType);
 
-                var asyncEntityRepositoryType = asyncRepositoryType.MakeGenericType(entity.GetType());
+                var asyncEntityRepositoryType = asyncRepositoryType.MakeGenericType(entityType);
                 var concreteAsyncEntityRepositoryType = concreteAsyncRepositoryType.MakeGenericType(typeof(TDbContext), entityType);
 
                 services.AddScoped(entityRepositoryType, concreteEntityRepositoryType);
@@ -45,12 +44,17 @@ namespace DNI.Core.Services.Extensions
             Action<IRepositoryOptions> repositoryOptions = null)
             where TDbContext : DbContext
         {
+            var genericTypeDbSet = typeof(DbSet<>);
             var dbContextType = typeof(TDbContext);
-            var entities = new object[] { };
+            var properties = dbContextType.GetProperties();
+            var dbSetProperties = properties.Where(property => property.PropertyType.IsGenericType);
+
+            var entities = dbSetProperties.Select(property => property.PropertyType.GetGenericArguments().FirstOrDefault());
+
             return RegisterRepositories<TDbContext>(
                 services, 
                 RepositoryOptionsBuilder.Build(repositoryOptions ?? RepositoryOptionsBuilder.Default),
-                entities);
+                entities.ToArray());
         }
     }
 }
