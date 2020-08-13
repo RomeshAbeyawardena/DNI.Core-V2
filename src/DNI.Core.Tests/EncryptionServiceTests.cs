@@ -60,11 +60,19 @@ namespace DNI.Core.Tests
         [Test]
         public void SaltKey()
         {
+            var expectedGuid = Guid.NewGuid();
+
             var salt = Guid.NewGuid().ToByteArray();
             var key = Guid.NewGuid().ToByteArray();
+            guidServiceMock.Setup(guidService => guidService.GenerateGuid())
+                .Returns(expectedGuid);
+
             var result = sut.SaltKey(salt, key);
 
             Assert.AreEqual(key.Length + salt.Length, result.Count());
+
+            result = sut.SaltKey(key, out var newSalt);
+            Assert.AreEqual(expectedGuid.ToByteArray(), newSalt);
         }
 
         private Mock<IGuidService> guidServiceMock;
