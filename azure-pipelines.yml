@@ -3,7 +3,7 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-name: '$(build.Version)$(Rev:r)'
+name: '$(build.Version).$(Rev:r)'
 
 trigger:
 - release/*
@@ -37,7 +37,7 @@ steps:
   displayName: 'Package project'
   inputs:
     command: 'pack'
-    includesymbols: true
+    includesymbols: false
     versioningScheme: 'byBuildNumber'
     majorVersion: '1'
     minorVersion: '0'
