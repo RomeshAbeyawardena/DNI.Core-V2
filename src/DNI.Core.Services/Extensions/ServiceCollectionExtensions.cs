@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Internal;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -62,6 +63,7 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             return services
+                .AddSingleton<ISystemClock, SystemClock>();
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(ScanGenerators<RepositoryOptions>(services)))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
         }
