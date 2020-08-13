@@ -3,11 +3,13 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+name: '$(build.Version).$(Rev:r)$(build.SemVersion)'
+
 trigger:
 - release/*
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
 
 variables:
   solution: '**/*.sln'
@@ -15,16 +17,46 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: PowerShell@2
+  displayName: 'Update Assembly Version'
+  inputs:
+    targetType: 'filePath'
+    filePath: './src/UpdateVersion-Powershell.ps1'
+    arguments: '-version $(Build.BuildNumber) -fileName ./src/Directory.Build.props'
 - task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
     feedsToUse: 'select'
 - task: DotNetCoreCLI@2
+  displayName: 'Build projects'
   inputs:
     command: 'build'
     projects: '**/*.csproj'
 - task: DotNetCoreCLI@2
+  displayName: 'Run tests'
   inputs:
     command: 'test'
     projects: '**/*.Tests*.csproj'
+- task: DotNetCoreCLI@2
+  displayName: 'Package project'
+  inputs:
+    command: 'pack'
+    includesymbols: false
+    versioningScheme: 'byBuildNumber'
+    majorVersion: '1'
+    minorVersion: '0'
+    patchVersion: '0'
+- task: DotNetCoreCLI@2
+  displayName: 'Push packages'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '7ddf0ba7-bdd7-4e73-976b-8e95ec289454/e1051d6e-ad9b-4460-913e-129960760b1f'
+- task: PowerShell@2
+  displayName: 'Tag Sources'
+  inputs:
+    targetType: 'inline'
+    script: 'git tag $(Build.BuildNumber)'
