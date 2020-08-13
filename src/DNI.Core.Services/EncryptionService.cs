@@ -13,6 +13,11 @@ namespace DNI.Core.Services
 {
     public class EncryptionService : IEncryptionService
     {
+        public EncryptionService(IGuidService guidService)
+        {
+            this.guidService = guidService;
+        }
+
         public string Decrypt(string encryptedValue, IEncryptionProfile encryptionProfile)
         {
             var value = Convert.FromBase64String(encryptedValue);
@@ -64,24 +69,33 @@ namespace DNI.Core.Services
             return Convert.ToBase64String(hashAlgorithm.ComputeHash(byteValue));
         }
 
+        public IEnumerable<byte> SaltKey(IEnumerable<byte> salt, IEnumerable<byte> key)
+        {
+            var saltedKey = new List<byte>();
+
+            saltedKey.AddRange(salt.ToArray());
+            saltedKey.AddRange(key.ToArray());
+
+            return saltedKey.ToArray();
+        }
+
+        public IEnumerable<byte> SaltKey(IEnumerable<byte> key, out IEnumerable<byte> salt)
+        {
+            salt = guidService.GenerateGuid().ToByteArray();
+            return SaltKey(salt, key);
+        }
+
         private HashAlgorithmName GetHashAlgorithmName(HashAlgorithmType hashAlgorithmType)
         {
-            switch (hashAlgorithmType)
+            return hashAlgorithmType switch
             {
-                case HashAlgorithmType.Md5:
-                    return HashAlgorithmName.MD5;
-                case HashAlgorithmType.Sha1:
-                    return HashAlgorithmName.SHA1;
-                case HashAlgorithmType.Sha256:
-                    return HashAlgorithmName.SHA256;
-                case HashAlgorithmType.Sha384:
-                    return HashAlgorithmName.SHA384;
-                case HashAlgorithmType.Sha512:
-                    return HashAlgorithmName.SHA512;
-                    case HashAlgorithmType.None:
-                default:
-                    throw new NotSupportedException();
-            }
+                HashAlgorithmType.Md5 => HashAlgorithmName.MD5,
+                HashAlgorithmType.Sha1 => HashAlgorithmName.SHA1,
+                HashAlgorithmType.Sha256 => HashAlgorithmName.SHA256,
+                HashAlgorithmType.Sha384 => HashAlgorithmName.SHA384,
+                HashAlgorithmType.Sha512 => HashAlgorithmName.SHA512,
+                _ => throw new NotSupportedException(),
+            };
         }
 
         private void InvokeSymmetricAlgorithm(Action<SymmetricAlgorithm> invokeAction, string symmetricAlgorithmName)
@@ -91,5 +105,7 @@ namespace DNI.Core.Services
                 invokeAction(symmetricAlgorithm);
             }
         }
+
+        private readonly IGuidService guidService;
     }
 }
