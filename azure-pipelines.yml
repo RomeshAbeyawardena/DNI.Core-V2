@@ -17,6 +17,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: PowerShell@2
+  displayName: 'Update Assembly Version'
+  inputs:
+    targetType: 'filePath'
+    script: 'UpdateVersion-Powershell.ps1'
+    arguments: '-version $(Build.BuildNumber) -fileName Directory.Build.props'
 - task: DotNetCoreCLI@2
   displayName: 'Restore NuGet packages'
   inputs:
