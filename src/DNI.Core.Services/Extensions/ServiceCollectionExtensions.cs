@@ -63,7 +63,7 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
             return services
-                .AddSingleton<ISystemClock, SystemClock>();
+                .AddSingleton<ISystemClock, SystemClock>()
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(ScanGenerators<RepositoryOptions>(services)))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
         }
