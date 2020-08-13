@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Shared domain classes consumed by DNI.Core.Services</Description>
   </PropertyGroup>
 
   <ItemGroup>
