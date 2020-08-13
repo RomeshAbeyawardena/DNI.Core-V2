@@ -1,17 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNI.Core.Domains", "DNI.Core.Domains\DNI.Core.Domains.csproj", "{9F04434B-1512-452E-A861-5AACD0C1D69F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNI.Core.Domains", "DNI.Core.Domains\DNI.Core.Domains.csproj", "{9F04434B-1512-452E-A861-5AACD0C1D69F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNI.Core.Services", "DNI.Core.Services\DNI.Core.Services.csproj", "{83C809D1-4FEB-4E62-BFCA-C78BB76B53BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNI.Core.Services", "DNI.Core.Services\DNI.Core.Services.csproj", "{83C809D1-4FEB-4E62-BFCA-C78BB76B53BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNI.Core.Shared", "DNI.Core.Shared\DNI.Core.Shared.csproj", "{4022E9F1-7CE2-4568-A57C-33D5F540FDC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNI.Core.Shared", "DNI.Core.Shared\DNI.Core.Shared.csproj", "{4022E9F1-7CE2-4568-A57C-33D5F540FDC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNI.Core.Tests", "DNI.Core.Tests\DNI.Core.Tests.csproj", "{F40DD77F-7F58-4162-8C2D-FA233AF9B735}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNI.Core.Tests", "DNI.Core.Tests\DNI.Core.Tests.csproj", "{F40DD77F-7F58-4162-8C2D-FA233AF9B735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNI.Core.Contracts", "DNI.Core.Contracts\DNI.Core.Contracts.csproj", "{CF519BF1-13EE-4427-B3EF-D3DF9940CDBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DNI.Core.Contracts", "DNI.Core.Contracts\DNI.Core.Contracts.csproj", "{CF519BF1-13EE-4427-B3EF-D3DF9940CDBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{989CD44A-5B6C-48C4-AC40-309C3080BC59}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		UpdateVersion-Powershell.ps1 = UpdateVersion-Powershell.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +27,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9F04434B-1512-452E-A861-5AACD0C1D69F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,5 +89,11 @@ Global
 		{CF519BF1-13EE-4427-B3EF-D3DF9940CDBF}.Release|x64.Build.0 = Release|Any CPU
 		{CF519BF1-13EE-4427-B3EF-D3DF9940CDBF}.Release|x86.ActiveCfg = Release|Any CPU
 		{CF519BF1-13EE-4427-B3EF-D3DF9940CDBF}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8451C27A-503F-4AC9-9200-D905D487D976}
 	EndGlobalSection
 EndGlobal
