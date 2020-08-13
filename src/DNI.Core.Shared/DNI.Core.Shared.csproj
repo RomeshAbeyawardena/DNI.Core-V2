@@ -2,5 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Shared extensions and common helpers consumed by DNI.Core.Services</Description>
   </PropertyGroup>
 </Project>
