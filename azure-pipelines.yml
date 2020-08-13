@@ -52,4 +52,5 @@ steps:
 - task: PowerShell@2
   displayName: 'Tag Sources'
   inputs:
+    targetType: 'inline'
     script: 'git tag $(Build.BuildNumber)'
