@@ -22,7 +22,7 @@ steps:
   inputs:
     targetType: 'filePath'
     filePath: './src/UpdateVersion-Powershell.ps1'
-    arguments: '-version $(Build.BuildNumber) -fileName Directory.Build.props'
+    arguments: '-version $(Build.BuildNumber) -fileName /src/Directory.Build.props'
 - task: DotNetCoreCLI@2
   displayName: 'Restore NuGet packages'
   inputs:
