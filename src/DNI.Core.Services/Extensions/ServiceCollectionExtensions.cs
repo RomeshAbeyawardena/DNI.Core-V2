@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Internal;
+using System.Reflection;
+using AutoMapper;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -82,6 +84,15 @@ namespace DNI.Core.Services.Extensions
             return valueGeneratorConcreteTypes
                 .Select(valueGenerator => new KeyValuePair<string, Type>(valueGenerator.FullName, valueGenerator));
 
+        }
+
+        public static IServiceCollection RegisterAutoMapperProviders(
+            this IServiceCollection services, 
+            Action<IAssemblyDefinition> obtainAssemblyDefinitions)
+        {
+            var assemblyDefinitions = new AssemblyDefinition();
+            obtainAssemblyDefinitions(assemblyDefinitions);
+            return services.AddAutoMapper(assemblyDefinitions.Assemblies);
         }
     }
 }
