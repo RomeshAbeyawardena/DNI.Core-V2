@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Services;
+using DNI.Core.Shared.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,11 +67,23 @@ namespace DNI.Core.Services
             using var hashAlgorithm = HashAlgorithm
                 .Create(GetHashAlgorithmName(encryptionProfile.HashAlgorithmType).Name);
 
-            return Convert.ToBase64String(hashAlgorithm.ComputeHash(byteValue));
+            return Convert.ToBase64String (
+                hashAlgorithm.ComputeHash (
+                    SaltKey(encryptionProfile.Salt, byteValue).ToArray()));
         }
 
         public IEnumerable<byte> SaltKey(IEnumerable<byte> salt, IEnumerable<byte> key)
         {
+            if(salt == null || salt.IsEmpty())
+            {
+                throw new ArgumentNullException(nameof(salt));
+            }
+
+            if(key == null || key.IsEmpty())
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             var saltedKey = new List<byte>();
 
             saltedKey.AddRange(salt.ToArray());

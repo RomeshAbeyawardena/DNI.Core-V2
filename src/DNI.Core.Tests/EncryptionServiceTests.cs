@@ -7,6 +7,7 @@ using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +74,32 @@ namespace DNI.Core.Tests
 
             result = sut.SaltKey(key, out var newSalt);
             Assert.AreEqual(expectedGuid.ToByteArray(), newSalt);
+        }
+
+        [Test]
+        public void Hash()
+        {
+            const string originalValue = "My$3cureP@s$w0rd!";
+            encryptionProfileMock
+                .SetupGet(encryptionProfile => encryptionProfile.Encoding)
+                .Returns(Encoding.ASCII);
+
+            encryptionProfileMock
+                .SetupGet(encryptionProfile => encryptionProfile.HashAlgorithmType)
+                .Returns(HashAlgorithmType.Sha512);
+
+            encryptionProfileMock
+                .SetupGet(encryptionProfile => encryptionProfile.Salt)
+                .Returns(Guid.NewGuid().ToByteArray());
+
+
+            var hashedValue = sut.Hash(originalValue, encryptionProfileMock.Object);
+
+            Assert.AreNotEqual(originalValue, hashedValue);
+
+            var repeatedHashedValue = sut.Hash(originalValue, encryptionProfileMock.Object);
+
+            Assert.AreEqual(hashedValue, repeatedHashedValue);
         }
 
         private Mock<IGuidService> guidServiceMock;
