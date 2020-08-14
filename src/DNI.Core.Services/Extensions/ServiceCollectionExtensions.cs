@@ -13,6 +13,7 @@ using Microsoft.Extensions.Internal;
 using System.Reflection;
 using AutoMapper;
 using MediatR;
+using DNI.Core.Shared.Extensions;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -63,11 +64,24 @@ namespace DNI.Core.Services.Extensions
                 entities.ToArray());
         }
 
-        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        public static IServiceCollection RegisterServices(
+            this IServiceCollection services, 
+            IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null)
         {
+            var internalGeneratorKeyValuePairs = ScanGenerators<RepositoryOptions>(services);
+            if(generatorKeyValuePairs == null)
+            {
+                generatorKeyValuePairs = internalGeneratorKeyValuePairs;
+            }
+            else
+            {
+                generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
+            }
+
+
             return services
                 .AddSingleton<ISystemClock, SystemClock>()
-                .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(ScanGenerators<RepositoryOptions>(services)))
+                .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
         }
 

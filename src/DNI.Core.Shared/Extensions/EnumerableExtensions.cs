@@ -12,5 +12,12 @@ namespace DNI.Core.Shared.Extensions
         {
             return value == null || !value.Any();
         }
+
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> items, IEnumerable<T> itemsToAppend)
+        {
+            var itemList = new List<T>(items);
+            itemList.AddRange(itemsToAppend);
+            return itemList.ToArray();
+        }
     }
 }
