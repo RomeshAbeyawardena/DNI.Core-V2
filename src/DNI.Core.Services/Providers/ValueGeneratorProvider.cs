@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Providers
 {
-    public class ValueGeneratorProvider : IValueGeneratorProvider
+    public sealed class ValueGeneratorProvider : IValueGeneratorProvider
     {
         public ValueGeneratorProvider(IServiceProvider serviceProvider, IValueGeneratorManager valueGeneratorManager)
         {

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Internal;
 using System.Reflection;
 using AutoMapper;
+using MediatR;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -88,11 +89,25 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterAutoMapperProviders(
             this IServiceCollection services, 
-            Action<IAssemblyDefinition> obtainAssemblyDefinitions)
+            Action<IAssemblyDefinition> obtainAssemblyDefinitions,
+            Action<IServiceProvider, IMapperConfigurationExpression> configureAutomapper)
         {
             var assemblyDefinitions = new AssemblyDefinition();
             obtainAssemblyDefinitions(assemblyDefinitions);
-            return services.AddAutoMapper(assemblyDefinitions.Assemblies);
+
+            return services.AddAutoMapper(configureAutomapper,assemblyDefinitions.Assemblies);
+        }
+
+        public static IServiceCollection RegisterMediatrProviders(
+            this IServiceCollection services,
+            Action<IAssemblyDefinition> obtainAssemblyDefinitions,
+            Action<MediatRServiceConfiguration> configuremediatRServiceConfiguration)
+        {
+            var assemblyDefinitions = new AssemblyDefinition();
+            obtainAssemblyDefinitions(assemblyDefinitions);
+            return services.AddMediatR(
+                assemblyDefinitions.Assemblies.ToArray(), 
+                configuremediatRServiceConfiguration);
         }
     }
 }
