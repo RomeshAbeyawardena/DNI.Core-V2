@@ -2,6 +2,7 @@
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Services.Extensions;
 using DNI.Core.Services.Providers;
+using DNI.Core.Tests.Generators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -52,6 +53,14 @@ namespace DNI.Core.Tests
             Assert.IsNotNull(valueGeneratorProvider);
         }
 
+        [Test]
+        public void ScanAndRegisterGenerators()
+        {
+            var valueGenerators = Services.Extensions.ServiceCollectionExtensions.ScanAndRegisterGenerators<TestValueGenerator>(services);
+
+            Assert.AreEqual(2, valueGenerators.Count());
+            Assert.AreEqual(2, services.Count());
+        }
 
         private ServiceCollection services;
     }

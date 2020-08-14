@@ -17,16 +17,21 @@ namespace DNI.Core.Services
 
         public IEnumerable<Assembly> Assemblies => assemblies.ToArray();
 
-        public IAssemblyDefinition GetAssembly<T>()
+        public IAssemblyDefinition Add(Assembly assembly)
         {
-            var assembly = Assembly.GetAssembly(typeof(T));
-
             if (!assemblies.Contains(assembly))
             {
                 assemblies.Add(assembly);
             }
 
             return this;
+        }
+
+        public IAssemblyDefinition GetAssembly<T>()
+        {
+            var assembly = Assembly.GetAssembly(typeof(T));
+
+            return Add(assembly);
         }
 
         private readonly List<Assembly> assemblies;
