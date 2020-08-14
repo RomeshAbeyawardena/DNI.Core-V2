@@ -12,6 +12,11 @@ namespace DNI.Core.Services.Managers
 {
     public class EncryptionProfileManager : IEncryptionProfileManager
     {
+        public EncryptionProfileManager()
+        {
+            dictionary = new Dictionary<EncryptionClassification, IEncryptionProfile>();
+        }
+
         IEncryptionProfile IReadOnlyDictionary<EncryptionClassification, IEncryptionProfile>.this[EncryptionClassification key] => dictionary[key];
 
         IEnumerable<EncryptionClassification> IReadOnlyDictionary<EncryptionClassification, IEncryptionProfile>.Keys => dictionary.Keys;
