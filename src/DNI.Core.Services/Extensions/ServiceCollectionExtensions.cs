@@ -70,7 +70,7 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterServices(
             this IServiceCollection services, 
-            Action<IDictionaryBuilder<EncryptionClassification, IEncryptionProfile>> buildSecurityProfiles = null,
+            Action<IDictionaryBuilder<EncryptionClassification, IEncryptionProfile>, IServiceProvider> buildSecurityProfiles = null,
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
             Action<Scrutor.ITypeSelector> scannerConfiguration = null)
         {
@@ -93,8 +93,10 @@ namespace DNI.Core.Services.Extensions
             if (buildSecurityProfiles != null)
             {
                 var securityProfilesDictionaryBuilder = DictionaryBuilder<EncryptionClassification, IEncryptionProfile>.Create();
-                buildSecurityProfiles(securityProfilesDictionaryBuilder);
-                services.AddSingleton<IEncryptionProfileManager>(serviceProvider => new EncryptionProfileManager(securityProfilesDictionaryBuilder));
+                
+                services.AddSingleton<IEncryptionProfileManager>(serviceProvider => { 
+                    buildSecurityProfiles(securityProfilesDictionaryBuilder, serviceProvider); 
+                    return new EncryptionProfileManager(securityProfilesDictionaryBuilder); });
             }
 
             if(scannerConfiguration != null)
