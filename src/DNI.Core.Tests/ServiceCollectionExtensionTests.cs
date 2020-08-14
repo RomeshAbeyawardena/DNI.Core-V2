@@ -66,7 +66,7 @@ namespace DNI.Core.Tests
             Assert.IsNotNull(encryptionProfile.Key);
 
             Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, 
-                builder => builder.Add(EncryptionClassification.Personal, encryptionProfile));
+                (builder, serviceProvider) => builder.Add(EncryptionClassification.Personal, encryptionProfile));
             serviceProvider = services.BuildServiceProvider();
 
              encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();

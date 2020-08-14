@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using DNI.Core.Contracts;
+using DNI.Core.Services.Builders;
 using DNI.Core.Services.Extensions;
+using DNI.Core.Shared.Enumerations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,10 +26,19 @@ namespace TestWebApp
 
             services
                 .RegisterRepositories<SiteDbContext>()
-                .RegisterServices()
+                .RegisterServices(BuildSecurityProfiles)
                 .RegisterAutoMapperProviders(assemblyDefinitions)
                 .RegisterMediatrProviders(assemblyDefinitions);
 
+        }
+
+        private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder)
+        {
+            builder.Add(EncryptionClassification.Personal, EncryptionProfileBuilder
+                .BuildProfile(profile => { 
+                    profile.Encoding = Encoding.ASCII;
+                    profile.InitialVector = Array.Empty<byte>();
+                }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
