@@ -31,7 +31,8 @@ namespace DNI.Core.Tests
         public void RegisterRepositories()
         {
             
-            Services.Extensions.ServiceCollectionExtensions.RegisterRepositories<TestDbContext>(services, options => options.UseInMemoryDatabase("TestDb"));
+            Services.Extensions.ServiceCollectionExtensions
+                .RegisterRepositories<TestDbContext>(services, (serviceProvider, options) => options.UseInMemoryDatabase("TestDb"));
 
             Assert.AreEqual(6, services.Count());
 
