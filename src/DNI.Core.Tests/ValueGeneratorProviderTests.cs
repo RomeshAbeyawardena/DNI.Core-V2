@@ -8,6 +8,7 @@ using DNI.Core.Contracts.Managers;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Moq;
 using NUnit.Framework;
+using DNI.Core.Tests.Generators;
 
 namespace DNI.Core.Tests
 {
