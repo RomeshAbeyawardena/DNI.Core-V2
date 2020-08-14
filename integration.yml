@@ -11,7 +11,7 @@ pool:
 
 variables:
   solution: '**/*.sln'
-  projectsPath: '**/.csproj'
+  projectsPath: '**/*.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
