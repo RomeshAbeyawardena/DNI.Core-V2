@@ -44,6 +44,7 @@ steps:
   displayName: 'Package project'
   inputs:
     command: 'pack'
+    projects: "$(projects)"
     includesymbols: false
     versioningScheme: 'byBuildNumber'
     majorVersion: '1'
