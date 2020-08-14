@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Abstractions
 {
-    public class ResponseBase<T> : IResponse<T>
+    public abstract class ResponseBase<T> : IResponse<T>
     {
         protected ResponseBase(T result)
         {

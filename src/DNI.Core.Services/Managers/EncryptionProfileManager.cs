@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Managers
 {
-    public class EncryptionProfileManager : IEncryptionProfileManager
+    internal class EncryptionProfileManager : IEncryptionProfileManager
     {
-        public EncryptionProfileManager()
+        public EncryptionProfileManager(IEnumerable<KeyValuePair<EncryptionClassification, IEncryptionProfile>> keyValuePairs)
         {
-            dictionary = new Dictionary<EncryptionClassification, IEncryptionProfile>();
+            dictionary = new Dictionary<EncryptionClassification, IEncryptionProfile>(keyValuePairs);
         }
 
         IEncryptionProfile IReadOnlyDictionary<EncryptionClassification, IEncryptionProfile>.this[EncryptionClassification key] => dictionary[key];

@@ -16,6 +16,8 @@ using MediatR;
 using DNI.Core.Shared.Extensions;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Services.Providers;
+using DNI.Core.Shared.Enumerations;
+using DNI.Core.Services.Builders;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -68,7 +70,9 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterServices(
             this IServiceCollection services, 
-            IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null)
+            Action<IDictionaryBuilder<EncryptionClassification, IEncryptionProfile>> buildSecurityProfiles = null,
+            IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
+            Action<Scrutor.ITypeSelector> scannerConfiguration = null)
         {
             var internalGeneratorKeyValuePairs = ScanAndRegisterGenerators<RepositoryOptions>(services);
             if(generatorKeyValuePairs == null)
@@ -80,11 +84,25 @@ namespace DNI.Core.Services.Extensions
                 generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
             }
 
-
-            return services
+            services
                 .AddSingleton<ISystemClock, SystemClock>()
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
-                .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
+                .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
+                .AddClasses(filter => filter.NotInNamespaceOf(typeof(DictionaryBuilder<,>)),true).AsImplementedInterfaces());
+
+            if (buildSecurityProfiles != null)
+            {
+                var securityProfilesDictionaryBuilder = DictionaryBuilder<EncryptionClassification, IEncryptionProfile>.Create();
+                buildSecurityProfiles(securityProfilesDictionaryBuilder);
+                services.AddSingleton<IEncryptionProfileManager>(serviceProvider => new EncryptionProfileManager(securityProfilesDictionaryBuilder));
+            }
+
+            if(scannerConfiguration != null)
+            {
+                services.Scan(scannerConfiguration);
+            }
+
+            return services;
         }
 
         public static IEnumerable<KeyValuePair<string, Type>> ScanAndRegisterGenerators<T>(IServiceCollection services)
@@ -113,7 +131,16 @@ namespace DNI.Core.Services.Extensions
             var assemblyDefinitions = new AssemblyDefinition();
             obtainAssemblyDefinitions(assemblyDefinitions);
 
-            return services.AddAutoMapper(configureAutomapper,assemblyDefinitions.Assemblies);
+            if(configureAutomapper != null)
+            { 
+                services.AddAutoMapper(configureAutomapper, assemblyDefinitions.Assemblies);
+            }
+            else
+            {
+                services.AddAutoMapper(assemblyDefinitions.Assemblies);
+            }
+            
+            return services;
         }
 
         public static IServiceCollection RegisterMediatrProviders(
