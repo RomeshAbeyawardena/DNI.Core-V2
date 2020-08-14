@@ -14,6 +14,8 @@ using System.Reflection;
 using AutoMapper;
 using MediatR;
 using DNI.Core.Shared.Extensions;
+using DNI.Core.Contracts.Providers;
+using DNI.Core.Services.Providers;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -104,8 +106,10 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterAutoMapperProviders(
             this IServiceCollection services, 
             Action<IAssemblyDefinition> obtainAssemblyDefinitions,
-            Action<IServiceProvider, IMapperConfigurationExpression> configureAutomapper)
+            Action<IServiceProvider, IMapperConfigurationExpression> configureAutomapper = null)
         {
+            services.AddSingleton<IMapperProvider, AutoMapperProvider>();
+
             var assemblyDefinitions = new AssemblyDefinition();
             obtainAssemblyDefinitions(assemblyDefinitions);
 
@@ -115,8 +119,10 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterMediatrProviders(
             this IServiceCollection services,
             Action<IAssemblyDefinition> obtainAssemblyDefinitions,
-            Action<MediatRServiceConfiguration> configuremediatRServiceConfiguration)
+            Action<MediatRServiceConfiguration> configuremediatRServiceConfiguration = null)
         {
+            services.AddSingleton<IMediatorProvider, MediatrProvider>();
+
             var assemblyDefinitions = new AssemblyDefinition();
             obtainAssemblyDefinitions(assemblyDefinitions);
             return services.AddMediatR(
