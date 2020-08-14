@@ -9,6 +9,7 @@ namespace DNI.Core.Contracts
 {
     public interface IAssemblyDefinition
     {
+        IAssemblyDefinition Add(Assembly assembly);
         IAssemblyDefinition GetAssembly<T>();
         IEnumerable<Assembly> Assemblies { get; }
     }

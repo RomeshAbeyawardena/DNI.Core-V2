@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Internal;
 using System.Reflection;
 using AutoMapper;
+using MediatR;
+using DNI.Core.Shared.Extensions;
+using DNI.Core.Contracts.Providers;
+using DNI.Core.Services.Providers;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -62,15 +66,28 @@ namespace DNI.Core.Services.Extensions
                 entities.ToArray());
         }
 
-        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        public static IServiceCollection RegisterServices(
+            this IServiceCollection services, 
+            IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null)
         {
+            var internalGeneratorKeyValuePairs = ScanAndRegisterGenerators<RepositoryOptions>(services);
+            if(generatorKeyValuePairs == null)
+            {
+                generatorKeyValuePairs = internalGeneratorKeyValuePairs;
+            }
+            else
+            {
+                generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
+            }
+
+
             return services
                 .AddSingleton<ISystemClock, SystemClock>()
-                .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(ScanGenerators<RepositoryOptions>(services)))
+                .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
         }
 
-        public static IEnumerable<KeyValuePair<string, Type>> ScanGenerators<T>(IServiceCollection services)
+        public static IEnumerable<KeyValuePair<string, Type>> ScanAndRegisterGenerators<T>(IServiceCollection services)
         {
             var valueGeneratorConcreteTypes = typeof(T)
                 .Assembly.GetTypes()
@@ -88,11 +105,29 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterAutoMapperProviders(
             this IServiceCollection services, 
-            Action<IAssemblyDefinition> obtainAssemblyDefinitions)
+            Action<IAssemblyDefinition> obtainAssemblyDefinitions,
+            Action<IServiceProvider, IMapperConfigurationExpression> configureAutomapper = null)
         {
+            services.AddSingleton<IMapperProvider, AutoMapperProvider>();
+
             var assemblyDefinitions = new AssemblyDefinition();
             obtainAssemblyDefinitions(assemblyDefinitions);
-            return services.AddAutoMapper(assemblyDefinitions.Assemblies);
+
+            return services.AddAutoMapper(configureAutomapper,assemblyDefinitions.Assemblies);
+        }
+
+        public static IServiceCollection RegisterMediatrProviders(
+            this IServiceCollection services,
+            Action<IAssemblyDefinition> obtainAssemblyDefinitions,
+            Action<MediatRServiceConfiguration> configuremediatRServiceConfiguration = null)
+        {
+            services.AddSingleton<IMediatorProvider, MediatrProvider>();
+
+            var assemblyDefinitions = new AssemblyDefinition();
+            obtainAssemblyDefinitions(assemblyDefinitions);
+            return services.AddMediatR(
+                assemblyDefinitions.Assemblies.ToArray(), 
+                configuremediatRServiceConfiguration);
         }
     }
 }
