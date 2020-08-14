@@ -26,7 +26,7 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterRepositories<TDbContext>(
             this IServiceCollection services, 
             IRepositoryOptions repositoryOptions,
-            Action<DbContextOptionsBuilder> dbContextOptionsBuilder,
+            Action<IServiceProvider, DbContextOptionsBuilder> dbContextOptionsBuilder,
             params Type[] entityTypes)
             where TDbContext : DbContext
         {
@@ -63,7 +63,7 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterRepositories<TDbContext>(
             this IServiceCollection services, 
-            Action<DbContextOptionsBuilder> dbContextOptionsBuilder,
+            Action<IServiceProvider, DbContextOptionsBuilder> dbContextOptionsBuilder,
             Action<IRepositoryOptions> repositoryOptions = null)
             where TDbContext : DbContext
         {
