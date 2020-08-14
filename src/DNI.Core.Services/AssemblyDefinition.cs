@@ -10,9 +10,16 @@ namespace DNI.Core.Services
 {
     internal class AssemblyDefinition : IAssemblyDefinition
     {
-        public AssemblyDefinition(IEnumerable<Assembly> assemblies = default)
+        public AssemblyDefinition(IEnumerable<Assembly> assemblies = null)
         {
-            this.assemblies = new List<Assembly>(assemblies);
+            if(assemblies == null)
+            {
+                this.assemblies = new List<Assembly>();
+            }
+            else
+            { 
+                this.assemblies = new List<Assembly>(assemblies);
+            }
         }
 
         public IEnumerable<Assembly> Assemblies => assemblies.ToArray();

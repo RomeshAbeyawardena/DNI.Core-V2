@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using DNI.Core.Contracts;
@@ -25,19 +26,24 @@ namespace TestWebApp
                     assemblyDefinitions.GetAssembly<Startup>();
 
             services
+                .AddDbContext<SiteDbContext>()
                 .RegisterRepositories<SiteDbContext>()
                 .RegisterServices(BuildSecurityProfiles)
-                .RegisterAutoMapperProviders(assemblyDefinitions)
-                .RegisterMediatrProviders(assemblyDefinitions);
+                .RegisterAutoMapperProviders(assemblyDefinitions);
+                //.RegisterMediatrProviders(assemblyDefinitions);
 
         }
 
-        private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder)
+        private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder,
+            IServiceProvider serviceProvider)
         {
+            var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
             builder.Add(EncryptionClassification.Personal, EncryptionProfileBuilder
                 .BuildProfile(profile => { 
                     profile.Encoding = Encoding.ASCII;
-                    profile.InitialVector = Array.Empty<byte>();
+                    profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+                    profile.Key = Convert.FromBase64String(applicationSettings.InitialVector);
+                    profile.SymmetricAlgorithmName = nameof(Aes);
                 }));
         }
 

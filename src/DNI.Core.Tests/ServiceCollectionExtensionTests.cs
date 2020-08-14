@@ -85,6 +85,13 @@ namespace DNI.Core.Tests
             Assert.AreEqual(2, services.Count());
         }
 
+        [Test]
+        public void RegisterAutoMapperProviders()
+        {
+            Services.Extensions.ServiceCollectionExtensions.RegisterAutoMapperProviders(services, assembly => assembly.GetAssembly<ServiceCollectionExtensionTests
+                >());
+        }
+
         private ServiceCollection services;
     }
 
