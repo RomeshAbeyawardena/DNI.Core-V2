@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DNI.Core.Services" Version="0.0.0.13" />
+    <PackageReference Include="DNI.Core.Services" Version="0.0.0.14" />
   </ItemGroup>
 
 </Project>
