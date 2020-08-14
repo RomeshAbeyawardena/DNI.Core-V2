@@ -70,7 +70,7 @@ namespace DNI.Core.Services.Extensions
             this IServiceCollection services, 
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null)
         {
-            var internalGeneratorKeyValuePairs = ScanGenerators<RepositoryOptions>(services);
+            var internalGeneratorKeyValuePairs = ScanAndRegisterGenerators<RepositoryOptions>(services);
             if(generatorKeyValuePairs == null)
             {
                 generatorKeyValuePairs = internalGeneratorKeyValuePairs;
@@ -87,7 +87,7 @@ namespace DNI.Core.Services.Extensions
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>().AddClasses().AsImplementedInterfaces());
         }
 
-        public static IEnumerable<KeyValuePair<string, Type>> ScanGenerators<T>(IServiceCollection services)
+        public static IEnumerable<KeyValuePair<string, Type>> ScanAndRegisterGenerators<T>(IServiceCollection services)
         {
             var valueGeneratorConcreteTypes = typeof(T)
                 .Assembly.GetTypes()
