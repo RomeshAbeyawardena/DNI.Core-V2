@@ -13,12 +13,13 @@ pool:
 
 variables:
   solution: '**/*.sln'
+  projects: '**/DNI.Core.*.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
 - task: PowerShell@2
-  displayName: 'Update Assembly Version'
+  displayName: 'Update assembly version'
   inputs:
     targetType: 'filePath'
     filePath: './src/UpdateVersion-Powershell.ps1'
@@ -27,13 +28,13 @@ steps:
   displayName: 'Restore NuGet packages'
   inputs:
     command: 'restore'
-    projects: '**/*.csproj'
+    projects: '$(projects)'
     feedsToUse: 'select'
 - task: DotNetCoreCLI@2
   displayName: 'Build projects'
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
+    projects: '$(projects)'
 - task: DotNetCoreCLI@2
   displayName: 'Run tests'
   inputs:
@@ -56,7 +57,7 @@ steps:
     nuGetFeedType: 'internal'
     publishVstsFeed: '7ddf0ba7-bdd7-4e73-976b-8e95ec289454/e1051d6e-ad9b-4460-913e-129960760b1f'
 - task: PowerShell@2
-  displayName: 'Tag Sources'
+  displayName: 'Tag sources'
   inputs:
     targetType: 'inline'
     script: 'git tag $(Build.BuildNumber)'
