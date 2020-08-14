@@ -1,7 +1,10 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
+using DNI.Core.Services.Builders;
 using DNI.Core.Services.Extensions;
 using DNI.Core.Services.Providers;
+using DNI.Core.Shared.Enumerations;
 using DNI.Core.Tests.Generators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,9 +51,29 @@ namespace DNI.Core.Tests
             Services.Extensions.ServiceCollectionExtensions.RegisterServices(services);
 
             var serviceProvider = services.BuildServiceProvider();
-            var valueGeneratorProvider = serviceProvider.GetRequiredService<IValueGeneratorProvider>();
-
+            var valueGeneratorProvider = serviceProvider.GetService<IValueGeneratorProvider>();
+            var encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
             Assert.IsNotNull(valueGeneratorProvider);
+            Assert.IsNull(encryptionProfileManager);
+
+            //Clear down for new test
+            SetUp();
+
+            var encryptionProfile = 
+                    EncryptionProfileBuilder
+                        .BuildProfile(profile => profile.Key = Array.Empty<byte>() );
+
+            Assert.IsNotNull(encryptionProfile.Key);
+
+            Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, 
+                builder => builder.Add(EncryptionClassification.Personal, encryptionProfile));
+            serviceProvider = services.BuildServiceProvider();
+
+             encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
+
+            Assert.IsNotNull(encryptionProfileManager);
+            Assert.IsTrue(encryptionProfileManager.TryGetValue(EncryptionClassification.Personal, out var actualEncryptionProfile));
+            Assert.IsNotNull(actualEncryptionProfile);
         }
 
         [Test]
