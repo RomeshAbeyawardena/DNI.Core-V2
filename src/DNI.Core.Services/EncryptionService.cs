@@ -113,10 +113,9 @@ namespace DNI.Core.Services
 
         private void InvokeSymmetricAlgorithm(Action<SymmetricAlgorithm> invokeAction, string symmetricAlgorithmName)
         {
-            using (var symmetricAlgorithm = SymmetricAlgorithm.Create(symmetricAlgorithmName))
-            {
-                invokeAction(symmetricAlgorithm);
-            }
+            using var symmetricAlgorithm = SymmetricAlgorithm.Create(symmetricAlgorithmName);
+            invokeAction(symmetricAlgorithm);
+            
         }
 
         private readonly IGuidService guidService;

@@ -24,5 +24,7 @@ namespace DNI.Core.Services
     internal class RepositoryOptions : IRepositoryOptions
     {
         public bool EnableTracking { get; set; }
+        public bool UseDbContextPools { get ; set ; }
+        public int PoolSize { get ; set ; }
     }
 }

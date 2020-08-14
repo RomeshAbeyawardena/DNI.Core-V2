@@ -25,10 +25,21 @@ namespace DNI.Core.Services.Extensions
     {
         public static IServiceCollection RegisterRepositories<TDbContext>(
             this IServiceCollection services, 
-            IRepositoryOptions repositoryOptions, 
+            IRepositoryOptions repositoryOptions,
+            Action<DbContextOptionsBuilder> dbContextOptionsBuilder,
             params Type[] entityTypes)
+            where TDbContext : DbContext
         {
             services.AddSingleton(repositoryOptions);
+
+            if (repositoryOptions.UseDbContextPools)
+            {
+                services.AddDbContextPool<TDbContext>(dbContextOptionsBuilder, repositoryOptions.PoolSize);
+            }
+            else
+            { 
+                services.AddDbContext<TDbContext>(dbContextOptionsBuilder);
+            }
 
             var repositoryType = typeof(IRepository<>);
             var asyncRepositoryType = typeof(IAsyncRepository<>);
@@ -52,6 +63,7 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterRepositories<TDbContext>(
             this IServiceCollection services, 
+            Action<DbContextOptionsBuilder> dbContextOptionsBuilder,
             Action<IRepositoryOptions> repositoryOptions = null)
             where TDbContext : DbContext
         {
@@ -61,11 +73,15 @@ namespace DNI.Core.Services.Extensions
             var dbSetProperties = properties.Where(property => property.PropertyType.IsGenericType);
 
             var entities = dbSetProperties.Select(property => property.PropertyType.GetGenericArguments().FirstOrDefault());
+            
+            var respositoryOptions = RepositoryOptionsBuilder.Build(repositoryOptions ?? RepositoryOptionsBuilder.Default);
+            var entitiesArray = entities.ToArray();
 
             return RegisterRepositories<TDbContext>(
                 services, 
-                RepositoryOptionsBuilder.Build(repositoryOptions ?? RepositoryOptionsBuilder.Default),
-                entities.ToArray());
+                respositoryOptions,
+                dbContextOptionsBuilder,
+                entitiesArray);
         }
 
         public static IServiceCollection RegisterServices(

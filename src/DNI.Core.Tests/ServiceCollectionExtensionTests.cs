@@ -30,11 +30,10 @@ namespace DNI.Core.Tests
         [Test]
         public void RegisterRepositories()
         {
-            services.AddScoped((serviceProvider) => DbContextOptionsTestBuilder.Build(services => services));
-            services.AddScoped<TestDbContext>();
-            Services.Extensions.ServiceCollectionExtensions.RegisterRepositories<TestDbContext>(services);
+            
+            Services.Extensions.ServiceCollectionExtensions.RegisterRepositories<TestDbContext>(services, options => options.UseInMemoryDatabase("TestDb"));
 
-            Assert.AreEqual(5, services.Count());
+            Assert.AreEqual(6, services.Count());
 
             var serviceProvider = services.BuildServiceProvider();
 

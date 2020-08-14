@@ -29,8 +29,8 @@ namespace TestWebApp
                 .AddDbContext<SiteDbContext>()
                 .RegisterRepositories<SiteDbContext>()
                 .RegisterServices(BuildSecurityProfiles)
-                .RegisterAutoMapperProviders(assemblyDefinitions);
-                //.RegisterMediatrProviders(assemblyDefinitions);
+                .RegisterAutoMapperProviders(assemblyDefinitions)
+                .RegisterMediatrProviders(assemblyDefinitions);
 
         }
 
