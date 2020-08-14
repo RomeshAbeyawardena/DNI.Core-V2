@@ -6,16 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
 
 namespace DNI.Core.Services.Abstractions
 {
     public abstract class ExtendedControllerBase : ControllerBase
     {
-        protected ExtendedControllerBase(IMapperProvider mapperProvider)
+        protected ExtendedControllerBase(IMediatorProvider mediator, IMapperProvider mapperProvider)
         {
             Mapper = mapperProvider;
+            Mediator = mediator;
         }
 
+        protected IMediatorProvider Mediator;
         protected IMapperProvider Mapper { get; }
 
         protected IActionResult ValidateResponse<T> (
