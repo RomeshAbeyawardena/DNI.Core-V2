@@ -8,6 +8,8 @@ namespace DNI.Core.Domains
 {
     public struct Version
     {
+        public static Version Zero => new Version();
+
         public static bool operator ==(Version left, Version right)
         {
             return left.Equals(right);
@@ -18,7 +20,21 @@ namespace DNI.Core.Domains
             return !(left == right);
         }
 
-        public static bool IsInRange(ref Version version, ref Version minimumVersion, ref Version maximumVersion)
+        public static bool TryParse(string value, out Version version)
+        {
+            try
+            {
+                version = new Version(value);
+                return true;
+            }
+            catch (FormatException)
+            {
+                version = Zero;
+                return false;
+            }
+        }
+
+        public static bool IsInRange(Version version, Version minimumVersion, Version maximumVersion)
         {
             static int getVersionSum(Version ver)
             {
@@ -57,6 +73,12 @@ namespace DNI.Core.Domains
         public int Major { get; }
         public int Minor { get; }
 
+        public bool Equals(ref Version version)
+        {
+            return Major == version.Major 
+                && Minor == version.Minor;
+        }
+
         public override bool Equals(object obj)
         {
             if(!(obj is Version version))
@@ -64,8 +86,7 @@ namespace DNI.Core.Domains
                 throw new InvalidOperationException();
             }
 
-            return Major == version.Major 
-                && Minor == version.Minor;
+            return Equals(ref version);
         }
 
         public override int GetHashCode()

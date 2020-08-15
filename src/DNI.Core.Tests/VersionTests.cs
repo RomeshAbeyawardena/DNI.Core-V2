@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Version = DNI.Core.Domains.Version;
+
 namespace DNI.Core.Tests
 {
     [TestFixture]
@@ -28,7 +29,7 @@ namespace DNI.Core.Tests
             var minimum = new Version(minimumMajor, minimumMinor);
             var maximum = new Version(maximumMajor, maximumMinor);
 
-            Assert.IsTrue(Version.IsInRange(ref actual, ref minimum, ref maximum));
+            Assert.IsTrue(Version.IsInRange(actual, minimum, maximum));
         }
 
         [TestCase(0, 0, 1, 0, 2, 0)]
@@ -49,7 +50,7 @@ namespace DNI.Core.Tests
             var minimum = new Version(minimumMajor, minimumMinor);
             var maximum = new Version(maximumMajor, maximumMinor);
 
-            Assert.IsFalse(Version.IsInRange(ref actual, ref minimum, ref maximum));
+            Assert.IsFalse(Version.IsInRange(actual, minimum, maximum));
         }
     }
 }
