@@ -18,9 +18,9 @@ namespace DNI.Core.Services.Builders
 
         public IEncryptionProfileDictionaryBuilder Add(
             EncryptionClassification encryptionClassification, 
-            Func<IEncryptionProfile> encryptionProfileBuilder)
+            Func<IEncryptionProfile, IEncryptionProfile> encryptionProfileBuilder)
         {
-            Add(encryptionClassification, encryptionProfileBuilder());
+            Add(encryptionClassification, encryptionProfileBuilder(new EncryptionProfile()));
             return this;
         }
     }

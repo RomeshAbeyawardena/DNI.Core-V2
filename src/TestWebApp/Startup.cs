@@ -43,9 +43,16 @@ namespace TestWebApp
 
         }
 
-        private void BuildSecurityProfiles(IEncryptionProfileDictionaryBuilder builder)
+        private void BuildSecurityProfiles(IServiceProvider serviceProvider, IEncryptionProfileDictionaryBuilder builder)
         {
-            throw new NotImplementedException();
+            var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
+            //builder.Add(EncryptionClassification.Personal, profile =>  { 
+            //        profile.Encoding = Encoding.ASCII;
+            //        profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+            //        profile.Key = Convert.FromBase64String(applicationSettings.PersonalKey);
+            //        profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
+            //        profile.SymmetricAlgorithmName = nameof(Aes);
+            //    }));
         }
 
         private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder,

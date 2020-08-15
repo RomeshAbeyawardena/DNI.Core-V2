@@ -84,9 +84,10 @@ namespace DNI.Core.Tests
             Assert.IsNotNull(actualEncryptionProfile);
         }
 
-        private IEncryptionProfile encryptionProfileBuilder()
+        private IEncryptionProfile encryptionProfileBuilder(IEncryptionProfile encryptionProfile)
         {
-            return EncryptionProfileBuilder.BuildProfile(encryptionProfile => encryptionProfile.Key = Array.Empty<byte>());
+            encryptionProfile.Key = Array.Empty<byte>();
+            return encryptionProfile;
         }
 
         [Test]
