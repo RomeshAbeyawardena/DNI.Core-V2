@@ -51,7 +51,7 @@ namespace DNI.Core.Tests
             Services.Extensions.ServiceCollectionExtensions.RegisterServices(services);
 
             var serviceProvider = services.BuildServiceProvider();
-            var valueGeneratorProvider = serviceProvider.GetService<IValueGeneratorProvider>();
+            var valueGeneratorProvider = serviceProvider.GetService<IValueGeneratorManager>();
             var encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
             Assert.IsNotNull(valueGeneratorProvider);
             Assert.IsNull(encryptionProfileManager);
