@@ -2,7 +2,9 @@
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Services.Builders;
+using DNI.Core.Shared.Extensions;
 using DNI.Core.Services.Extensions;
+using DNI.Core.Services.Implementations.Generators;
 using DNI.Core.Services.Providers;
 using DNI.Core.Shared.Enumerations;
 using DNI.Core.Tests.Generators;
@@ -55,6 +57,18 @@ namespace DNI.Core.Tests
             var encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
             Assert.IsNotNull(valueGeneratorProvider);
             Assert.IsNull(encryptionProfileManager);
+
+            Assert.True(valueGeneratorProvider.TryGetValue(Shared.Constants.Generators.DateTimeOffSetValueGenerator, out var dateTimeOffSetValueGenerator));
+            Assert.IsNotNull(dateTimeOffSetValueGenerator);
+            Assert.AreEqual(dateTimeOffSetValueGenerator.GetType().GetUnderlyingSystemType(dateTimeOffSetValueGenerator), typeof(DateTimeOffSetValueGenerator));
+
+            Assert.True(valueGeneratorProvider.TryGetValue(Shared.Constants.Generators.DateTimeValueGenerator, out var dateTimeValueGenerator));
+            Assert.IsNotNull(dateTimeValueGenerator);
+            Assert.AreEqual(dateTimeOffSetValueGenerator.GetType().GetUnderlyingSystemType(dateTimeValueGenerator), typeof(DateTimeValueGenerator));
+
+            Assert.True(valueGeneratorProvider.TryGetValue(Shared.Constants.Generators.GuidValueGenerator, out var guidValueGenerator));
+            Assert.IsNotNull(guidValueGenerator);
+            Assert.AreEqual(dateTimeOffSetValueGenerator.GetType().GetUnderlyingSystemType(guidValueGenerator), typeof(GuidValueGenerator));
 
             //Clear down for new test
             SetUp();

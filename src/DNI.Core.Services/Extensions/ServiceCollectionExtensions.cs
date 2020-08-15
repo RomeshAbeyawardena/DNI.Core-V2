@@ -19,6 +19,8 @@ using DNI.Core.Services.Providers;
 using DNI.Core.Shared.Enumerations;
 using DNI.Core.Services.Builders;
 using DNI.Core.Domains;
+using DNI.Core.Services.Attributes;
+using DNI.Core.Services.Implementations.Generators;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -106,9 +108,13 @@ namespace DNI.Core.Services.Extensions
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
                 .AddClasses(filter => filter
+                .NotInNamespaceOf(typeof(EntityFrameworkRepository<,>))
                     .NotInNamespaceOf(typeof(DictionaryBuilder<,>))
+                    .NotInNamespaceOf<AutoMapperProvider>()
                     .NotInNamespaceOf<Domains.Version>()
-                    .NotInNamespaceOf<ValueGeneratorManager>())
+                    .NotInNamespaceOf<VersionAttribute>()
+                    .NotInNamespaceOf<ValueGeneratorManager>()
+                    .NotInNamespaceOf<DateTimeOffSetValueGenerator>())
                 .AsImplementedInterfaces());
 
             if (buildSecurityProfiles != null)

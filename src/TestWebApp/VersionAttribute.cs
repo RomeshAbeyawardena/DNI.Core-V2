@@ -10,7 +10,7 @@ using Version = DNI.Core.Domains.Version;
 namespace TestWebApp
 {
 
-    public class VersionAttribute : ActionFilterAttribute
+    public sealed class VersionAttribute : ActionFilterAttribute
     {
         public VersionAttribute(string minimum, string maximum = null)
         {

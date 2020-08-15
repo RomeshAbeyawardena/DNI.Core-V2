@@ -9,7 +9,7 @@ using Version = DNI.Core.Domains.Version;
 
 namespace DNI.Core.Services.Attributes
 {
-    public class VersionAttribute : ActionFilterAttribute
+    public sealed class VersionAttribute : ActionFilterAttribute
     {
         public VersionAttribute(string minimum, string maximum = null)
         {
