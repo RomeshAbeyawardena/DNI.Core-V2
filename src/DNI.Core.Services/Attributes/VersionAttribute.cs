@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using Version = DNI.Core.Domains.Version;
 
 namespace DNI.Core.Services.Attributes
 {
-    public sealed class VersionAttribute : ActionFilterAttribute
+    public sealed class VersionAttribute : ActionFilterAttribute, IActionConstraint
     {
         public VersionAttribute(string minimum, string maximum = null)
         {
@@ -34,17 +35,17 @@ namespace DNI.Core.Services.Attributes
             {
                 if (!context.RouteData.Values.TryGetValue("version", out var versionString))
                 {
-                    throw new InvalidOperationException();
+                    throw new NullReferenceException("Version could not be obtained by the route data, ensure the {version} is specified somewhere within the MVC routing configuration");
                 }
 
                 if (!Version.TryParse(versionString.ToString(), out var version))
                 {
-                    throw new InvalidOperationException();
+                    throw new FormatException($"Version {versionString} string could not be parsed, expecting the semantic version format [major].[minor]");
                 }
 
-                if (Version.IsInRange(version, Minimum, Maximum))
+                if (!Version.IsInRange(version, Minimum, Maximum))
                 {
-                    throw new InvalidOperationException();
+                    throw new ArgumentOutOfRangeException($"Version {version} does not meet the specific range. Minimum: {Minimum} Maximum: {Maximum}");
                 }
 
                 base.OnActionExecuting(context);
@@ -54,6 +55,29 @@ namespace DNI.Core.Services.Attributes
                 context.Result = new BadRequestObjectResult(ex);
             }
 
+        }
+
+        public bool Accept(ActionConstraintContext context)
+        {
+            var suitableCandidates = context.Candidates
+                .Where(candidate => candidate.Constraints.Any(constraint => constraint is VersionAttribute));
+
+            if (!suitableCandidates.Any())
+            {
+                return true;
+            }
+
+            if (!context.RouteContext.RouteData.Values.TryGetValue("version", out var versionString))
+            {
+                throw new InvalidOperationException("Version could not be obtained by the route data, ensure the {version} is specified somewhere within the MVC routing configuration");
+            }
+
+            if (!Version.TryParse(versionString.ToString(), out var version))
+            {
+                throw new FormatException($"Version {versionString} string could not be parsed, expecting the semantic version format [major].[minor]");
+            }
+
+            return Version.IsInRange(version, Minimum, Maximum);
         }
 
         public Version Minimum { get; }

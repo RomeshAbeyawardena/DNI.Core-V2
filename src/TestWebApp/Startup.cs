@@ -27,6 +27,7 @@ namespace TestWebApp
                     assemblyDefinitions.GetAssembly<Startup>();
 
             services
+                .AddSingleton<ApplicationSettings>()
                 .RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
                     var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
                     dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);})

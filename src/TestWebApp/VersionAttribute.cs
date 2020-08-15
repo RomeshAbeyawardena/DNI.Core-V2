@@ -36,17 +36,17 @@ namespace TestWebApp
             {
                 if (!context.RouteData.Values.TryGetValue("version", out var versionString))
                 {
-                    throw new InvalidOperationException();
+                    throw new NullReferenceException("Version could not be obtained by the route data, ensure the {version} is specified somewhere within the MVC routing configuration");
                 }
 
                 if (!Version.TryParse(versionString.ToString(), out var version))
                 {
-                    throw new InvalidOperationException();
+                    throw new FormatException($"Version {versionString} string could not be parsed, expecting the semantic version format [major].[minor]");
                 }
 
                 if (!Version.IsInRange(version, Minimum, Maximum))
                 {
-                    throw new InvalidOperationException();
+                    throw new ArgumentOutOfRangeException($"Version {version} does not meet the specific range. Minimum: {Minimum} Maximum: {Maximum}");
                 }
 
                 base.OnActionExecuting(context);
@@ -60,25 +60,25 @@ namespace TestWebApp
 
         public bool Accept(ActionConstraintContext context)
         {
-            var candidates = context.Candidates
+            var suitableCandidates = context.Candidates
                 .Where(candidate => candidate.Constraints.Any(constraint => constraint is VersionAttribute));
 
-            if (!context.RouteContext.RouteData.Values.TryGetValue("version", out var versionString))
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (!Version.TryParse(versionString.ToString(), out var version))
-            {
-                throw new InvalidOperationException();
-            }
-
-            if(Version.IsInRange(version, Minimum, Maximum))
+            if (!suitableCandidates.Any())
             {
                 return true;
             }
 
-            return !candidates.Any();
+            if (!context.RouteContext.RouteData.Values.TryGetValue("version", out var versionString))
+            {
+                throw new InvalidOperationException("Version could not be obtained by the route data, ensure the {version} is specified somewhere within the MVC routing configuration");
+            }
+
+            if (!Version.TryParse(versionString.ToString(), out var version))
+            {
+                throw new FormatException($"Version {versionString} string could not be parsed, expecting the semantic version format [major].[minor]");
+            }
+
+            return Version.IsInRange(version, Minimum, Maximum);
         }
 
         public Version Minimum { get; }

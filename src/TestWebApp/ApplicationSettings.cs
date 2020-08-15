@@ -13,6 +13,7 @@ namespace TestWebApp
         public ApplicationSettings(IConfiguration configuration)
         {
             configuration.Bind(this, configuration => configuration.BindNonPublicProperties = true);
+            DefaultConnectionString = configuration.GetConnectionString("default");
         }
         public string DefaultConnectionString { get; private set; }
         public string InitialVector { get; private set; }
