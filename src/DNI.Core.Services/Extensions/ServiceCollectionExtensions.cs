@@ -107,7 +107,8 @@ namespace DNI.Core.Services.Extensions
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
                 .AddClasses(filter => filter
                     .NotInNamespaceOf(typeof(DictionaryBuilder<,>))
-                    .NotInNamespaceOf<Domains.Version>())
+                    .NotInNamespaceOf<Domains.Version>()
+                    .NotInNamespaceOf<ValueGeneratorManager>())
                 .AsImplementedInterfaces());
 
             if (buildSecurityProfiles != null)
