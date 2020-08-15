@@ -11,19 +11,17 @@ namespace DNI.Core.Services.Builders
 {
     public class EncryptionProfileDictionaryBuilder : DictionaryBuilder<EncryptionClassification, IEncryptionProfile>, IEncryptionProfileDictionaryBuilder
     {
-        public EncryptionProfileDictionaryBuilder(IServiceProvider serviceProvider)
+        public EncryptionProfileDictionaryBuilder()
         {
-            this.serviceProvider = serviceProvider;
+            
         }
 
         public IEncryptionProfileDictionaryBuilder Add(
             EncryptionClassification encryptionClassification, 
-            Func<IServiceProvider, IEncryptionProfile> encryptionProfileBuilder)
+            Func<IEncryptionProfile> encryptionProfileBuilder)
         {
-            Add(encryptionClassification, encryptionProfileBuilder(serviceProvider));
+            Add(encryptionClassification, encryptionProfileBuilder());
             return this;
         }
-
-        private readonly IServiceProvider serviceProvider;
     }
 }

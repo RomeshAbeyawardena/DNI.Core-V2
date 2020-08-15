@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using DNI.Core.Contracts;
+using DNI.Core.Contracts.Builders;
 using DNI.Core.Services.Builders;
 using DNI.Core.Services.Extensions;
 using DNI.Core.Shared.Enumerations;
@@ -40,6 +41,11 @@ namespace TestWebApp
                 .RegisterMediatrProviders(assemblyDefinitions)
                 .AddControllers();
 
+        }
+
+        private void BuildSecurityProfiles(IEncryptionProfileDictionaryBuilder builder)
+        {
+            throw new NotImplementedException();
         }
 
         private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder,
