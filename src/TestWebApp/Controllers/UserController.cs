@@ -23,5 +23,16 @@ namespace TestWebApp.Controllers
         {
             return Ok("Hello");
         }
+
+        [Version("2.0"), ActionName("Hello")]
+        public ActionResult HelloV2()
+        {
+            return Ok("Hello v2");
+        }
+
+        public ActionResult GoodBye()
+        {
+            return Ok("Bye!");
+        }
     }
 }

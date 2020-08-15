@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using Version = DNI.Core.Domains.Version;
 namespace TestWebApp
 {
 
-    public sealed class VersionAttribute : ActionFilterAttribute
+    public sealed class VersionAttribute : ActionFilterAttribute, IActionConstraint
     {
         public VersionAttribute(string minimum, string maximum = null)
         {
@@ -43,7 +44,7 @@ namespace TestWebApp
                     throw new InvalidOperationException();
                 }
 
-                if (Version.IsInRange(version, Minimum, Maximum))
+                if (!Version.IsInRange(version, Minimum, Maximum))
                 {
                     throw new InvalidOperationException();
                 }
@@ -55,6 +56,29 @@ namespace TestWebApp
                 context.Result = new BadRequestObjectResult(ex);
             }
 
+        }
+
+        public bool Accept(ActionConstraintContext context)
+        {
+            var candidates = context.Candidates
+                .Where(candidate => candidate.Constraints.Any(constraint => constraint is VersionAttribute));
+
+            if (!context.RouteContext.RouteData.Values.TryGetValue("version", out var versionString))
+            {
+                throw new InvalidOperationException();
+            }
+
+            if (!Version.TryParse(versionString.ToString(), out var version))
+            {
+                throw new InvalidOperationException();
+            }
+
+            if(Version.IsInRange(version, Minimum, Maximum))
+            {
+                return true;
+            }
+
+            return !candidates.Any();
         }
 
         public Version Minimum { get; }

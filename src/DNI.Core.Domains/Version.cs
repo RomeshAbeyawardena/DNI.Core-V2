@@ -93,5 +93,10 @@ namespace DNI.Core.Domains
         {
             return HashCode.Combine(Major, Minor);
         }
+
+        public override string ToString()
+        {
+            return string.Format("Major:{0}, Minor:{1}, String:\"{0}\",\"{1}\"", Major, Minor);
+        }
     }
 }
