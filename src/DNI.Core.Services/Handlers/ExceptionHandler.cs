@@ -29,7 +29,7 @@ namespace DNI.Core.Services.Handlers
             }
             finally
             {
-                finallyBlock();
+                finallyBlock?.Invoke();
             }
         }
 
@@ -55,7 +55,7 @@ namespace DNI.Core.Services.Handlers
             }
             finally
             {
-                finallyBlock();
+                finallyBlock?.Invoke();
             }
         }
 
@@ -76,7 +76,7 @@ namespace DNI.Core.Services.Handlers
             }
             finally
             {
-                finallyBlock();
+                finallyBlock?.Invoke();
             }
         }
 
