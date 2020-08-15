@@ -73,14 +73,8 @@ namespace DNI.Core.Tests
             //Clear down for new test
             SetUp();
 
-            var encryptionProfile = 
-                    EncryptionProfileBuilder
-                        .BuildProfile(profile => profile.Key = Array.Empty<byte>() );
-
-            Assert.IsNotNull(encryptionProfile.Key);
-
             Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, 
-                (builder, serviceProvider) => builder.Add(EncryptionClassification.Personal, encryptionProfile));
+                (builder) => builder.Add(EncryptionClassification.Personal, encryptionProfileBuilder));
             serviceProvider = services.BuildServiceProvider();
 
              encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
@@ -88,6 +82,11 @@ namespace DNI.Core.Tests
             Assert.IsNotNull(encryptionProfileManager);
             Assert.IsTrue(encryptionProfileManager.TryGetValue(EncryptionClassification.Personal, out var actualEncryptionProfile));
             Assert.IsNotNull(actualEncryptionProfile);
+        }
+
+        private IEncryptionProfile encryptionProfileBuilder(IServiceProvider arg)
+        {
+            throw new NotImplementedException();
         }
 
         [Test]

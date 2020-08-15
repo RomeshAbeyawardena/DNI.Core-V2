@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Builders;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace DNI.Core.Services.Builders
             return new DictionaryBuilder<TKey, TValue>();
         }
 
-        private DictionaryBuilder()
+        protected DictionaryBuilder()
         {
             dictionary = new Dictionary<TKey, TValue>();
         }

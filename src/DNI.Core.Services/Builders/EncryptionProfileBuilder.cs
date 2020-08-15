@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Shared.Enumerations;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using System;
 using System.Collections.Generic;
@@ -17,5 +18,6 @@ namespace DNI.Core.Services.Builders
             buildProfile(encryptionProfile);
             return encryptionProfile;
         }
+
     }
 }

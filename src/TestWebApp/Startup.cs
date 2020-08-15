@@ -30,7 +30,11 @@ namespace TestWebApp
                 .AddSingleton<ApplicationSettings>()
                 .RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
                     var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
-                    dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);})
+                    dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);},
+                    options => { 
+                        options.EnableTracking = false; 
+                        options.UseDbContextPools = true;
+                        options.PoolSize = 256; })
                 .RegisterServices(BuildSecurityProfiles)
                 .RegisterAutoMapperProviders(assemblyDefinitions)
                 .RegisterMediatrProviders(assemblyDefinitions)
@@ -46,7 +50,22 @@ namespace TestWebApp
                 .BuildProfile(profile => { 
                     profile.Encoding = Encoding.ASCII;
                     profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                    profile.Key = Convert.FromBase64String(applicationSettings.InitialVector);
+                    profile.Key = Convert.FromBase64String(applicationSettings.PersonalKey);
+                    profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
+                    profile.SymmetricAlgorithmName = nameof(Aes);
+                })).Add(EncryptionClassification.Common, EncryptionProfileBuilder
+                .BuildProfile(profile => { 
+                    profile.Encoding = Encoding.ASCII;
+                    profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+                    profile.Key = Convert.FromBase64String(applicationSettings.CommonKey);
+                    profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
+                    profile.SymmetricAlgorithmName = nameof(Aes);
+                })).Add(EncryptionClassification.Shared, EncryptionProfileBuilder
+                .BuildProfile(profile => { 
+                    profile.Encoding = Encoding.ASCII;
+                    profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+                    profile.Key = Convert.FromBase64String(applicationSettings.SharedKey);
+                    profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
                     profile.SymmetricAlgorithmName = nameof(Aes);
                 }));
         }

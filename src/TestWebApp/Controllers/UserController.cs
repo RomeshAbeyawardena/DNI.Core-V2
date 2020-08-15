@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
+using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Abstractions;
 using DNI.Core.Services.Attributes;
 using Microsoft.AspNetCore.Mvc;
@@ -15,11 +16,16 @@ namespace TestWebApp.Controllers
     public class UserController : ApiController
     {
         private readonly IRepository<User> userRepository;
-
-        public UserController(IMediatorProvider mediator, IMapperProvider mapperProvider, IRepository<User> userRepository) 
+        private readonly IEncryptionService encryptionService;
+        public UserController(
+            IMediatorProvider mediator, 
+            IMapperProvider mapperProvider, 
+            IRepository<User> userRepository,
+            IEncryptionService encryptionService) 
             : base(mediator, mapperProvider)
         {
             this.userRepository = userRepository;
+            this.encryptionService = encryptionService;
         }
 
         [Version("1.0", "1.9")]

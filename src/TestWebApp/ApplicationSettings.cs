@@ -17,10 +17,10 @@ namespace TestWebApp
         }
         public string DefaultConnectionString { get; private set; }
         public string InitialVector { get; private set; }
-        public string Key1 {get; private set; }
-        public string Key2 {get; private set; }
-        public string Key3 {get; private set; }
-        public string Key4 {get; private set; }
+        public string PersonalKey {get; private set; }
+        public string CommonKey {get; private set; }
+        public string SharedKey {get; private set; }
+        public string GeneralKey {get; private set; }
         public string Salt {get; private set; }
     }
 }
