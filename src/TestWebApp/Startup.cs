@@ -27,11 +27,13 @@ namespace TestWebApp
                     assemblyDefinitions.GetAssembly<Startup>();
 
             services
-                .RegisterRepositories<SiteDbContext>(dbContextOptions =>
-                    dbContextOptions.UseSqlServer(""))
+                .RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
+                    var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
+                    dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);})
                 .RegisterServices(BuildSecurityProfiles)
                 .RegisterAutoMapperProviders(assemblyDefinitions)
-                .RegisterMediatrProviders(assemblyDefinitions);
+                .RegisterMediatrProviders(assemblyDefinitions)
+                .AddControllers();
 
         }
 
@@ -60,10 +62,7 @@ namespace TestWebApp
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllers();
             });
         }
     }
