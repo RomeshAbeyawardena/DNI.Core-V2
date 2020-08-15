@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DNI.Core.Domains\DNI.Core.Domains.csproj" />
     <ProjectReference Include="..\DNI.Core.Services\DNI.Core.Services.csproj" />
   </ItemGroup>
 

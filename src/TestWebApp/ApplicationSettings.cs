@@ -14,7 +14,7 @@ namespace TestWebApp
         {
             configuration.Bind(this, configuration => configuration.BindNonPublicProperties = true);
         }
-
+        public string DefaultConnectionString { get; private set; }
         public string InitialVector { get; private set; }
         public string Key1 {get; private set; }
         public string Key2 {get; private set; }
