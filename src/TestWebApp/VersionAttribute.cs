@@ -5,56 +5,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Version = DNI.Core.Domains.Version;
 
 namespace TestWebApp
 {
 
-    //public class VersionAttribute : ActionFilterAttribute
-    //{
-    //    public VersionAttribute(string minimum, string maximum = null)
-    //    {
-    //        Minimum = ParseVersion(minimum);
+    public class VersionAttribute : ActionFilterAttribute
+    {
+        public VersionAttribute(string minimum, string maximum = null)
+        {
 
-    //        if(maximum != null)
-    //        { 
-    //            Maximum = ParseVersion(maximum);
-    //        }
-    //    }
+            if (!Version.TryParse(minimum, out var minimumVersion))
+            {
+                throw new ArgumentException($"{minimum} not in valid format ([Major].[Minor])", nameof(minimum));
+            }
 
-    //    public Tuple<int, int> Minimum { get; }
-    //    public Tuple<int, int> Maximum { get; }
+            if (maximum != null & !Version.TryParse(minimum, out var maximumVersion))
+            {
+                throw new ArgumentException($"{maximum} not in valid format ([Major].[Minor])", nameof(maximum));
+            }
 
-    //    public override void OnActionExecuting(ActionExecutingContext context)
-    //    {
-    //        if (!context.RouteData.Values.TryGetValue("version", out var version))
-    //        {
-    //            context.Result = new BadRequestResult();
-    //            return;
-    //        }
+            Minimum = minimumVersion;
+            Maximum = maximumVersion;
+        }
 
-    //        var parsedVersion = ParseVersion(version.ToString());
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            try
+            {
+                if (!context.RouteData.Values.TryGetValue("version", out var versionString))
+                {
+                    throw new InvalidOperationException();
+                }
 
-    //        if(Maximum == null)
-    //        {
-    //            //Maximum version not supplied - ensure current version is equal than or greater than requested version...
-    //            if(Minimum.Item1 < parsedVersion.Item1 && Minimum.Item2 < parsedVersion.Item2)
-    //            {
-    //                context.Result = new BadRequestResult();
-    //                return;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            if(Minimum.Item1 < parsedVersion.Item1 || Minimum.Item2 < parsedVersion.Item2
-    //                && Maximum.Item1 > parsedVersion.Item1 || Maximum.Item2 > parsedVersion.Item2)
-    //            {
-    //                context.Result = new BadRequestResult();
-    //                return;
-    //            }
-    //        }
+                if (!Version.TryParse(versionString.ToString(), out var version))
+                {
+                    throw new InvalidOperationException();
+                }
 
-    //        base.OnActionExecuting(context);
-    //    }
+                if (Version.IsInRange(version, Minimum, Maximum))
+                {
+                    throw new InvalidOperationException();
+                }
 
-    //}
+                base.OnActionExecuting(context);
+            }
+            catch (InvalidOperationException ex)
+            {
+                context.Result = new BadRequestObjectResult(ex);
+            }
+
+        }
+
+        public Version Minimum { get; }
+        public Version Maximum { get; }
+
+    }
 }

@@ -18,7 +18,7 @@ namespace TestWebApp.Controllers
 
         }
 
-        //[Version("1.0", "1.4")]
+        [Version("1.0", "1.4")]
         public ActionResult Hello()
         {
             return Ok("Hello");
