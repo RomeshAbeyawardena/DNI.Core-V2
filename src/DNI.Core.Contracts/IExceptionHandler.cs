@@ -8,6 +8,16 @@ namespace DNI.Core.Contracts
 {
     public interface IExceptionHandler
     {
+        void Try(Action tryBlock,
+            Action<Exception> catchBlock,
+            Action finallyBlock = null,
+            params Type[] exceptionTypes);
+
+        void Try(Action tryBlock,
+            Action<Exception> catchBlock,
+            Action<ITypeDefinition> exceptionTypes,
+            Action finallyBlock = null);
+
         TResult Try<TParameter, TResult>(
             TParameter parameter,
             Func<TParameter, TResult> tryBlock, 

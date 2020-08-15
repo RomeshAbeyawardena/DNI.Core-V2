@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Services.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,35 @@ namespace DNI.Core.Services.Handlers
             {
                 finallyBlock();
             }
+        }
+
+        public void Try(Action tryBlock, Action<Exception> catchBlock, Action finallyBlock = null, params Type[] exceptionTypes)
+        {
+            try
+            {
+               tryBlock();
+            }
+            catch(Exception exception)
+            {
+                if(!IsExceptionHandled(exception, exceptionTypes))
+                {
+                    throw;
+                }
+
+                catchBlock(exception);
+            }
+            finally
+            {
+                finallyBlock();
+            }
+        }
+
+        public void Try(Action tryBlock, Action<Exception> catchBlock, Action<ITypeDefinition> exceptionTypes, Action finallyBlock = null)
+        {
+            var typeDefinition = new TypeDefinition();
+
+            exceptionTypes(typeDefinition);
+            Try(tryBlock, catchBlock, finallyBlock, typeDefinition.Types.ToArray());
         }
 
         private bool IsExceptionHandled(

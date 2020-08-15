@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Contracts
 {
-    public interface IAssemblyDefinition
+    public interface IAssemblyDefinition : IDefinition<Assembly>
     {
-        IAssemblyDefinition Add(Assembly assembly);
+        new IAssemblyDefinition Add(Assembly assembly);
         IAssemblyDefinition GetAssembly<T>();
         IEnumerable<Assembly> Assemblies { get; }
     }

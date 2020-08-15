@@ -21,6 +21,7 @@ using DNI.Core.Services.Builders;
 using DNI.Core.Domains;
 using DNI.Core.Services.Attributes;
 using DNI.Core.Services.Implementations.Generators;
+using DNI.Core.Services.Definitions;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -114,7 +115,8 @@ namespace DNI.Core.Services.Extensions
                     .NotInNamespaceOf<Domains.Version>()
                     .NotInNamespaceOf<VersionAttribute>()
                     .NotInNamespaceOf<ValueGeneratorManager>()
-                    .NotInNamespaceOf<DateTimeOffSetValueGenerator>())
+                    .NotInNamespaceOf<DateTimeOffSetValueGenerator>()
+                    .NotInNamespaceOf<TypeDefinition>())
                 .AsImplementedInterfaces());
 
             if (buildSecurityProfiles != null)

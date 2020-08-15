@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DNI.Core.Contracts;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +33,9 @@ namespace DNI.Core.Services.Attributes
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            try
+            var exceptionHandler = context.HttpContext.RequestServices.GetRequiredService<IExceptionHandler>();
+
+            exceptionHandler.Try(() =>
             {
                 if (!context.RouteData.Values.TryGetValue("version", out var versionString))
                 {
@@ -49,11 +53,13 @@ namespace DNI.Core.Services.Attributes
                 }
 
                 base.OnActionExecuting(context);
-            }
-            catch (InvalidOperationException ex)
+            }, exception =>
             {
-                context.Result = new BadRequestObjectResult(ex);
-            }
+                context.Result = new BadRequestObjectResult(exception);
+            }, typeDefinition => typeDefinition
+                                    .GetType<NullReferenceException>()
+                                    .GetType<FormatException>()
+                                    .GetType<ArgumentOutOfRangeException>());
 
         }
 

@@ -27,7 +27,7 @@ namespace DNI.Core.Domains
                 version = new Version(value);
                 return true;
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
                 version = Zero;
                 return false;
