@@ -86,7 +86,7 @@ namespace DNI.Core.Tests
 
         private IEncryptionProfile encryptionProfileBuilder(IServiceProvider arg)
         {
-            throw new NotImplementedException();
+            return EncryptionProfileBuilder.BuildProfile(encryptionProfile => encryptionProfile.Key = Array.Empty<byte>());
         }
 
         [Test]

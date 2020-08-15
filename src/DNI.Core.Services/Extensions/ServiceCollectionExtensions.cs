@@ -122,11 +122,11 @@ namespace DNI.Core.Services.Extensions
 
             if (buildSecurityProfiles != null)
             {
-                var securityProfilesDictionaryBuilder = new EncryptionProfileDictionaryBuilder(serviceProvider);
-                
                 services.AddSingleton<IEncryptionProfileManager>(serviceProvider => { 
+                    var securityProfilesDictionaryBuilder = new EncryptionProfileDictionaryBuilder(serviceProvider);
                     buildSecurityProfiles(securityProfilesDictionaryBuilder); 
-                    return new EncryptionProfileManager(securityProfilesDictionaryBuilder); });
+                    return new EncryptionProfileManager(securityProfilesDictionaryBuilder); 
+                });
             }
 
             if(scannerConfiguration != null)
