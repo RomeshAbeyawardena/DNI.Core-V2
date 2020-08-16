@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Providers
 {
-    public sealed class ModelEncryptionProvider : IModelEncryptionProvider
+    public class ModelEncryptionProvider : IModelEncryptionProvider
     {
         public ModelEncryptionProvider(
             IEncryptionService encryptionService, 

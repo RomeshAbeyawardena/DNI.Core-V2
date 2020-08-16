@@ -54,13 +54,15 @@ namespace DNI.Core.Tests
 
             var serviceProvider = services.BuildServiceProvider();
             var valueGeneratorProvider = serviceProvider.GetService<IValueGeneratorManager>();
+            
             var encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
+
             var mapperProvider = serviceProvider.GetService<IMapperProvider>();
             var mediatorProvider = serviceProvider.GetService<IMediatorProvider>();
 
             Assert.IsNotNull(valueGeneratorProvider);
             Assert.IsNull(encryptionProfileManager);
-
+            
             Assert.IsNull(mapperProvider);
             Assert.IsNull(mediatorProvider);
 
@@ -108,8 +110,16 @@ namespace DNI.Core.Tests
         [Test]
         public void RegisterAutoMapperProviders()
         {
+            Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, (serviceProvider, builder) => builder.Add(EncryptionClassification.Personal, encryptionProfileBuilder));
+
             Services.Extensions.ServiceCollectionExtensions.RegisterAutoMapperProviders(services, assembly => assembly.GetAssembly<ServiceCollectionExtensionTests
                 >());
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var modelEncryptionProvider = serviceProvider.GetService<IModelEncryptionProvider>();
+
+            Assert.IsNotNull(modelEncryptionProvider);
         }
 
         private ServiceCollection services;
