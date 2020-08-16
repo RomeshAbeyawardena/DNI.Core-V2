@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using DNI.Core.Shared.Constants;
 
 namespace TestWebApp
 {
@@ -42,7 +42,10 @@ namespace TestWebApp
         [Encrypt(EncryptionMethod.TwoWay, EncryptionClassification.Common)]
         public string LastName { get; set; }
 
-        [GeneratedDefaultValue(DNI.Core.Shared.Constants.Generators.DateTimeOffSetValueGenerator)]
+        [GeneratedDefaultValue(Generators.DateTimeOffSetValueGenerator)]
         public DateTimeOffset Created { get; set; }
+
+        [GeneratedDefaultValue(Generators.DateTimeOffSetValueGenerator, setOnUpdate: true)]
+        public DateTimeOffset Modified { get; set; }
     }
 }
