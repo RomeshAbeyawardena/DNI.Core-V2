@@ -17,6 +17,8 @@ namespace DNI.Core.Services.Implementations.Generators
 
         public Func<object, object> GenerateValue => (value) => guidService.GenerateGuid(); 
         
+        public bool ExpectsValue => false;
+
         private readonly IGuidService guidService;
     }
 }

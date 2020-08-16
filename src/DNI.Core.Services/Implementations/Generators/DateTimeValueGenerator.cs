@@ -17,6 +17,8 @@ namespace DNI.Core.Services.Implementations.Generators
 
         public Func<object,object> GenerateValue => (value) => SystemClock.UtcNow.UtcDateTime;
         
+        public bool ExpectsValue => false;
+
         private ISystemClock SystemClock { get; }
     }
 }

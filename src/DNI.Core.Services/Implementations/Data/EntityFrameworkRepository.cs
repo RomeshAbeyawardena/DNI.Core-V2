@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Services.Abstractions;
 using DNI.Core.Shared;
 using DNI.Core.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace DNI.Core.Services.Implementations.Data
 {
     internal class EntityFrameworkRepository<TDbContext, TEntity> : IRepository<TEntity>
-        where TDbContext : DbContext
+        where TDbContext : EnhancedDbContextBase
         where TEntity : class
     {
         public EntityFrameworkRepository(TDbContext dbContext, IRepositoryOptions repositoryOptions)
@@ -68,6 +69,7 @@ namespace DNI.Core.Services.Implementations.Data
         {
             var entityType = typeof(TEntity);
             entry = DbContext.Entry(entity);
+
             var primaryKey = DbContext.Model.FindEntityType(typeof(TEntity)).FindPrimaryKey();
 
             if(primaryKey == null)
@@ -90,6 +92,7 @@ namespace DNI.Core.Services.Implementations.Data
                 }
             }
 
+            DbContext.ReportChange(entry);
             LastEntityState = entry.State;
         }
 

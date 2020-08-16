@@ -1,8 +1,11 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Providers;
 using DNI.Core.Services;
 using DNI.Core.Services.Implementations.Data;
+using DNI.Core.Services.Implementations.Generators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -18,8 +21,15 @@ namespace DNI.Core.Tests
         [SetUp]
         public void SetUp()
         {
+            valueGeneratorProviderMock = new Mock<IValueGeneratorProvider>();
+            valueGeneratorMock = new Mock<IValueGenerator>();
+
+            valueGeneratorProviderMock.Setup(sut => sut.GetValueGeneratorByName(nameof(DateTimeOffSetValueGenerator), true))
+                .Returns(valueGeneratorMock.Object)//DateTimeOffSetValueGenerator
+                .Verifiable();
+
             dbContextOptions = DbContextOptionsTestBuilder
-                .Build(services => services);
+                .Build(services => services.AddSingleton(valueGeneratorProviderMock.Object));
             testDbContext = new TestDbContext(dbContextOptions);
             sut = new EntityFrameworkRepository<TestDbContext, User>(testDbContext, RepositoryOptionsBuilder.Build(RepositoryOptionsBuilder.Default));
         }
@@ -27,6 +37,12 @@ namespace DNI.Core.Tests
         [Test]
         public void SaveChanges()
         {
+            var expectedDateTimeOffset = new DateTimeOffset(new DateTime(2020, 09, 20, 15, 30, 0), TimeSpan.FromHours(-1d));
+            
+            valueGeneratorMock.Setup(sut => sut.GenerateValue)
+                .Returns((a) => expectedDateTimeOffset)
+                .Verifiable();
+
             var user = new User();
             sut.SaveChanges(user);
             Assert.AreEqual(EntityState.Added, sut.LastEntityState);
@@ -38,6 +54,8 @@ namespace DNI.Core.Tests
 
         }
 
+        private Mock<IValueGenerator> valueGeneratorMock;
+        private Mock<IValueGeneratorProvider> valueGeneratorProviderMock;
         private TestDbContext testDbContext;
         private DbContextOptions dbContextOptions;
         private EntityFrameworkRepository<TestDbContext, User> sut;

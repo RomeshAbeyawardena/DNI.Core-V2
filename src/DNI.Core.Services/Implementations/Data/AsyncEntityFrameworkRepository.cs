@@ -9,13 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DNI.Core.Services.Abstractions;
 
 namespace DNI.Core.Services.Implementations.Data
 {
     internal class AsyncEntityFrameworkRepository<TDbContext, TEntity> : 
         EntityFrameworkRepository<TDbContext, TEntity>, 
         IAsyncRepository<TEntity>
-        where TDbContext : DbContext
+        where TDbContext : EnhancedDbContextBase
         where TEntity : class
     {
         public AsyncEntityFrameworkRepository(TDbContext dbContext, IRepositoryOptions repositoryOptions) 

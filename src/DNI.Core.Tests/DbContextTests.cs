@@ -37,8 +37,9 @@ namespace DNI.Core.Tests
             valueGeneratorMock = new Mock<IValueGenerator>();
 
             valueGeneratorProviderMock.Setup(sut => sut.GetValueGeneratorByName(nameof(DateTimeOffSetValueGenerator), true))
-                .Returns(valueGeneratorMock.Object)
+                .Returns(valueGeneratorMock.Object)//DateTimeOffSetValueGenerator
                 .Verifiable();
+
             dbContextOptions = DbContextOptionsTestBuilder
                 .Build(services => services
                     .AddSingleton(valueGeneratorProviderMock.Object));
@@ -56,8 +57,8 @@ namespace DNI.Core.Tests
 
             var testUser = new User();
 
-            sut.Add(testUser);
-            
+            var entry = sut.Entry(testUser);
+            sut.ReportChange(entry);
             valueGeneratorProviderMock.Verify();
             valueGeneratorMock.Verify();
             Assert.AreEqual(expectedDateTimeOffset, testUser.Created);

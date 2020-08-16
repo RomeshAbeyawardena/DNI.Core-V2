@@ -1,12 +1,14 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Shared.Attributes;
+using DNI.Core.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -20,65 +22,75 @@ namespace DNI.Core.Services.Abstractions
         protected EnhancedDbContextBase(DbContextOptions dbContextOptions)
             : base(dbContextOptions)
         {
-
+            entityEntrySubject = new Subject<EntityEntry>();
+            entityEntrySubject.Subscribe(OnNextEntity);
         }
 
-        public override EntityEntry<TEntity> Entry<TEntity>(TEntity entity)
+        public void ReportChange<TEntity>(EntityEntry<TEntity> entry)
+            where TEntity : class
         {
-            PrepareForAddOrUpdate(entity);
-            return base.Entry(entity);
+            entityEntrySubject.OnNext(entry);
         }
 
-        public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
+        private void OnNextEntity(EntityEntry entry)
         {
-            PrepareForAddOrUpdate(entity);
-            return base.Add(entity);
+            PrepareForAddOrUpdate(entry.Entity, entry.State);
         }
 
-        public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
-        {
-            PrepareForAddOrUpdate(entity);
-            return base.Update(entity);
-        }
-        
-        internal void PrepareForAddOrUpdate<TEntity>(TEntity entity)
+        internal void PrepareForAddOrUpdate<TEntity>(TEntity entity, EntityState state)
         {
             var entityType = typeof(TEntity);
+            
+            if (entityType == typeof(object))
+            {
+                entityType = entity.GetType();
+            }
 
             var implementedDecoratedValueGenerators = GetImplementedDecoratedValueGenerators(entityType.GetProperties());
-            SetImplementedDecoratedValueUsingSpecifiedGenerators(entity, implementedDecoratedValueGenerators);
+            SetImplementedDecoratedValueUsingSpecifiedGenerators(entity, state, implementedDecoratedValueGenerators);
         }
 
-        private void SetImplementedDecoratedValueUsingSpecifiedGenerators<TEntity>(TEntity entity, 
-            IDictionary<PropertyInfo, IValueGenerator> generatorDictionary)
+        private void SetImplementedDecoratedValueUsingSpecifiedGenerators<TEntity>(
+            TEntity entity, 
+            EntityState entityState,
+            IDictionary<PropertyInfo, Tuple<GeneratedDefaultValueAttribute, IValueGenerator>> generatorDictionary)
         {
             foreach(var (property, valueGenerator) in generatorDictionary)
             {
                 if(valueGenerator != null) 
                 {
                     var currentValue = property.GetValue(entity);
-                    property.SetValue(entity, valueGenerator.GenerateValue(currentValue));
+                    if(valueGenerator.Item2.ExpectsValue 
+                        || (valueGenerator.Item1.SetOnUpdate && entityState == EntityState.Modified) 
+                        || currentValue.IsDefault())
+                    { 
+                        property.SetValue(entity, valueGenerator.Item2.GenerateValue(currentValue));
+                    }
                 }
             }
         }
 
-        private IDictionary<PropertyInfo, IValueGenerator> GetImplementedDecoratedValueGenerators(IEnumerable<PropertyInfo> propertiesToScan)
+        private IDictionary<PropertyInfo, Tuple<GeneratedDefaultValueAttribute,IValueGenerator>> GetImplementedDecoratedValueGenerators(
+            IEnumerable<PropertyInfo> propertiesToScan)
         {
             var valueGeneratorProvider = this.GetService<IValueGeneratorProvider>();
-            var valueGeneratorDictionary = new Dictionary<PropertyInfo, IValueGenerator>();
+            var valueGeneratorDictionary = new Dictionary<PropertyInfo, Tuple<GeneratedDefaultValueAttribute, IValueGenerator>>();
             var generatedDefaultValueAttributes = propertiesToScan.ToDictionary(property => property, property => property.GetCustomAttribute<GeneratedDefaultValueAttribute>());
 
             foreach(var generatedDefaultValueAttribute in generatedDefaultValueAttributes)
             {
                 if(generatedDefaultValueAttribute.Value != null)
                 { 
-                    valueGeneratorDictionary.Add(generatedDefaultValueAttribute.Key, 
-                            valueGeneratorProvider.GetValueGeneratorByName(generatedDefaultValueAttribute.Value.GeneratorName, 
-                        generatedDefaultValueAttribute.Value.UsesDefaultServiceInjector));
+                    var valueGenerator = valueGeneratorProvider.GetValueGeneratorByName(generatedDefaultValueAttribute.Value.GeneratorName, 
+                        generatedDefaultValueAttribute.Value.UsesDefaultServiceInjector);
+                    var tuple = Tuple.Create(generatedDefaultValueAttribute.Value, valueGenerator);
+                    valueGeneratorDictionary.Add(generatedDefaultValueAttribute.Key, tuple);
                 }
             }
 
             return valueGeneratorDictionary;
         }
+
+        private ISubject<EntityEntry> entityEntrySubject;
     }
 }

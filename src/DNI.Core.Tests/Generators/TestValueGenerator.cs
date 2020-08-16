@@ -15,7 +15,7 @@ namespace DNI.Core.Tests.Generators
         }
 
         public Func<object, object> GenerateValue => (a) => value;
-
+        public bool ExpectsValue => false;
         private readonly object value;
     }
 }

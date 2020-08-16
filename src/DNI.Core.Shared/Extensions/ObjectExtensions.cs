@@ -17,22 +17,24 @@ namespace DNI.Core.Shared.Extensions
         {
             var determinedType = Converter.DetermineType(value);
 
+            if(determinedType == typeof(bool))
+            { 
+                return (bool)value == default;
+            }
+
             if(determinedType == typeof(DateTimeOffset))
             { 
-                var convertorResult = Converter.TryConvert<decimal>(value);
-                return convertorResult.IsSuccessful && convertorResult.Value == default;
+                return (DateTimeOffset)value == default;
             }
 
             if(determinedType == typeof(long))
             { 
-                var convertorResult = Converter.TryConvert<long>(value);
-                return convertorResult.IsSuccessful && convertorResult.Value == default;
+                return Convert.ToInt32(value) == default;
             }
 
             if(determinedType == typeof(decimal))
             { 
-                var convertorResult =  Converter.TryConvert<decimal>(value);
-                return convertorResult.IsSuccessful && convertorResult.Value == default;
+                return (decimal)value == default;
             }
 
             return false;

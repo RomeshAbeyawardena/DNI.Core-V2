@@ -53,6 +53,11 @@ namespace DNI.Core.Shared
 
             var stringValue = value.ToString();
 
+            if(bool.TryParse(stringValue, out var booleanValue))
+            {
+                return (typeof(bool));
+            }
+
             if (DateTimeOffset.TryParse(stringValue, out var dateValue))
             { 
                 return typeof(DateTimeOffset);
