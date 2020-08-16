@@ -18,7 +18,9 @@ namespace DNI.Core.Services
 {
     public class JwtService : IJwtService
     {
-        public JwtSecurityToken BuildJwtSecurityToken(Action<JwtHeader> buildHeader, Action<JwtPayload> buildPayload)
+        public JwtSecurityToken BuildJwtSecurityToken(
+            Action<JwtHeader> buildHeader, 
+            Action<JwtPayload> buildPayload)
         {
             var header = new JwtHeader();
             var payload = new JwtPayload();
@@ -29,7 +31,9 @@ namespace DNI.Core.Services
             return new JwtSecurityToken(header, payload);
         }
 
-        public EncryptingCredentials GetEncryptingCredentials(EncryptionCredentialType encryptionCredentialType, IEncryptionProfile encryptionProfile)
+        public EncryptingCredentials GetEncryptingCredentials(
+            EncryptionCredentialType encryptionCredentialType, 
+            IEncryptionProfile encryptionProfile)
         {
             return encryptionCredentialType switch
             {
@@ -39,7 +43,9 @@ namespace DNI.Core.Services
             };
         }
 
-        public IEnumerable<Claim> BuildClaims(Action<IClaimsBuilder> buildClaims, IEnumerable<Claim> claims = null)
+        public IEnumerable<Claim> BuildClaims(
+            Action<IClaimsBuilder> buildClaims, 
+            IEnumerable<Claim> claims = null)
         {
             var claimsBuilder = new ClaimsBuilder(claims);
             buildClaims(claimsBuilder);
