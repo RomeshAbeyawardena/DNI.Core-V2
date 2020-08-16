@@ -32,17 +32,22 @@ namespace TestWebApp.Controllers
         public ActionResult Hello()
         {
             var encryptedUser = encryptionService
-                .Encrypt<User>(new User { 
+                .Encrypt(new User { 
+                    Id = 5,
                     EmailAddress = "romesh.abeyawardena@dotnetinsights.net", 
                     FirstName = "Anthony",
-                    MiddleName = "Romesh",
+                    MiddleName = "Romesh_new",
                     LastName = "Abeyawardena",
-                    Password = "P@s$w0rd0_1$"
+                    Password = "P@s$w0rd0_2$"
                 });
 
-            var decryptedUser = encryptionService.Decrypt<User>(encryptedUser);
+            var affectedRows = userRepository.SaveChanges(encryptedUser, true);
 
-            return Ok("Hello");
+            var savedUser = userRepository.Query.FirstOrDefault(user => user.FirstName == encryptedUser.FirstName);
+
+            var decryptedUser = encryptionService.Decrypt(savedUser);
+
+            return Ok(decryptedUser);
         }
 
         [Version("2.0", "2.9"), ActionName("Hello")]

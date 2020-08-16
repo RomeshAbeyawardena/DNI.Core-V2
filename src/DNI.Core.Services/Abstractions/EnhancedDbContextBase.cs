@@ -23,6 +23,12 @@ namespace DNI.Core.Services.Abstractions
 
         }
 
+        public override EntityEntry<TEntity> Entry<TEntity>(TEntity entity)
+        {
+            PrepareForAddOrUpdate(entity);
+            return base.Entry(entity);
+        }
+
         public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
         {
             PrepareForAddOrUpdate(entity);

@@ -41,5 +41,8 @@ namespace TestWebApp
 
         [Encrypt(EncryptionMethod.TwoWay, EncryptionClassification.Common)]
         public string LastName { get; set; }
+
+        [GeneratedDefaultValue(DNI.Core.Shared.Constants.Generators.DateTimeOffSetValueGenerator)]
+        public DateTimeOffset Created { get; set; }
     }
 }

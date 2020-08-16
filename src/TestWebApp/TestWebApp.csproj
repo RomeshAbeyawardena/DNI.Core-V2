@@ -5,8 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DNI.Core.Services" Version="0.0.0.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DNI.Core.Services\DNI.Core.Services.csproj" />
   </ItemGroup>
 
 </Project>

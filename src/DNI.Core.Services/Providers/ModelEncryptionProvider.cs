@@ -2,6 +2,7 @@
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
+using DNI.Core.Shared;
 using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Enumerations;
 using System;
@@ -111,12 +112,14 @@ namespace DNI.Core.Services.Providers
 
         public T Decrypt<T>(T model)
         {
-            return Decrypt<T, T>(model);
+            var copiedModel = Utilities.Copy(model);
+            return Decrypt<T, T>(copiedModel);
         }
 
         public T Encrypt<T>(T model)
         {
-            return Encrypt<T, T>(model);
+            var copiedModel = Utilities.Copy(model);
+            return Encrypt<T, T>(copiedModel);
         }
 
         private readonly IEncryptionService encryptionService;
