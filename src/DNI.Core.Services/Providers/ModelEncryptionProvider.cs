@@ -104,6 +104,16 @@ namespace DNI.Core.Services.Providers
             throw new NotSupportedException();
         }
 
+        public T Decrypt<T>(T model)
+        {
+            return Decrypt<T,T>(model);
+        }
+
+        public T Encrypt<T>(T model)
+        {
+            return Encrypt<T>(model);
+        }
+
         private readonly IEncryptionService encryptionService;
         private readonly IMapperProvider mapperProvider;
         private readonly IEncryptionProfileManager encryptionProfileManager;

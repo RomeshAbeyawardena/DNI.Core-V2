@@ -31,7 +31,14 @@ namespace TestWebApp.Controllers
         [Version("1.0", "1.9")]
         public ActionResult Hello()
         {
-            var encryptedUser = encryptionService.Encrypt<User, User>(new User { EmailAddress = "romesh.abeyawardena@dotnetinsights.net" });
+            var encryptedUser = encryptionService
+                .Encrypt<User, User>(new User { 
+                    EmailAddress = "romesh.abeyawardena@dotnetinsights.net", 
+                    FirstName = "Anthony",
+                    MiddleName = "Romesh",
+                    LastName = "Abeyawardena"
+                });
+
             return Ok("Hello");
         }
 

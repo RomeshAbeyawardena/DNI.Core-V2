@@ -78,34 +78,6 @@ namespace TestWebApp
             });
         }
 
-        private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder,
-            IServiceProvider serviceProvider)
-        {
-            var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
-            builder.Add(EncryptionClassification.Personal, EncryptionProfileBuilder
-                .BuildProfile(profile => { 
-                    profile.Encoding = Encoding.ASCII;
-                    profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                    profile.Key = Convert.FromBase64String(applicationSettings.PersonalKey);
-                    profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-                    profile.SymmetricAlgorithmName = nameof(Aes);
-                })).Add(EncryptionClassification.Common, EncryptionProfileBuilder
-                .BuildProfile(profile => { 
-                    profile.Encoding = Encoding.ASCII;
-                    profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                    profile.Key = Convert.FromBase64String(applicationSettings.CommonKey);
-                    profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-                    profile.SymmetricAlgorithmName = nameof(Aes);
-                })).Add(EncryptionClassification.Shared, EncryptionProfileBuilder
-                .BuildProfile(profile => { 
-                    profile.Encoding = Encoding.ASCII;
-                    profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                    profile.Key = Convert.FromBase64String(applicationSettings.SharedKey);
-                    profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-                    profile.SymmetricAlgorithmName = nameof(Aes);
-                }));
-        }
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
