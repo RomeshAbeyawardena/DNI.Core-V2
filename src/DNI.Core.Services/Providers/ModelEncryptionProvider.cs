@@ -111,7 +111,7 @@ namespace DNI.Core.Services.Providers
 
         public T Encrypt<T>(T model)
         {
-            return Encrypt<T>(model);
+            return Encrypt<T, T>(model);
         }
 
         private readonly IEncryptionService encryptionService;

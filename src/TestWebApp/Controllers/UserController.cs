@@ -32,11 +32,12 @@ namespace TestWebApp.Controllers
         public ActionResult Hello()
         {
             var encryptedUser = encryptionService
-                .Encrypt<User, User>(new User { 
+                .Encrypt<User>(new User { 
                     EmailAddress = "romesh.abeyawardena@dotnetinsights.net", 
                     FirstName = "Anthony",
                     MiddleName = "Romesh",
-                    LastName = "Abeyawardena"
+                    LastName = "Abeyawardena",
+                    //Password = "P@s$w0rd0_1$"
                 });
 
             return Ok("Hello");
