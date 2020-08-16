@@ -26,5 +26,15 @@ namespace DNI.Core.Services.Providers
         {
             return mapper.Map<IEnumerable<TDestination>>(sources);
         }
+
+        public TDestination Map<TSource, TDestination>(TSource source)
+        {
+            return mapper.Map<TSource, TDestination>(source);
+        }
+
+        public IEnumerable<TDestination> Map<TSource, TDestination>(IEnumerable<TSource> sources)
+        {
+            return mapper.Map<IEnumerable<TSource>, IEnumerable<TDestination>>(sources);
+        }
     }
 }

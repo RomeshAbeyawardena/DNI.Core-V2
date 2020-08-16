@@ -27,7 +27,7 @@ namespace DNI.Core.Services.Providers
 
         public TDestination Decrypt<T, TDestination>(T model)
         {
-            var mappedModel = mapperProvider.Map<TDestination>(model);
+            var mappedModel = mapperProvider.Map<T, TDestination>(model);
 
             var destinationType = typeof(TDestination);
 
@@ -59,7 +59,7 @@ namespace DNI.Core.Services.Providers
 
         public TDestination Encrypt<T, TDestination>(T model)
         {
-            var mappedModel = mapperProvider.Map<TDestination>(model);
+            var mappedModel = mapperProvider.Map<T, TDestination>(model);
 
             var destinationType = typeof(TDestination);
 
@@ -111,7 +111,7 @@ namespace DNI.Core.Services.Providers
 
         public T Decrypt<T>(T model)
         {
-            return Decrypt<T,T>(model);
+            return Decrypt<T, T>(model);
         }
 
         public T Encrypt<T>(T model)

@@ -43,7 +43,7 @@ namespace DNI.Core.Tests
         [Test]
         public void Decrypt()
         {
-            mapperProviderMock.Setup(mapper => mapper.Map<UserDto>(It.IsAny<User>()))
+            mapperProviderMock.Setup(mapper => mapper.Map<User, UserDto>(It.IsAny<User>()))
                 .Returns(new UserDto { EmailAddress = "encrypted-test@gmail.com" });
 
             encryptionProfileManagerMock.Setup(epm => epm
@@ -62,7 +62,7 @@ namespace DNI.Core.Tests
         [Test]
         public void Encrypt()
         {
-            mapperProviderMock.Setup(mapper => mapper.Map<UserDto>(It.IsAny<User>()))
+            mapperProviderMock.Setup(mapper => mapper.Map<User, UserDto>(It.IsAny<User>()))
                 .Returns(new UserDto { EmailAddress = "encrypted-test@gmail.com" });
 
             encryptionProfileManagerMock.Setup(epm => epm
