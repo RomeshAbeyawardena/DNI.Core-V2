@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,13 +47,35 @@ namespace TestWebApp
         private void BuildSecurityProfiles(IServiceProvider serviceProvider, IEncryptionProfileDictionaryBuilder builder)
         {
             var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
-            //builder.Add(EncryptionClassification.Personal, profile =>  { 
-            //        profile.Encoding = Encoding.ASCII;
-            //        profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-            //        profile.Key = Convert.FromBase64String(applicationSettings.PersonalKey);
-            //        profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-            //        profile.SymmetricAlgorithmName = nameof(Aes);
-            //    }));
+            builder.Add(EncryptionClassification.Personal, profile =>
+            {
+                profile.Encoding = Encoding.ASCII;
+                profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+                profile.Key = Convert.FromBase64String(applicationSettings.PersonalKey);
+                profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
+                profile.HashAlgorithmType = HashAlgorithmType.Sha512;
+                profile.SymmetricAlgorithmName = nameof(Aes);
+
+                return profile;
+            }).Add(EncryptionClassification.Common, profile => {
+                profile.Encoding = Encoding.ASCII;
+                profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+                profile.Key = Convert.FromBase64String(applicationSettings.CommonKey);
+                profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
+                profile.HashAlgorithmType = HashAlgorithmType.Sha512;
+                profile.SymmetricAlgorithmName = nameof(Aes);
+
+                return profile;
+            }).Add(EncryptionClassification.Shared, profile => {
+                profile.Encoding = Encoding.ASCII;
+                profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
+                profile.Key = Convert.FromBase64String(applicationSettings.SharedKey);
+                profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
+                profile.HashAlgorithmType = HashAlgorithmType.Sha512;
+                profile.SymmetricAlgorithmName = nameof(Aes);
+
+                return profile;
+            });
         }
 
         private void BuildSecurityProfiles(IDictionaryBuilder<EncryptionClassification, IEncryptionProfile> builder,

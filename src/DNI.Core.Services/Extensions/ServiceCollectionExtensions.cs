@@ -105,19 +105,28 @@ namespace DNI.Core.Services.Extensions
                 generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
             }
 
+            var interfaceTypes = new [] { typeof(IMapperProvider), typeof(IMediatorProvider) };
+
+            bool HasInterfaces(Type type)
+            {
+                return !interfaceTypes.Contains(type);
+            }
+
             services
                 .AddSingleton<ISystemClock, SystemClock>()
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
                 .AddClasses(filter => filter
-                .NotInNamespaceOf(typeof(EntityFrameworkRepository<,>))
+                    .NotInNamespaceOf(typeof(EntityFrameworkRepository<,>))
                     .NotInNamespaceOf(typeof(DictionaryBuilder<,>))
-                    .NotInNamespaceOf<AutoMapperProvider>()
                     .NotInNamespaceOf<Domains.Version>()
                     .NotInNamespaceOf<VersionAttribute>()
                     .NotInNamespaceOf<ValueGeneratorManager>()
                     .NotInNamespaceOf<DateTimeOffSetValueGenerator>()
-                    .NotInNamespaceOf<TypeDefinition>())
+                    .NotInNamespaceOf<TypeDefinition>()
+                    .Where(type => type
+                        .GetInterfaces()
+                        .Any(HasInterfaces)))
                 .AsImplementedInterfaces());
 
             if (buildSecurityProfiles != null)

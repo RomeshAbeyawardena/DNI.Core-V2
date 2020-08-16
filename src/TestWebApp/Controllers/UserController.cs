@@ -16,12 +16,12 @@ namespace TestWebApp.Controllers
     public class UserController : ApiController
     {
         private readonly IRepository<User> userRepository;
-        private readonly IEncryptionService encryptionService;
+        private readonly IModelEncryptionProvider encryptionService;
         public UserController(
             IMediatorProvider mediator, 
             IMapperProvider mapperProvider, 
             IRepository<User> userRepository,
-            IEncryptionService encryptionService) 
+            IModelEncryptionProvider encryptionService) 
             : base(mediator, mapperProvider)
         {
             this.userRepository = userRepository;
@@ -31,6 +31,7 @@ namespace TestWebApp.Controllers
         [Version("1.0", "1.9")]
         public ActionResult Hello()
         {
+            var encryptedUser = encryptionService.Encrypt<User, User>(new User { EmailAddress = "romesh.abeyawardena@dotnetinsights.net" });
             return Ok("Hello");
         }
 

@@ -55,8 +55,14 @@ namespace DNI.Core.Tests
             var serviceProvider = services.BuildServiceProvider();
             var valueGeneratorProvider = serviceProvider.GetService<IValueGeneratorManager>();
             var encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
+            var mapperProvider = serviceProvider.GetService<IMapperProvider>();
+            var mediatorProvider = serviceProvider.GetService<IMediatorProvider>();
+
             Assert.IsNotNull(valueGeneratorProvider);
             Assert.IsNull(encryptionProfileManager);
+
+            Assert.IsNull(mapperProvider);
+            Assert.IsNull(mediatorProvider);
 
             Assert.True(valueGeneratorProvider.TryGetValue(Shared.Constants.Generators.DateTimeOffSetValueGenerator, out var dateTimeOffSetValueGenerator));
             Assert.IsNotNull(dateTimeOffSetValueGenerator);
