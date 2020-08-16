@@ -37,8 +37,10 @@ namespace TestWebApp.Controllers
                     FirstName = "Anthony",
                     MiddleName = "Romesh",
                     LastName = "Abeyawardena",
-                    //Password = "P@s$w0rd0_1$"
+                    Password = "P@s$w0rd0_1$"
                 });
+
+            var decryptedUser = encryptionService.Decrypt<User>(encryptedUser);
 
             return Ok("Hello");
         }

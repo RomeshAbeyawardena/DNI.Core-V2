@@ -34,6 +34,8 @@ namespace DNI.Core.Services.Providers
             foreach (var propertyTuple in GetEncryptedProperties<T>())
             {
                 var property = propertyTuple.Item1; 
+                var encryptAttribute = propertyTuple.Item2;
+
                 var currentValue = property.GetValue(model);
                 if(currentValue != null)
                 { 
@@ -41,11 +43,14 @@ namespace DNI.Core.Services.Providers
                     if(destinationProperty == null)
                         throw new NullReferenceException();
 
-                    destinationProperty.SetValue(
-                        mappedModel, 
-                        encryptionService.Decrypt(
-                            currentValue.ToString(), 
-                            GetEncryptionProfile(propertyTuple.Item2.EncryptionClassification)));
+                    if(encryptAttribute.EncryptionMethod == EncryptionMethod.TwoWay)
+                    {
+                        destinationProperty.SetValue(
+                            mappedModel, 
+                            encryptionService.Decrypt(
+                                currentValue.ToString(), 
+                                GetEncryptionProfile(propertyTuple.Item2.EncryptionClassification)));
+                    }
                 }
             }
 
