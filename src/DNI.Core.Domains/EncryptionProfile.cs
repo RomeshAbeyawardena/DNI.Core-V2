@@ -8,7 +8,7 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNI.Core.Services.Builders
+namespace DNI.Core.Domains
 {
     public class EncryptionProfile : IEncryptionProfile
     {

@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Builders;
+using DNI.Core.Domains;
 using DNI.Core.Shared.Enumerations;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace DNI.Core.Services.Builders
             
         }
 
-        public IEncryptionProfileDictionaryBuilder Add(
+        IEncryptionProfileDictionaryBuilder IEncryptionProfileDictionaryBuilder.Add(
             EncryptionClassification encryptionClassification, 
             Func<IEncryptionProfile, IEncryptionProfile> encryptionProfileBuilder)
         {

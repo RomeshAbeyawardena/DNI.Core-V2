@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Domains;
 using DNI.Core.Shared.Enumerations;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using System;
