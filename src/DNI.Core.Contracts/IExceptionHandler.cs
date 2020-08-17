@@ -31,5 +31,12 @@ namespace DNI.Core.Contracts
             Action<Exception> catchBlock, 
             Action finallyBlock = null,
             params Type[] exceptionTypes);
+
+        TResult Try<TParameter, TResult>(
+            TParameter parameter, 
+            Func<TParameter, TResult> tryBlock, 
+            Func<Exception, TResult> catchBlock, 
+            Action<ITypeDefinition> exceptionTypes,
+            Action finallyBlock = null);
     }
 }

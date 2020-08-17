@@ -2,6 +2,7 @@
 using DNI.Core.Contracts.Builders;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Builders;
+using DNI.Core.Services.Definitions;
 using DNI.Core.Shared.Enumerations;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -18,8 +19,14 @@ namespace DNI.Core.Services
 {
     public class JwtService : IJwtService
     {
+        public JwtService(IExceptionHandler exceptionHandler)
+        {
+            lazyJwtSecurityTokenHandler = new Lazy<JwtSecurityTokenHandler>(() => new JwtSecurityTokenHandler(), true);
+            this.exceptionHandler = exceptionHandler;
+        }
+
         public JwtSecurityToken BuildJwtSecurityToken(
-            Action<JwtHeader> buildHeader, 
+            Action<JwtHeader> buildHeader,
             Action<JwtPayload> buildPayload)
         {
             var header = new JwtHeader();
@@ -31,8 +38,38 @@ namespace DNI.Core.Services
             return new JwtSecurityToken(header, payload);
         }
 
+        public string GenerateToken(JwtSecurityToken token)
+        {
+            return JwtSecurityTokenHandler.WriteToken(token);
+        }
+
+        public bool TryReadToken(
+            string token,
+            TokenValidationParameters tokenValidationParameters,
+            out SecurityToken securityToken,
+            out ClaimsPrincipal claimsPrincipal)
+        {
+            securityToken = null;
+            claimsPrincipal = null;
+
+            if (!JwtSecurityTokenHandler.CanReadToken(token))
+            {
+                return false;
+            }
+
+            var result = exceptionHandler.Try(
+                securityToken, 
+                (validatedToken) => JwtSecurityTokenHandler
+                    .ValidateToken(token, tokenValidationParameters, out validatedToken), (exception) => null,
+                exceptionTypes: builder => builder.GetType<SecurityTokenException>());
+
+            claimsPrincipal = result;
+
+            return result == null;
+        }
+
         public EncryptingCredentials GetEncryptingCredentials(
-            EncryptionCredentialType encryptionCredentialType, 
+            EncryptionCredentialType encryptionCredentialType,
             IEncryptionProfile encryptionProfile)
         {
             return encryptionCredentialType switch
@@ -44,12 +81,16 @@ namespace DNI.Core.Services
         }
 
         public IEnumerable<Claim> BuildClaims(
-            Action<IClaimsBuilder> buildClaims, 
+            Action<IClaimsBuilder> buildClaims,
             IEnumerable<Claim> claims = null)
         {
             var claimsBuilder = new ClaimsBuilder(claims);
             buildClaims(claimsBuilder);
             return claimsBuilder.ToArray();
         }
+
+        private readonly IExceptionHandler exceptionHandler;
+        private readonly Lazy<JwtSecurityTokenHandler> lazyJwtSecurityTokenHandler;
+        private JwtSecurityTokenHandler JwtSecurityTokenHandler => lazyJwtSecurityTokenHandler.Value;
     }
 }

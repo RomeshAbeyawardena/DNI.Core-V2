@@ -82,10 +82,22 @@ namespace DNI.Core.Services.Handlers
 
         public void Try(Action tryBlock, Action<Exception> catchBlock, Action<ITypeDefinition> exceptionTypes, Action finallyBlock = null)
         {
-            var typeDefinition = new TypeDefinition();
+            var typeDefinition = TypeDefinition.Build(exceptionTypes);
 
-            exceptionTypes(typeDefinition);
             Try(tryBlock, catchBlock, finallyBlock, typeDefinition.Types.ToArray());
+        }
+
+        
+        public TResult Try<TParameter, TResult>(
+            TParameter parameter, 
+            Func<TParameter, TResult> tryBlock, 
+            Func<Exception, TResult> catchBlock, 
+            Action<ITypeDefinition> exceptionTypes,
+            Action finallyBlock = null)
+        {
+            var typeDefinition = TypeDefinition.Build(exceptionTypes);
+
+            return Try(parameter, tryBlock, catchBlock, finallyBlock, typeDefinition.Types.ToArray());
         }
 
         private bool IsExceptionHandled(

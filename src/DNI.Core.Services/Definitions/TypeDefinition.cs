@@ -9,6 +9,13 @@ namespace DNI.Core.Services.Definitions
 {
     public class TypeDefinition : DefinitionBase<Type>, ITypeDefinition
     {
+        public static ITypeDefinition Build(Action<ITypeDefinition> build)
+        {
+            var typeDefinition = new TypeDefinition();
+            build(typeDefinition);
+            return typeDefinition;
+        }
+
         public TypeDefinition(IEnumerable<Type> types = null)
             : base(types)
         {
