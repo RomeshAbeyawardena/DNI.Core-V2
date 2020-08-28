@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace DNI.Core.Domains
+namespace DNI.Core.Contracts
 {
     public interface IServiceRegistration
     {

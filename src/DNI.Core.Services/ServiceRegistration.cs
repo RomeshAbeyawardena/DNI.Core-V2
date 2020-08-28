@@ -1,4 +1,4 @@
-﻿using DNI.Core.Domains;
+﻿using DNI.Core.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
