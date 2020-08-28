@@ -1,6 +1,7 @@
 using Castle.Components.DictionaryAdapter;
 using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
+using DNI.Core.Domains;
 using DNI.Core.Services.Implementations.Generators;
 using DNI.Core.Shared.Attributes;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,8 @@ namespace DNI.Core.Tests
 
             dbContextOptions = DbContextOptionsTestBuilder
                 .Build(services => services
-                    .AddSingleton(valueGeneratorProviderMock.Object));
+                    .AddSingleton(valueGeneratorProviderMock.Object)
+                    .AddSingleton<IRepositoryOptions>(new RepositoryOptions()));
 
             sut = new TestDbContext(dbContextOptions);
         }

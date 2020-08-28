@@ -29,7 +29,9 @@ namespace DNI.Core.Tests
                 .Verifiable();
 
             dbContextOptions = DbContextOptionsTestBuilder
-                .Build(services => services.AddSingleton(valueGeneratorProviderMock.Object));
+                .Build(services => services
+                    .AddSingleton(valueGeneratorProviderMock.Object)
+                    .AddSingleton<IRepositoryOptions>(new RepositoryOptions()));
             testDbContext = new TestDbContext(dbContextOptions);
             sut = new EntityFrameworkRepository<TestDbContext, User>(testDbContext, RepositoryOptionsBuilder.Build(RepositoryOptionsBuilder.Default));
         }
