@@ -95,7 +95,7 @@ namespace DNI.Core.Services.Extensions
             this IServiceCollection services, 
             Action<IServiceProvider, IEncryptionProfileDictionaryBuilder> buildSecurityProfiles = null,
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
-            Action<Scrutor.ITypeSelector> scannerConfiguration = null)
+            Action<Scrutor.ITypeSourceSelector> scannerConfiguration = null)
         {
             var internalGeneratorKeyValuePairs = ScanAndRegisterGenerators<RepositoryOptions>(services);
             if(generatorKeyValuePairs == null)
