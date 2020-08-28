@@ -9,6 +9,16 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Builders
 {
+    public static class DictionaryBuilder 
+    {
+        public static IDictionaryBuilder<TKey, TValue> Create<TKey, TValue>(Action<IDictionaryBuilder<TKey, TValue>> builderAction = null)
+        {
+            var dictionaryBuilder = DictionaryBuilder<TKey, TValue>.Create();
+            builderAction?.Invoke(dictionaryBuilder);
+            return dictionaryBuilder;
+        }
+    }
+
     public class DictionaryBuilder<TKey, TValue> : IDictionaryBuilder<TKey, TValue>
     {
         public static IDictionaryBuilder<TKey, TValue> Create()
@@ -18,20 +28,20 @@ namespace DNI.Core.Services.Builders
 
         protected DictionaryBuilder()
         {
-            dictionary = new Dictionary<TKey, TValue>();
+            Dictionary = new Dictionary<TKey, TValue>();
         }
 
-        TValue IReadOnlyDictionary<TKey, TValue>.this[TKey key] => dictionary[key];
+        TValue IReadOnlyDictionary<TKey, TValue>.this[TKey key] => Dictionary[key];
 
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Dictionary.Keys;
 
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Dictionary.Values;
 
-        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => dictionary.Count;
+        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => Dictionary.Count;
 
         public IDictionaryBuilder<TKey, TValue> Add(TKey key, TValue value)
         {
-            dictionary.Add(key, value);
+            Dictionary.Add(key, value);
             return this;
         }
 
@@ -42,24 +52,24 @@ namespace DNI.Core.Services.Builders
 
         bool IReadOnlyDictionary<TKey, TValue>.ContainsKey(TKey key)
         {
-            return dictionary.ContainsKey(key);
+            return Dictionary.ContainsKey(key);
         }
 
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            return dictionary.GetEnumerator();
+            return Dictionary.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return dictionary.GetEnumerator();
+            return Dictionary.GetEnumerator();
         }
 
         bool IReadOnlyDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
-            return dictionary.TryGetValue(key, out value);
+            return Dictionary.TryGetValue(key, out value);
         }
 
-        private Dictionary<TKey, TValue> dictionary;
+        public IDictionary<TKey, TValue> Dictionary { get; }
     }
 }

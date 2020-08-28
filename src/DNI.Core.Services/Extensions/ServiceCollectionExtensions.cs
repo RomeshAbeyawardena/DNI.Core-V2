@@ -23,6 +23,8 @@ using DNI.Core.Services.Attributes;
 using DNI.Core.Services.Implementations.Generators;
 using DNI.Core.Services.Definitions;
 using DNI.Core.Contracts.Builders;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -113,6 +115,7 @@ namespace DNI.Core.Services.Extensions
             }
 
             services
+                .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
                 .AddSingleton<ISystemClock, SystemClock>()
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
