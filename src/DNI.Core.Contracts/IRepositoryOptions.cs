@@ -11,5 +11,6 @@ namespace DNI.Core.Contracts
         bool EnableTracking { get; set; }
         bool UseDbContextPools { get; set; }
         int PoolSize { get; set; }
+        bool SingulariseTableNames { get; set; }
     }
 }

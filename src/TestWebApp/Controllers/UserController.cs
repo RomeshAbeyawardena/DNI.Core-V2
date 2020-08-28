@@ -17,15 +17,19 @@ namespace TestWebApp.Controllers
     {
         private readonly IRepository<User> userRepository;
         private readonly IModelEncryptionProvider encryptionService;
+        private readonly IRepositoryOptions repositoryOptions;
+
         public UserController(
             IMediatorProvider mediator, 
             IMapperProvider mapperProvider, 
             IRepository<User> userRepository,
-            IModelEncryptionProvider encryptionService) 
+            IModelEncryptionProvider encryptionService,
+            IRepositoryOptions repositoryOptions) 
             : base(mediator, mapperProvider)
         {
             this.userRepository = userRepository;
             this.encryptionService = encryptionService;
+            this.repositoryOptions = repositoryOptions;
         }
 
         [Version("1.0", "1.9")]

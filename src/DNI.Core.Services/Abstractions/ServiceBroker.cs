@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Abstractions
 {
-    public class ServiceBroker : IServiceBroker
+    public abstract class ServiceBroker : IServiceBroker
     {
         public ServiceBroker(Action<IAssemblyDefinition> defineAssemblyDefinitions)
         {

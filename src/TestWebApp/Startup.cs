@@ -34,6 +34,7 @@ namespace TestWebApp
                     var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
                     dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);},
                     options => { 
+                        options.SingulariseTableNames = true;
                         options.EnableTracking = false; 
                         options.UseDbContextPools = true;
                         options.PoolSize = 256; })

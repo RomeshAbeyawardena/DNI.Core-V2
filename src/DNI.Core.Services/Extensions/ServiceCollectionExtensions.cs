@@ -107,7 +107,7 @@ namespace DNI.Core.Services.Extensions
                 generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
             }
 
-            var interfaceTypes = new [] { typeof(IMapperProvider), typeof(IMediatorProvider) };
+            var interfaceTypes = new [] { typeof(IMapperProvider), typeof(IMediatorProvider), typeof(IRepositoryOptions) };
 
             bool HasInterfaces(Type type)
             {
