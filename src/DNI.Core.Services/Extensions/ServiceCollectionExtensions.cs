@@ -150,6 +150,16 @@ namespace DNI.Core.Services.Extensions
             return services;
         }
 
+        public static IServiceCollection RegisterServiceBroker<TServiceBroker>(this IServiceCollection services, params object[] serviceBrokerConstructorArguments)
+            where TServiceBroker : IServiceBroker
+        {
+            var serviceBroker = Activator.CreateInstance(typeof(TServiceBroker), serviceBrokerConstructorArguments) as IServiceBroker;
+
+            serviceBroker.RegisterServices(services, serviceBroker.GetServiceRegistrations());
+
+            return services;
+        }
+
         public static IEnumerable<KeyValuePair<string, Type>> ScanAndRegisterGenerators<T>(IServiceCollection services)
         {
             var valueGeneratorConcreteTypes = typeof(T)

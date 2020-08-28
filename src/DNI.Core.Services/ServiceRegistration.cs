@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DNI.Core.Domains;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace DNI.Core.Services
 {
-    public static class ServiceRegistration
+    public abstract class ServiceRegistration : IServiceRegistration
     {
-        public static IServiceCollection RegisterServices(IServiceCollection services)
-        {
-            return services;
-        }
+        public abstract void RegisterServices(IServiceCollection services);
     }
 }
