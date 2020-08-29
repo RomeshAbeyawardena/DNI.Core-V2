@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Services;
+using DNI.Core.Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Generators
 {
+    [IgnoreScanning]
     internal class GuidValueGenerator : IValueGenerator
     {
         public GuidValueGenerator(IGuidService guidService)

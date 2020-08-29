@@ -112,7 +112,8 @@ namespace DNI.Core.Tests
         {
             Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, (serviceProvider, builder) => builder.Add(EncryptionClassification.Personal, encryptionProfileBuilder));
 
-            Services.Extensions.ServiceCollectionExtensions.RegisterAutoMapperProviders(services, assembly => assembly.DescribeAssembly<ServiceCollectionExtensionTests
+            Services.Extensions.ServiceCollectionExtensions
+                    .RegisterAutoMapperProviders(services, assembly => assembly.DescribeAssembly<ServiceCollectionExtensionTests
                 >());
 
             var serviceProvider = services.BuildServiceProvider();

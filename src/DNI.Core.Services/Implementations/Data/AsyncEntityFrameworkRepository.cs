@@ -10,9 +10,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DNI.Core.Services.Abstractions;
+using DNI.Core.Shared.Attributes;
 
 namespace DNI.Core.Services.Implementations.Data
 {
+    [IgnoreScanning]
     internal class AsyncEntityFrameworkRepository<TDbContext, TEntity> : 
         EntityFrameworkRepository<TDbContext, TEntity>, 
         IAsyncRepository<TEntity>

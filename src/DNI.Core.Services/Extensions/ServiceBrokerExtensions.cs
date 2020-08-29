@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Domains;
+using DNI.Core.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,9 @@ namespace DNI.Core.Services.Extensions
             {
                 foreach(var type in assembly.GetTypes().Where(findinterfaceExpression))
                 {
+                    if(type == typeof(ServiceRegistration))
+                        continue;
+
                     yield return Activator.CreateInstance(type) as IServiceRegistration;
                 }
             }

@@ -9,9 +9,11 @@ using DNI.Core.Contracts.Builders;
 using System;
 using System.Collections.Generic;
 using DNI.Core.Services.Hosts;
+using DNI.Core.Shared.Attributes;
 
-namespace DNI.Core.Services.Shared.Hosts
+namespace DNI.Core.Services.Builders
 {
+    [IgnoreScanning]
     public sealed class AppHostBuilder : IAppHostBuilder
     {
         public AppHostBuilder(IDictionary<object, object> properties = null)

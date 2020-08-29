@@ -1,13 +1,16 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Services.Definitions;
+using DNI.Core.Shared.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DNI.Core.Services
 {
+    [IgnoreScanning]
     public class Attempt : IAttempt
     {
         public static IAttempt Create(
@@ -99,6 +102,7 @@ namespace DNI.Core.Services
         public object Result { get; }
     }
 
+    [IgnoreScanning]
     public class Attempt<T> : Attempt, IAttempt<T>
         where T: class
     {

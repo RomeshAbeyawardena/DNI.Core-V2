@@ -4,9 +4,11 @@ using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using DNI.Core.Shared.Attributes;
 
 namespace DNI.Core.Services.Hosts
 {
+    [IgnoreScanning]
     public sealed class AppHost<TStartup>: AppHost, IAppHost<TStartup>
     {
         public Action<TStartup> StartAction { get; set; }
@@ -57,6 +59,7 @@ namespace DNI.Core.Services.Hosts
         private TStartup startupService;
     }
 
+    [IgnoreScanning]
     public class AppHost : IAppHost
     {
         public Type StartupType { get; set; }

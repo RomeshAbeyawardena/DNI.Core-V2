@@ -1,6 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Builders;
-using DNI.Core.Services.Shared.Hosts;
+using DNI.Core.Services.Builders;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;

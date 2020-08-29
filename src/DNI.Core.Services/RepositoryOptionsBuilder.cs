@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace DNI.Core.Services
         public static Action<IRepositoryOptions> Default => options => { options.EnableTracking = false; };
     }
 
+    [IgnoreScanning]
     internal class RepositoryOptions : IRepositoryOptions
     {
         public bool EnableTracking { get; set; }

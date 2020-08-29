@@ -10,9 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using DNI.Core.Services.Extensions;
 using Version = DNI.Core.Domains.Version;
+using DNI.Core.Shared.Attributes;
 
 namespace DNI.Core.Services.Attributes
 {
+    [IgnoreScanning]
     public sealed class VersionAttribute : ActionFilterAttribute, IActionConstraint
     {
         public VersionAttribute(string minimum, string maximum = null)

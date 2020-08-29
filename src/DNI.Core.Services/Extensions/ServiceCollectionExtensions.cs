@@ -25,6 +25,9 @@ using DNI.Core.Services.Definitions;
 using DNI.Core.Contracts.Builders;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using DNI.Core.Services.Hosts;
+using DNI.Core.Shared.Attributes;
+using System.Diagnostics;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -107,30 +110,28 @@ namespace DNI.Core.Services.Extensions
                 generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
             }
 
-            var interfaceTypes = new [] { typeof(IMapperProvider), typeof(IMediatorProvider), typeof(IRepositoryOptions) };
-
-            bool HasInterfaces(Type type)
+            bool HasAttribute(Type type)
             {
-                return !interfaceTypes.Contains(type);
+                var ignoreScanningAttributeType = typeof(IgnoreScanningAttribute);
+                var attributes = type.CustomAttributes;
+                Debug.WriteLine("Inspecting {0}...", args: type.Name);
+                foreach(var attribute in attributes)
+                {
+                    Debug.WriteLine("{0}: {1}", type.Name, attribute.AttributeType.Name);
+                }
+                
+                var result = attributes.Count() == 0 
+                    || attributes.Any(attribute => attribute.AttributeType != ignoreScanningAttributeType);
+                return result;
             }
-
+            
             services
                 .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
                 .AddSingleton<ISystemClock, SystemClock>()
                 .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
-                .AddClasses(filter => filter
-                    .NotInNamespaceOf(typeof(EntityFrameworkRepository<,>))
-                    .NotInNamespaceOf(typeof(DictionaryBuilder<,>))
-                    .NotInNamespaceOf<Domains.Version>()
-                    .NotInNamespaceOf<VersionAttribute>()
-                    .NotInNamespaceOf<ValueGeneratorManager>()
-                    .NotInNamespaceOf<DateTimeOffSetValueGenerator>()
-                    .NotInNamespaceOf<TypeDefinition>()
-                    .Where(type => type
-                        .GetInterfaces()
-                        .Any(HasInterfaces)))
-                .AsImplementedInterfaces());
+                .AddClasses(filter => filter.Where(HasAttribute), true)
+                .AsMatchingInterface());
 
             if (buildSecurityProfiles != null)
             {
@@ -145,6 +146,14 @@ namespace DNI.Core.Services.Extensions
             if(scannerConfiguration != null)
             {
                 services.Scan(scannerConfiguration);
+            }
+
+            foreach(var service in services)
+            {
+                if(service.ImplementationType != null)
+                { 
+                    Debug.WriteLine("{0}: {1}", service.ServiceType.Name, service.ImplementationType.Name);
+                }
             }
 
             return services;
@@ -164,7 +173,7 @@ namespace DNI.Core.Services.Extensions
         {
             var valueGeneratorConcreteTypes = typeof(T)
                 .Assembly.GetTypes()
-                .Where(type => type.GetInterface(nameof(IValueGenerator)) != null);
+                .Where(type => type.GetInterfaces().Any(interfaceType => interfaceType == typeof(IValueGenerator)));
 
             foreach(var valueGeneratorConcreteType in valueGeneratorConcreteTypes)
             {

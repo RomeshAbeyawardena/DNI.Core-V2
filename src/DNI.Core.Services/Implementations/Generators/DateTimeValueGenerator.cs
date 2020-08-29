@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Shared.Attributes;
 using Microsoft.Extensions.Internal;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Generators
 {
+    [IgnoreScanning]
     internal sealed class DateTimeValueGenerator : IValueGenerator
     {
         public DateTimeValueGenerator(ISystemClock systemClock)

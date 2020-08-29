@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
+using DNI.Core.Shared.Attributes;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Providers
 {
+    [IgnoreScanning]
     internal class MediatrProvider : IMediatorProvider
     {
         public MediatrProvider(IMediator mediator)

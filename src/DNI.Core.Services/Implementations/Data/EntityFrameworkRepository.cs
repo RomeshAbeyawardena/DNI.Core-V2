@@ -1,6 +1,7 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Services.Abstractions;
 using DNI.Core.Shared;
+using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Data
 {
+    [IgnoreScanning]
     internal class EntityFrameworkRepository<TDbContext, TEntity> : IRepository<TEntity>
         where TDbContext : EnhancedDbContextBase
         where TEntity : class

@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Shared.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Definitions
 {
+    [IgnoreScanning]
     public abstract class DefinitionBase<TDefinition> : IDefinition<TDefinition>
     {
         protected DefinitionBase(IEnumerable<TDefinition> definitions)

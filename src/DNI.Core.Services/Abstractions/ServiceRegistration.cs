@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace DNI.Core.Services
+namespace DNI.Core.Services.Abstractions
 {
     public abstract class ServiceRegistration : IServiceRegistration
     {

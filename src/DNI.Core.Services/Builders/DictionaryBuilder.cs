@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Builders;
+using DNI.Core.Shared.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace DNI.Core.Services.Builders
         }
     }
 
+    [IgnoreScanning]
     public class DictionaryBuilder<TKey, TValue> : IDictionaryBuilder<TKey, TValue>
     {
         public static IDictionaryBuilder<TKey, TValue> Create()
