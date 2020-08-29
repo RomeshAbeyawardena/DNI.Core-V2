@@ -1,6 +1,7 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Domains;
 using DNI.Core.Services.Abstractions;
+using DNI.Core.Services.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
@@ -14,7 +15,7 @@ namespace DNI.Core.Tests
     public class TestServiceBroker : ServiceBroker
     {
         public TestServiceBroker() 
-            : base(definitions => definitions.GetAssembly<ServiceBrokerTests>())
+            : base(definitions => definitions.DescribeAssembly<ServiceBrokerTests>())
         {
         }
     }

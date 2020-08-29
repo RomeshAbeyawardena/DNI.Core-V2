@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,16 @@ namespace DNI.Core.Services.Definitions
             return this;
         }
 
-        protected List<TDefinition> definitions;
+        IEnumerator<TDefinition> IEnumerable<TDefinition>.GetEnumerator()
+        {
+            return definitions.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return definitions.GetEnumerator();
+        }
+
+        private readonly List<TDefinition> definitions;
     }
 }

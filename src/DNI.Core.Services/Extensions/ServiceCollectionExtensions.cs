@@ -178,7 +178,7 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterAutoMapperProviders(
             this IServiceCollection services, 
-            Action<IAssemblyDefinition> obtainAssemblyDefinitions,
+            Action<IDefinition<Assembly>> obtainAssemblyDefinitions,
             Action<IServiceProvider, IMapperConfigurationExpression> configureAutomapper = null)
         {
             services.AddSingleton<IMapperProvider, AutoMapperProvider>();
@@ -188,11 +188,11 @@ namespace DNI.Core.Services.Extensions
 
             if(configureAutomapper != null)
             { 
-                services.AddAutoMapper(configureAutomapper, assemblyDefinitions.Assemblies);
+                services.AddAutoMapper(configureAutomapper, assemblyDefinitions.Definitions);
             }
             else
             {
-                services.AddAutoMapper(assemblyDefinitions.Assemblies);
+                services.AddAutoMapper(assemblyDefinitions.Definitions);
             }
             
             return services;
@@ -200,7 +200,7 @@ namespace DNI.Core.Services.Extensions
 
         public static IServiceCollection RegisterMediatrProviders(
             this IServiceCollection services,
-            Action<IAssemblyDefinition> obtainAssemblyDefinitions,
+            Action<IDefinition<Assembly>> obtainAssemblyDefinitions,
             Action<MediatRServiceConfiguration> configuremediatRServiceConfiguration = null)
         {
             services.AddSingleton<IMediatorProvider, MediatrProvider>();
@@ -208,7 +208,7 @@ namespace DNI.Core.Services.Extensions
             var assemblyDefinitions = new AssemblyDefinition();
             obtainAssemblyDefinitions(assemblyDefinitions);
             return services.AddMediatR(
-                assemblyDefinitions.Assemblies.ToArray(), 
+                assemblyDefinitions.Definitions.ToArray(), 
                 configuremediatRServiceConfiguration);
         }
     }

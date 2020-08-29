@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DNI.Core.Services.Extensions;
 using Version = DNI.Core.Domains.Version;
 
 namespace DNI.Core.Services.Attributes
@@ -56,10 +57,10 @@ namespace DNI.Core.Services.Attributes
             }, exception =>
             {
                 context.Result = new BadRequestObjectResult(exception);
-            }, typeDefinition => typeDefinition
-                                    .GetType<NullReferenceException>()
-                                    .GetType<FormatException>()
-                                    .GetType<ArgumentOutOfRangeException>());
+            }, exceptionTypes: typeDefinition => typeDefinition
+                                    .DescribeType<NullReferenceException>()
+                                    .DescribeType<FormatException>()
+                                    .DescribeType<ArgumentOutOfRangeException>());
 
         }
 

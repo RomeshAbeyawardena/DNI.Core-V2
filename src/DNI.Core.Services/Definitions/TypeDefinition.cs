@@ -7,33 +7,13 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Definitions
 {
-    public class TypeDefinition : DefinitionBase<Type>, ITypeDefinition
+    public class TypeDefinition : DefinitionBase<Type>, IDefinition<Type>
     {
-        public static ITypeDefinition Build(Action<ITypeDefinition> build)
-        {
-            var typeDefinition = new TypeDefinition();
-            build(typeDefinition);
-            return typeDefinition;
-        }
-
         public TypeDefinition(IEnumerable<Type> types = null)
             : base(types)
         {
             
         }
 
-        public IEnumerable<Type> Types => Definitions;
-
-        public new ITypeDefinition Add(Type type)
-        {
-            base.Add(type);
-            return this;
-        }
-
-        public ITypeDefinition GetType<TType>()
-        {
-            var type = typeof(TType);
-            return Add(type);
-        }
     }
 }

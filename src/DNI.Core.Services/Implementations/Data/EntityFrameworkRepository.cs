@@ -62,7 +62,7 @@ namespace DNI.Core.Services.Implementations.Data
                 return DbContext.SaveChanges();
             }
 
-            return Shared.Constants.Data.DatabaseOperationFailed;
+            return Core.Shared.Constants.Data.DatabaseOperationFailed;
         }
 
         protected void SetEntityStateByPrimaryKeyExistanceOfEntity(TEntity entity, out EntityEntry<TEntity> entry)

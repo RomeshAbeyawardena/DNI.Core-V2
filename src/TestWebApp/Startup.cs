@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
@@ -25,8 +26,8 @@ namespace TestWebApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            Action<IAssemblyDefinition> assemblyDefinitions = assemblyDefinitions =>
-                    assemblyDefinitions.GetAssembly<Startup>();
+            Action<IDefinition<Assembly>> assemblyDefinitions = assemblyDefinitions =>
+                    assemblyDefinitions.DescribeAssembly<Startup>();
 
             services
                 .AddSingleton<ApplicationSettings>()

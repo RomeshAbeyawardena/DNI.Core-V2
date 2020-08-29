@@ -13,11 +13,11 @@ namespace DNI.Core.Services.Abstractions
 {
     public abstract class ServiceBroker : IServiceBroker
     {
-        public ServiceBroker(Action<IAssemblyDefinition> defineAssemblyDefinitions)
+        public ServiceBroker(Action<IDefinition<Assembly>> defineAssemblyDefinitions)
         {
             var assemblyDefinitions = new AssemblyDefinition();
             defineAssemblyDefinitions(assemblyDefinitions);
-            Assemblies = assemblyDefinitions.Assemblies;
+            Assemblies = assemblyDefinitions.Definitions;
         }
 
         public void RegisterServices(IServiceCollection services, IEnumerable<IServiceRegistration> serviceRegistrations)

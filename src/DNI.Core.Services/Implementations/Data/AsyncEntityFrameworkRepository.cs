@@ -31,7 +31,7 @@ namespace DNI.Core.Services.Implementations.Data
                 return DbContext.SaveChangesAsync(cancellationToken);
             }
 
-            return Task.FromResult(Shared.Constants.Data.DatabaseOperationFailed);
+            return Task.FromResult(Core.Shared.Constants.Data.DatabaseOperationFailed);
         }
 
         public Task<TEntity> FindAsync(CancellationToken cancellationToken = default, params object[] keys)

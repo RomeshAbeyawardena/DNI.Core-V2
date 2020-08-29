@@ -80,11 +80,12 @@ namespace DNI.Core.Services.Handlers
             }
         }
 
-        public void Try(Action tryBlock, Action<Exception> catchBlock, Action<ITypeDefinition> exceptionTypes, Action finallyBlock = null)
+        public void Try(Action tryBlock, Action<Exception> catchBlock, Action<IDefinition<Type>> exceptionTypes, Action finallyBlock = null)
         {
-            var typeDefinition = TypeDefinition.Build(exceptionTypes);
+            var typeDefinition = new TypeDefinition();
+            exceptionTypes(typeDefinition);
 
-            Try(tryBlock, catchBlock, finallyBlock, typeDefinition.Types.ToArray());
+            Try(tryBlock, catchBlock, finallyBlock, typeDefinition.Definitions.ToArray());
         }
 
         
@@ -92,12 +93,13 @@ namespace DNI.Core.Services.Handlers
             TParameter parameter, 
             Func<TParameter, TResult> tryBlock, 
             Func<Exception, TResult> catchBlock, 
-            Action<ITypeDefinition> exceptionTypes,
+            Action<IDefinition<Type>> exceptionTypes,
             Action finallyBlock = null)
         {
-            var typeDefinition = TypeDefinition.Build(exceptionTypes);
+            var typeDefinition = new TypeDefinition();
+            exceptionTypes(typeDefinition);
 
-            return Try(parameter, tryBlock, catchBlock, finallyBlock, typeDefinition.Types.ToArray());
+            return Try(parameter, tryBlock, catchBlock, finallyBlock, typeDefinition.Definitions.ToArray());
         }
 
         private bool IsExceptionHandled(
