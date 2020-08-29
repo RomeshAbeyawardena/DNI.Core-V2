@@ -13,9 +13,42 @@ namespace DNI.Core.Shared.Extensions
             throw new NotSupportedException();
         }
 
+        
+        public static Type DetermineType(this object value)
+        {
+            if(value == null)
+                return null;
+
+            var stringValue = value.ToString();
+
+            if(bool.TryParse(stringValue, out var booleanValue))
+            {
+                return (typeof(bool));
+            }
+
+            if (DateTimeOffset.TryParse(stringValue, out var dateValue))
+            { 
+                return typeof(DateTimeOffset);
+            }
+
+            if (stringValue.All(str => char.IsNumber(str)) 
+                && long.TryParse(stringValue, out var longValue))
+            { 
+                return typeof(long);
+            }
+
+            if (stringValue.Any(str => str == '.') 
+                && decimal.TryParse(stringValue, out var decimalValue))
+            { 
+                return typeof(long);
+            }
+
+            return typeof(string);
+        }
+
         public static bool IsDefault(this object value)
         {
-            var determinedType = Converter.DetermineType(value);
+            var determinedType = DetermineType(value);
 
             if(determinedType == typeof(bool))
             { 
