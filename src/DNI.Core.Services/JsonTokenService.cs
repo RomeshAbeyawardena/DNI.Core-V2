@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using DNI.Core.Contracts.Services;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services
 {
-    public class JsonTokenService
+    public class JsonTokenService : IJsonTokenService
     {
         private SecurityTokenDescriptor GetSecurityTokenDescriptor(Action<SecurityTokenDescriptor> populateSecurityTokenDescriptor,
             SigningCredentials signingCredentials,

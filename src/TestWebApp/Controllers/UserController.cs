@@ -17,6 +17,7 @@ namespace TestWebApp.Controllers
     {
         private readonly IRepository<User> userRepository;
         private readonly IModelEncryptionProvider encryptionService;
+        private readonly IJsonTokenService jsonTokenService;
         private readonly IRepositoryOptions repositoryOptions;
 
         public UserController(
@@ -24,11 +25,13 @@ namespace TestWebApp.Controllers
             IMapperProvider mapperProvider, 
             IRepository<User> userRepository,
             IModelEncryptionProvider encryptionService,
+            IJsonTokenService jsonTokenService,
             IRepositoryOptions repositoryOptions) 
             : base(mediator, mapperProvider)
         {
             this.userRepository = userRepository;
             this.encryptionService = encryptionService;
+            this.jsonTokenService = jsonTokenService;
             this.repositoryOptions = repositoryOptions;
         }
 
