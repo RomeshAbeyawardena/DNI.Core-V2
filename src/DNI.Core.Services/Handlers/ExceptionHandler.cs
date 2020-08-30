@@ -33,6 +33,44 @@ namespace DNI.Core.Services.Handlers
             }
         }
 
+        public async Task<TResult> TryAsync<TParameter, TResult>(
+            TParameter parameter, 
+            Func<TParameter, Task<TResult>> tryBlock, 
+            Func<Exception, Task<TResult>> catchBlock, 
+            Action finallyBlock = null, 
+            params Type[] exceptionTypes)
+        {
+            try
+            {
+                return await tryBlock(parameter);
+            }
+            catch(Exception exception)
+            {
+                if(!IsExceptionHandled(exception, exceptionTypes))
+                {
+                    throw;
+                }
+
+                return await catchBlock(exception);
+            }
+            finally
+            {
+                finallyBlock?.Invoke();
+            }
+        }
+
+        public async Task<TResult> TryAsync<TParameter, TResult>(
+            TParameter parameter, 
+            Func<TParameter, Task<TResult>> tryBlock, 
+            Func<Exception, Task<TResult>> catchBlock, 
+            Action<IDefinition<Type>> exceptionTypes,
+            Action finallyBlock = null)
+        {
+            var typeDefinitions = new TypeDefinition();
+            exceptionTypes.Invoke(typeDefinitions);
+            return await TryAsync<TParameter, TResult>(parameter, tryBlock, catchBlock, finallyBlock, typeDefinitions.ToArray());
+        }
+
         public TResult Try<TParameter, TResult>(
             TParameter parameter, 
             Func<TParameter, TResult> tryBlock, 
