@@ -8,6 +8,13 @@ namespace DNI.Core.Contracts
 {
     public interface IExceptionHandler
     {
+        Task TryAsync<TParameter>(
+            TParameter parameter,
+            Func<TParameter, Task> tryBlock,
+            Func<Exception, Task> catchBlock,
+            Action<IDefinition<Type>> exceptionTypes,
+            Action finallyBlock = null);
+
         Task<TResult> TryAsync<TParameter, TResult>(
             TParameter parameter, 
             Func<TParameter, Task<TResult>> tryBlock, 

@@ -148,5 +148,30 @@ namespace DNI.Core.Services.Handlers
             return exceptionTypes
                 .Any(exceptionType => exceptionType == currentExceptionType);
         }
+
+        public Task TryAsync<TParameter>(TParameter parameter, Func<TParameter, Task> tryBlock, Func<Exception, Task> catchBlock, Action<IDefinition<Type>> exceptionTypes, Action finallyBlock = null)
+        {
+            var typeDefinitions = new TypeDefinition();
+
+            exceptionTypes(typeDefinitions);
+
+            try
+            {
+                return tryBlock(parameter);
+            }
+            catch (Exception exception)
+            {
+                if(!IsExceptionHandled(exception, typeDefinitions.Definitions))
+                {
+                    throw;
+                }
+
+                return catchBlock(exception);
+            }
+            finally
+            {
+                finallyBlock?.Invoke();
+            }
+        }
     }
 }
