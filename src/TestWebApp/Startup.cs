@@ -26,58 +26,11 @@ namespace TestWebApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            Action<IDefinition<Assembly>> assemblyDefinitions = assemblyDefinitions =>
-                    assemblyDefinitions.DescribeAssembly<Startup>();
-
             services
                 .AddSingleton<ApplicationSettings>()
-                .RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
-                    var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
-                    dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);},
-                    options => { 
-                        options.SingulariseTableNames = true;
-                        options.EnableTracking = false; 
-                        options.UseDbContextPools = true;
-                        options.PoolSize = 256; })
-                .RegisterServices(BuildSecurityProfiles)
-                .RegisterAutoMapperProviders(assemblyDefinitions)
-                .RegisterMediatrProviders(assemblyDefinitions)
+                .RegisterServiceBroker<AppServiceBroker>()
                 .AddControllers();
 
-        }
-
-        private void BuildSecurityProfiles(IServiceProvider serviceProvider, IEncryptionProfileDictionaryBuilder builder)
-        {
-            var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
-            builder.Add(EncryptionClassification.Personal, profile =>
-            {
-                profile.Encoding = Encoding.ASCII;
-                profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                profile.Key = Convert.FromBase64String(applicationSettings.PersonalKey);
-                profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-                profile.HashAlgorithmType = HashAlgorithmType.Sha512;
-                profile.SymmetricAlgorithmName = nameof(Aes);
-
-                return profile;
-            }).Add(EncryptionClassification.Common, profile => {
-                profile.Encoding = Encoding.ASCII;
-                profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                profile.Key = Convert.FromBase64String(applicationSettings.CommonKey);
-                profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-                profile.HashAlgorithmType = HashAlgorithmType.Sha512;
-                profile.SymmetricAlgorithmName = nameof(Aes);
-
-                return profile;
-            }).Add(EncryptionClassification.Shared, profile => {
-                profile.Encoding = Encoding.ASCII;
-                profile.InitialVector = Convert.FromBase64String(applicationSettings.InitialVector);
-                profile.Key = Convert.FromBase64String(applicationSettings.SharedKey);
-                profile.Salt = Convert.FromBase64String(applicationSettings.Salt);
-                profile.HashAlgorithmType = HashAlgorithmType.Sha512;
-                profile.SymmetricAlgorithmName = nameof(Aes);
-
-                return profile;
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
