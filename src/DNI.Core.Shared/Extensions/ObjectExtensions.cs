@@ -8,11 +8,6 @@ namespace DNI.Core.Shared.Extensions
 {
     public static class ObjectExtensions
     {
-        public static bool IsInt()
-        {
-            throw new NotSupportedException();
-        }
-
         
         public static Type DetermineType(this object value)
         {

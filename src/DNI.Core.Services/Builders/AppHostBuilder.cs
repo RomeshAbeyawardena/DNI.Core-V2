@@ -55,7 +55,7 @@ namespace DNI.Core.Services.Builders
 
         public IHostBuilder ConfigureContainer<TContainerBuilder>(Action<HostBuilderContext, TContainerBuilder> configureDelegate)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("ConfigureContainer not supported");
         }
 
         public IHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configureDelegate)
@@ -72,12 +72,12 @@ namespace DNI.Core.Services.Builders
 
         public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("UseServiceProviderFactory not supported");
         }
 
         public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("UseServiceProviderFactory not supported");
         }
 
         public IAppHost<TStartup> Build<TStartup>()

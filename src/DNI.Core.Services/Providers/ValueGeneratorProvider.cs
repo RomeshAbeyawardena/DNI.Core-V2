@@ -25,7 +25,7 @@ namespace DNI.Core.Services.Providers
                 return (IValueGenerator)serviceProvider.GetService(generatorType);
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException($"{generatorName} not found.");
         }
         
         

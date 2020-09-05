@@ -107,7 +107,7 @@ namespace DNI.Core.Services.Providers
                 return encryptionProfile;
             }
 
-            throw new NotSupportedException();
+            throw new NotSupportedException("Encryption profile not found");
         }
 
         public T Decrypt<T>(T model)

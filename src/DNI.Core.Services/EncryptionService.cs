@@ -107,7 +107,7 @@ namespace DNI.Core.Services
                 HashAlgorithmType.Sha256 => HashAlgorithmName.SHA256,
                 HashAlgorithmType.Sha384 => HashAlgorithmName.SHA384,
                 HashAlgorithmType.Sha512 => HashAlgorithmName.SHA512,
-                _ => throw new NotSupportedException(),
+                _ => throw new NotSupportedException("Specified hash algorithm not supported"),
             };
         }
 
