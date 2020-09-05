@@ -38,11 +38,23 @@ namespace DNI.Core.Tests
         public void TestAsync()
         {
             Assert.ThrowsAsync<NullReferenceException>(
-                () => sut.TryAsync(2, async(i) => { 
-                    if(i != 1) 
-                        throw new NullReferenceException(); 
-                    return await Task.FromResult(true); }, async(ex) => await Task.FromResult(false)));
+                () => sut.TryAsync(2, async (i) =>
+                {
+                    if (i != 1)
+                        throw new NullReferenceException();
+                    return await Task.FromResult(true);
+                }, async (ex) => await Task.FromResult(false)));
 
+
+            Assert.DoesNotThrowAsync(
+                async () => await sut.TryAsync<int>(1, 
+                async(number) => { 
+                    if(number ==1) 
+                        throw new FormatException(); 
+                    await Task.CompletedTask; },
+                (exception) => { return Task.CompletedTask; },
+                definitionTypes => definitionTypes.DescribeType<FormatException>()
+                ));
 
             Assert.DoesNotThrowAsync(
                 async() => await sut.TryAsync<int, bool>(2, async(i) => { 
