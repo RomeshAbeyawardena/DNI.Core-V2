@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DNI.Core.Services.Providers;
 using DNI.Core.Contracts.Managers;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Moq;
 using NUnit.Framework;
 using DNI.Core.Tests.Generators;

@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Services;
 using Moq;
@@ -6,28 +7,42 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Tests
 {
     [TestFixture]
     public class EncryptionServiceTests
     {
+        delegate void Asm(Guid s, string m, IEnumerable<byte> val);
+
         [SetUp]
         public void SetUp()
         {
             encryptionProfileMock = new Mock<IEncryptionProfile>();
+            memoryStreamProviderMock = new Mock<IMemoryStreamProvider>();
             guidServiceMock = new Mock<IGuidService>();
-            sut = new EncryptionService(guidServiceMock.Object);
+            sut = new EncryptionService(guidServiceMock.Object, memoryStreamProviderMock.Object);
         }
 
         [Test]
         public void Encrypt_Decrypt()
         {
+            byte[] byteValue = Array.Empty<byte>();
+            memoryStreamProviderMock.Setup(memoryStreamProvider => memoryStreamProvider
+                .GetMemoryStream(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Callback(new Asm((a, b, c) => { byteValue = c.ToArray(); }))
+                    .Returns(() => new MemoryStream(byteValue));
+
+            memoryStreamProviderMock.Setup(memoryStreamProvider => memoryStreamProvider
+                .GetMemoryStream(It.IsAny<Guid>(), It.IsAny<string>()))
+                    .Returns(new MemoryStream());
+
+
             const string expectedValue = "Lorem Ipsum";
             encryptionProfileMock
                 .SetupGet(encryptionProfile => encryptionProfile.SymmetricAlgorithmName)
@@ -102,6 +117,7 @@ namespace DNI.Core.Tests
             Assert.AreEqual(hashedValue, repeatedHashedValue);
         }
 
+        private Mock<IMemoryStreamProvider> memoryStreamProviderMock;
         private Mock<IGuidService> guidServiceMock;
         private Mock<IEncryptionProfile> encryptionProfileMock;
         private EncryptionService sut;

@@ -1,21 +1,16 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
-using DNI.Core.Services.Builders;
 using DNI.Core.Shared.Extensions;
 using DNI.Core.Services.Extensions;
 using DNI.Core.Services.Implementations.Generators;
-using DNI.Core.Services.Providers;
 using DNI.Core.Shared.Enumerations;
 using DNI.Core.Tests.Generators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Tests
 {

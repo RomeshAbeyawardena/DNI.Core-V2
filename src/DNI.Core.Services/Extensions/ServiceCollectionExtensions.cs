@@ -7,27 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Internal;
 using System.Reflection;
 using AutoMapper;
 using MediatR;
-using DNI.Core.Shared.Extensions;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Services.Providers;
-using DNI.Core.Shared.Enumerations;
 using DNI.Core.Services.Builders;
-using DNI.Core.Domains;
-using DNI.Core.Services.Attributes;
-using DNI.Core.Services.Implementations.Generators;
 using DNI.Core.Services.Definitions;
 using DNI.Core.Contracts.Builders;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using DNI.Core.Services.Hosts;
-using DNI.Core.Shared.Attributes;
 using System.Diagnostics;
+using DNI.Core.Services.Implementations;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -100,47 +89,22 @@ namespace DNI.Core.Services.Extensions
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
             Action<Scrutor.ITypeSourceSelector> scannerConfiguration = null)
         {
-            var internalGeneratorKeyValuePairs = ScanAndRegisterGenerators<RepositoryOptions>(services);
-            if(generatorKeyValuePairs == null)
+            
+            if(generatorKeyValuePairs != null)
             {
-                generatorKeyValuePairs = internalGeneratorKeyValuePairs;
-            }
-            else
-            {
-                generatorKeyValuePairs = generatorKeyValuePairs.Append(internalGeneratorKeyValuePairs);
+                services.AddSingleton(generatorKeyValuePairs);
             }
 
-            bool HasAttribute(Type type)
-            {
-                var ignoreScanningAttributeType = typeof(IgnoreScanningAttribute);
-                var attributes = type.CustomAttributes;
-                Debug.WriteLine("Inspecting {0}...", args: type.Name);
-                foreach(var attribute in attributes)
-                {
-                    Debug.WriteLine("{0}: {1}", type.Name, attribute.AttributeType.Name);
-                }
-                
-                var result = attributes.Count() == 0 
-                    || attributes.Any(attribute => attribute.AttributeType != ignoreScanningAttributeType);
-                return result;
-            }
-            
-            services
-                .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
-                .AddSingleton<ISystemClock, SystemClock>()
-                .AddSingleton<IValueGeneratorManager>(serviceProvider => new ValueGeneratorManager(generatorKeyValuePairs))
-                .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
-                .AddClasses(filter => filter.Where(HasAttribute), true)
-                .AsMatchingInterface());
+            services.RegisterServiceBroker<DefaultServiceBroker>();
 
             if (buildSecurityProfiles != null)
             {
                 var securityProfilesDictionaryBuilder = new EncryptionProfileDictionaryBuilder();
-
-                services.AddSingleton<IEncryptionProfileManager>(serviceProvider => { 
-                    buildSecurityProfiles(serviceProvider, securityProfilesDictionaryBuilder); 
-                    return new EncryptionProfileManager(securityProfilesDictionaryBuilder); 
-                });
+                services
+                    .AddSingleton<IEncryptionProfileManager>(serviceProvider => { 
+                        buildSecurityProfiles(serviceProvider, securityProfilesDictionaryBuilder); 
+                        return new EncryptionProfileManager(securityProfilesDictionaryBuilder); 
+                    });
             }
 
             if(scannerConfiguration != null)

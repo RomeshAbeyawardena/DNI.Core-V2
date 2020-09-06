@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Contracts
 {

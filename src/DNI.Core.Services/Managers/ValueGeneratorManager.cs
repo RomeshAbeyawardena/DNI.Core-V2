@@ -2,10 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Managers
 {
@@ -14,14 +10,12 @@ namespace DNI.Core.Services.Managers
         public ValueGeneratorManager(IEnumerable<KeyValuePair<string, Type>> valueKeyPairs)
         {
             if(valueKeyPairs == null)
-            throw new ArgumentNullException(nameof(valueKeyPairs));
+            { 
+                throw new ArgumentNullException(nameof(valueKeyPairs));
+            }
 
             dictionary = new Dictionary<string, Type>();
-
-            foreach(var valueKeyPair in valueKeyPairs)
-            { 
-                dictionary.Add(valueKeyPair);
-            }
+            AppendValueGenerators(valueKeyPairs);
         }
 
         Type IReadOnlyDictionary<string, Type>.this[string key] => dictionary[key];
@@ -50,6 +44,14 @@ namespace DNI.Core.Services.Managers
         bool IReadOnlyDictionary<string, Type>.TryGetValue(string key, out Type value)
         {
             return dictionary.TryGetValue(key, out value);
+        }
+
+        public void AppendValueGenerators(IEnumerable<KeyValuePair<string, Type>> valueKeyPairs)
+        {
+            foreach(var valueKeyPair in valueKeyPairs)
+            { 
+                dictionary.Add(valueKeyPair);
+            }
         }
 
         private readonly IDictionary<string, Type> dictionary;

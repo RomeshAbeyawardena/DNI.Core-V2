@@ -1,15 +1,11 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Services.Abstractions;
-using DNI.Core.Shared;
 using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Data
 {

@@ -1,12 +1,7 @@
-﻿using AutoMapper.Internal;
-using DNI.Core.Contracts;
-using System;
+﻿using DNI.Core.Contracts;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Security.Authentication;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Domains
 {

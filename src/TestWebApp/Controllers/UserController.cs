@@ -1,18 +1,14 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
-using DNI.Core.Services.Abstractions;
 using DNI.Core.Services.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TestWebApp.Controllers
 {
-    
+
     public class UserController : ApiController
     {
         private readonly IRepository<User> userRepository;

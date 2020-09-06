@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Shared.Extensions;
 using System;
@@ -7,16 +8,15 @@ using System.IO;
 using System.Linq;
 using System.Security.Authentication;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Services
 {
     public class EncryptionService : IEncryptionService
     {
-        public EncryptionService(IGuidService guidService)
+        public EncryptionService(IGuidService guidService, IMemoryStreamProvider memoryStreamProvider)
         {
             this.guidService = guidService;
+            this.memoryStreamProvider = memoryStreamProvider;
         }
 
         public string Decrypt(string encryptedValue, IEncryptionProfile encryptionProfile)
@@ -30,7 +30,7 @@ namespace DNI.Core.Services
                     encryptionProfile.Key.ToArray(),
                     encryptionProfile.InitialVector.ToArray());
 
-                using var memoryStream = new MemoryStream(value);
+                using var memoryStream =  memoryStreamProvider.GetMemoryStream(guidService.GenerateGuid(), "decrypt", value);
                 using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Read);
                 using var streamReader = new StreamReader(cryptoStream);
                     result = streamReader.ReadToEnd();
@@ -50,7 +50,7 @@ namespace DNI.Core.Services
                     encryptionProfile.Key.ToArray(),
                     encryptionProfile.InitialVector.ToArray());
 
-                using var memoryStream = new MemoryStream();
+                using var memoryStream = memoryStreamProvider.GetMemoryStream(guidService.GenerateGuid(), "encrypt");
                 using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                 using (var streamWriter = new StreamWriter(cryptoStream))
                     streamWriter.Write(value);
@@ -119,5 +119,6 @@ namespace DNI.Core.Services
         }
 
         private readonly IGuidService guidService;
+        private readonly IMemoryStreamProvider memoryStreamProvider;
     }
 }

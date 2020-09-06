@@ -1,10 +1,8 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
-using DNI.Core.Services.Configurations;
 using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
@@ -13,8 +11,6 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Humanizer;
 
 [assembly: InternalsVisibleTo("DNI.Core.Tests", AllInternalsVisible = true)]

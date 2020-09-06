@@ -6,10 +6,6 @@ using DNI.Core.Services.Providers;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Enumerations;
 

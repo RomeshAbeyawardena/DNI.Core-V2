@@ -1,4 +1,3 @@
-using Castle.Components.DictionaryAdapter;
 using DNI.Core.Contracts;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Domains;

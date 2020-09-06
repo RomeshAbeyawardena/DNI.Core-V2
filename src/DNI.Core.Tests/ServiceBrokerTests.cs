@@ -1,14 +1,8 @@
 ﻿using DNI.Core.Contracts;
-using DNI.Core.Domains;
 using DNI.Core.Services.Abstractions;
 using DNI.Core.Services.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Tests
 {
