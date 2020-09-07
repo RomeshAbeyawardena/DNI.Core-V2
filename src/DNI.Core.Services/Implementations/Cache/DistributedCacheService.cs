@@ -108,6 +108,17 @@ namespace DNI.Core.Services.Implementations.Cache
             return false;
         }
 
+        public override Task RemoveAsync(string key, CancellationToken cancellationToken)
+        {
+            return distributedCache.RemoveAsync(key, cancellationToken);
+        }
+
+        public override void Remove(string key)
+        {
+            var task = RemoveAsync(key, CancellationToken.None);
+            task.Wait();
+        }
+
         private readonly IExceptionHandler exceptionHandler;
         private readonly IDistributedCache distributedCache;
         private readonly DistributedCacheEntryOptions distributedCacheEntryOptions;

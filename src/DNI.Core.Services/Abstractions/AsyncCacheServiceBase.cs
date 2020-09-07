@@ -16,6 +16,8 @@ namespace DNI.Core.Services.Abstractions
         {
         }
 
+        public abstract Task RemoveAsync(string key, CancellationToken cancellationToken);
+
         public abstract Task<IAttempt<T>> GetAsync<T>(string key, CancellationToken cancellationToken)
             where T: class;
 

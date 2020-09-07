@@ -22,6 +22,8 @@ namespace DNI.Core.Services.Abstractions
         public abstract bool TrySet<T>(string key, T value)
             where T: class;
 
+        public abstract void Remove(string key);
+
         protected async Task<IEnumerable<byte>> SerializeAsync<T>(T value, CancellationToken cancellationToken)
         {
             using (var messageStream = memoryStreamProvider.GetMemoryStream())

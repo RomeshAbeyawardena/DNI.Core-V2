@@ -10,5 +10,7 @@ namespace DNI.Core.Contracts.Services
 
         Task<IAttempt<T>> SetAsync<T>(string key, T value, CancellationToken cancellationToken)
             where T: class;
+
+        Task RemoveAsync(string key, CancellationToken cancellationToken);
     }
 }

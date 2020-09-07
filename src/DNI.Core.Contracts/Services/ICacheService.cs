@@ -7,5 +7,7 @@
 
         bool TrySet<T>(string key, T value)
             where T: class;
+
+        void Remove(string key);
     }
 }
