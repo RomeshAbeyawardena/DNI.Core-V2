@@ -1,5 +1,7 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
+using MessagePack;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +10,12 @@ namespace DNI.Core.Services.Abstractions
 {
     public abstract class AsyncCacheServiceBase : CacheServiceBase, IAsyncCacheService
     {
+        protected AsyncCacheServiceBase(IMemoryStreamProvider memoryStreamProvider,
+            MessagePackSerializerOptions messagePackSerializerOptions) 
+            : base(memoryStreamProvider, messagePackSerializerOptions)
+        {
+        }
+
         public abstract Task<IAttempt<T>> GetAsync<T>(string key, CancellationToken cancellationToken)
             where T: class;
 

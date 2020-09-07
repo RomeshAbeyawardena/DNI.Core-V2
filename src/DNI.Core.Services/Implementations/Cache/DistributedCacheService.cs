@@ -1,10 +1,12 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Providers;
 using DNI.Core.Services.Abstractions;
 using DNI.Core.Services.Extensions;
 using MessagePack;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,18 +15,21 @@ namespace DNI.Core.Services.Implementations.Cache
     public class DistributedCacheService : AsyncCacheServiceBase
     {
         public DistributedCacheService(
+            IMemoryStreamProvider memoryStreamProvider,
             IExceptionHandler exceptionHandler,
             IDistributedCache distributedCache,
-            MessagePackSerializerOptions messagePackSerializer)
+            DistributedCacheEntryOptions distributedCacheEntryOptions,
+            MessagePackSerializerOptions messagePackSerializerOptions)
+            : base(memoryStreamProvider, messagePackSerializerOptions)
         {
             this.exceptionHandler = exceptionHandler;
             this.distributedCache = distributedCache;
-            messagePackSerializerOptions = messagePackSerializer;
+            this.distributedCacheEntryOptions = distributedCacheEntryOptions;
         }
 
         public override async Task<IAttempt<T>> GetAsync<T>(string key, CancellationToken cancellationToken)
         {
-            return await exceptionHandler.TryAsync<string, IAttempt<T>>(key, async (key) =>
+            return await exceptionHandler.TryAsync(key, async (key) =>
             {
                 if (string.IsNullOrEmpty(key))
                 {
@@ -33,12 +38,12 @@ namespace DNI.Core.Services.Implementations.Cache
 
                 var value = await distributedCache.GetAsync(key);
 
-                if (value == null)
+                if (value == null || value.Length < 0)
                 {
                     throw new NullReferenceException($"Cache value for '{key}' not available");
                 }
 
-                return CreateAttempt(MessagePackSerializer.Deserialize<T>(value, messagePackSerializerOptions));
+                return CreateAttempt(await DeserializeAsync<T>(value, cancellationToken));
             }, (exception) =>
             {
                 var attempt = CreateAttempt<T>(exception);
@@ -60,31 +65,49 @@ namespace DNI.Core.Services.Implementations.Cache
                 throw new ArgumentNullException(nameof(value));
             }
 
-            return await exceptionHandler.TryAsync<string, IAttempt<T>>(key, async (key) =>
+            return await exceptionHandler.TryAsync(key, async (key) =>
             {
-                using var messageStream = new MemoryStream();
-                await MessagePackSerializer.SerializeAsync(messageStream, value, messagePackSerializerOptions, cancellationToken);
-                messageStream.Position = 0;
-
-                await distributedCache.SetAsync(key, messageStream.ToArray());
+                var serializedValue = await SerializeAsync(value, cancellationToken);
+                await distributedCache.SetAsync(key, serializedValue.ToArray(), distributedCacheEntryOptions, cancellationToken);
                 return CreateAttempt(value);
             }, exception => Task.FromResult(CreateAttempt<T>(exception)), exceptionTypes => exceptionTypes.DescribeType<NullReferenceException>()
                 .DescribeType<MessagePackSerializationException>());
 
         }
 
-        public override bool TryGet<T>(string key, out T Value)
+        public override bool TryGet<T>(string key, out T value)
         {
-            throw new NotImplementedException();
+            value = default;
+            var task = GetAsync<T>(key, CancellationToken.None);
+                task.ConfigureAwait(true);
+
+            task.Wait(CancellationToken.None);
+
+            if (task.Result.Successful)
+            {
+                value = task.Result.Result;
+                return true;
+            }
+
+            return false;
         }
 
-        public override bool TrySet<T>(T value)
+        public override bool TrySet<T>(string key, T value)
         {
-            throw new NotImplementedException();
+            var task = SetAsync(key, value, CancellationToken.None);
+            task.ConfigureAwait(true);
+
+            task.Wait(CancellationToken.None);
+            if (task.Result.Successful)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private readonly IExceptionHandler exceptionHandler;
         private readonly IDistributedCache distributedCache;
-        private readonly MessagePackSerializerOptions messagePackSerializerOptions;
+        private readonly DistributedCacheEntryOptions distributedCacheEntryOptions;
     }
 }

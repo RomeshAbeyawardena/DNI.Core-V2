@@ -2,7 +2,10 @@
 {
     public interface ICacheService
     {
-        bool TryGet<T>(string key, out T Value);
-        bool TrySet<T>(T value);
+        bool TryGet<T>(string key, out T Value)
+            where T: class;
+
+        bool TrySet<T>(string key, T value)
+            where T: class;
     }
 }
