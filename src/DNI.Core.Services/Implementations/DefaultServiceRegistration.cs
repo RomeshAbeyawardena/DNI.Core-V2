@@ -14,6 +14,7 @@ using Microsoft.IO;
 using DNI.Core.Shared.Enumerations;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Implementations.Cache;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace DNI.Core.Services.Implementations
 {
@@ -41,6 +42,7 @@ namespace DNI.Core.Services.Implementations
 
             services
                 .AddSingleton<RecyclableMemoryStreamManager>()
+                .AddSingleton<DistributedCacheService>()
                 .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
                 .AddSingleton<ISystemClock, SystemClock>()
                 .AddSingleton<ICacheManager>(serviceProvider => {                    

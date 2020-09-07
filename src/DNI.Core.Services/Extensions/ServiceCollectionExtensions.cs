@@ -17,6 +17,8 @@ using DNI.Core.Services.Definitions;
 using DNI.Core.Contracts.Builders;
 using System.Diagnostics;
 using DNI.Core.Services.Implementations;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -86,6 +88,9 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterServices(
             this IServiceCollection services, 
             Action<IServiceProvider, IEncryptionProfileDictionaryBuilder> buildSecurityProfiles = null,
+            Action<MemoryDistributedCacheOptions> configureDistrubutedCacheOptions = null,
+            Action<DistributedCacheEntryOptions> configureDistributedCacheEntryOptions = null,
+            Action<MessagePack.MessagePackSerializerOptions> configureMessagePackSerializerOptions = null,
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
             Action<Scrutor.ITypeSourceSelector> scannerConfiguration = null)
         {
@@ -93,6 +98,26 @@ namespace DNI.Core.Services.Extensions
             if(generatorKeyValuePairs != null)
             {
                 services.AddSingleton(generatorKeyValuePairs);
+            }
+            
+            var messagePackSerializerOptions = MessagePack.MessagePackSerializerOptions.Standard;
+
+            configureMessagePackSerializerOptions?.Invoke(messagePackSerializerOptions);
+            services.AddSingleton(messagePackSerializerOptions);
+
+            var distributedCacheEntryOptions = new DistributedCacheEntryOptions();
+
+            configureDistributedCacheEntryOptions?.Invoke(distributedCacheEntryOptions);
+
+            services.AddSingleton(distributedCacheEntryOptions);
+
+            if(configureDistrubutedCacheOptions != null)
+            { 
+                services.AddDistributedMemoryCache(configureDistrubutedCacheOptions);
+            }
+            else
+            {
+                services.AddDistributedMemoryCache();
             }
 
             services.RegisterServiceBroker<DefaultServiceBroker>();
