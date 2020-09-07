@@ -46,6 +46,14 @@ namespace TestWebApp.Controllers
 
             var savedUser = userRepository.Query.FirstOrDefault(user => user.FirstName == encryptedUser.FirstName);
 
+            if(savedUser == null)
+            {
+                encryptedUser.Id = 0;
+                userRepository.SaveChanges(encryptedUser);
+
+                savedUser = userRepository.Query.FirstOrDefault(user => user.FirstName == encryptedUser.FirstName);
+            }
+
             var decryptedUser = encryptionService.Decrypt(savedUser);
 
             decryptedUser.MiddleName = "Romesh2";

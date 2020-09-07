@@ -18,7 +18,7 @@ namespace DNI.Core.Tests
     [TestFixture]
     public class EncryptionServiceTests
     {
-        delegate void Asm(Guid s, string m, IEnumerable<byte> val);
+        delegate void Asm(IEnumerable<byte> val);
 
         [SetUp]
         public void SetUp()
@@ -34,12 +34,12 @@ namespace DNI.Core.Tests
         {
             byte[] byteValue = Array.Empty<byte>();
             memoryStreamProviderMock.Setup(memoryStreamProvider => memoryStreamProvider
-                .GetMemoryStream(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Callback(new Asm((a, b, c) => { byteValue = c.ToArray(); }))
+                .GetMemoryStream(It.IsAny<IEnumerable<byte>>() ))
+                .Callback(new Asm((c) => { byteValue = c.ToArray(); }))
                     .Returns(() => new MemoryStream(byteValue));
 
             memoryStreamProviderMock.Setup(memoryStreamProvider => memoryStreamProvider
-                .GetMemoryStream(It.IsAny<Guid>(), It.IsAny<string>()))
+                .GetMemoryStream())
                     .Returns(new MemoryStream());
 
 

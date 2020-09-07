@@ -30,10 +30,12 @@ namespace DNI.Core.Services
                     encryptionProfile.Key.ToArray(),
                     encryptionProfile.InitialVector.ToArray());
 
-                using var memoryStream =  memoryStreamProvider.GetMemoryStream(guidService.GenerateGuid(), "decrypt", value);
-                using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Read);
-                using var streamReader = new StreamReader(cryptoStream);
-                    result = streamReader.ReadToEnd();
+                using (var memoryStream = memoryStreamProvider.GetMemoryStream(value))
+                { 
+                    using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Read);
+                    using var streamReader = new StreamReader(cryptoStream);
+                        result = streamReader.ReadToEnd();
+                }
             },
                 encryptionProfile.SymmetricAlgorithmName);
 
@@ -42,7 +44,7 @@ namespace DNI.Core.Services
 
         public string Encrypt(string value, IEncryptionProfile encryptionProfile)
         {
-            byte[] result = null;
+            byte[] result = default;
             InvokeSymmetricAlgorithm(symmetricAlgorithm =>
             {
 
@@ -50,11 +52,14 @@ namespace DNI.Core.Services
                     encryptionProfile.Key.ToArray(),
                     encryptionProfile.InitialVector.ToArray());
 
-                using var memoryStream = memoryStreamProvider.GetMemoryStream(guidService.GenerateGuid(), "encrypt");
-                using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                using (var streamWriter = new StreamWriter(cryptoStream))
-                    streamWriter.Write(value);
-                 result = memoryStream.ToArray();
+                using (var memoryStream = memoryStreamProvider.GetMemoryStream())
+                { 
+                    using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                    using (var streamWriter = new StreamWriter(cryptoStream))
+                        streamWriter.Write(value);
+
+                    result = memoryStream.ToArray();
+                }
             },
                 encryptionProfile.SymmetricAlgorithmName);
 
@@ -67,19 +72,19 @@ namespace DNI.Core.Services
             using var hashAlgorithm = HashAlgorithm
                 .Create(GetHashAlgorithmName(encryptionProfile.HashAlgorithmType).Name);
 
-            return Convert.ToBase64String (
-                hashAlgorithm.ComputeHash (
+            return Convert.ToBase64String(
+                hashAlgorithm.ComputeHash(
                     SaltKey(encryptionProfile.Salt, byteValue).ToArray()));
         }
 
         public IEnumerable<byte> SaltKey(IEnumerable<byte> salt, IEnumerable<byte> key)
         {
-            if(salt == null || salt.IsEmpty())
+            if (salt == null || salt.IsEmpty())
             {
                 throw new ArgumentNullException(nameof(salt));
             }
 
-            if(key == null || key.IsEmpty())
+            if (key == null || key.IsEmpty())
             {
                 throw new ArgumentNullException(nameof(key));
             }
@@ -115,7 +120,7 @@ namespace DNI.Core.Services
         {
             using var symmetricAlgorithm = SymmetricAlgorithm.Create(symmetricAlgorithmName);
             invokeAction(symmetricAlgorithm);
-            
+
         }
 
         private readonly IGuidService guidService;

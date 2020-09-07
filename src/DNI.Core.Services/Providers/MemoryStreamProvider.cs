@@ -26,8 +26,17 @@ namespace DNI.Core.Services.Providers
             var initialValueArray = initialValue.ToArray();
             memoryStream.Write(initialValueArray, 0 , initialValueArray.Length);
 
-            memoryStream.Position = 0;
             return memoryStream;
+        }
+
+        public MemoryStream GetMemoryStream()
+        {
+            return new MemoryStream();
+        }
+
+        public MemoryStream GetMemoryStream(IEnumerable<byte> initialValue)
+        {
+            return new MemoryStream(initialValue.ToArray());
         }
 
         private readonly RecyclableMemoryStreamManager recyclableMemoryStreamManager;

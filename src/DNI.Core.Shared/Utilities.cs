@@ -6,6 +6,11 @@ namespace DNI.Core.Shared
     {
         public static T Copy<T>(T original)
         {
+            if(original == null)
+            {
+                throw new ArgumentNullException(nameof(original));
+            }
+
             var type = typeof(T);
             var copy = (T)Activator.CreateInstance(typeof(T));
 
