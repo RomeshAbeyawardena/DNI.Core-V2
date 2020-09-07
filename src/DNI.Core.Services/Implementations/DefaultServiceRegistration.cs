@@ -15,6 +15,7 @@ using DNI.Core.Shared.Enumerations;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Implementations.Cache;
 using Microsoft.Extensions.Caching.Distributed;
+using DNI.Core.Services.Builders;
 
 namespace DNI.Core.Services.Implementations
 {
@@ -40,14 +41,16 @@ namespace DNI.Core.Services.Implementations
             
             var generatorKeyValuePairs = Extensions.ServiceCollectionExtensions.ScanAndRegisterGenerators<RepositoryOptions>(services);
 
+            
             services
                 .AddSingleton<RecyclableMemoryStreamManager>()
                 .AddSingleton<DistributedCacheService>()
                 .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
                 .AddSingleton<ISystemClock, SystemClock>()
-                .AddSingleton<ICacheManager>(serviceProvider => {                    
-                    return new CacheManager(serviceProvider, 
-                        new [] { KeyValuePair.Create(CacheType.DistributedCache, typeof(DistributedCacheService)) });
+                .AddSingleton<IEnumerable<KeyValuePair<CacheType, Type>>>(serviceProvider => {                    
+                    return new CacheManager(serviceProvider, new ListBuilder<KeyValuePair<CacheType, Type>>()
+                        .Add(KeyValuePair.Create(CacheType.DistributedCache, typeof(DistributedCacheService)))
+                        .ToArray());
                 })
                 .AddSingleton<IValueGeneratorManager>(serviceProvider =>  { 
                     var customValueGenerators = serviceProvider.GetService<IEnumerable<KeyValuePair<string, Type>>>(); 

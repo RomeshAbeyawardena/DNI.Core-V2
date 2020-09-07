@@ -19,6 +19,7 @@ namespace TestWebApp
         public DbSet<User> Users { get; set; }
     }
 
+    [MessagePack.MessagePackObject(true)]
     public class User
     {
         [Key]

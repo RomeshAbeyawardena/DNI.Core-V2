@@ -13,20 +13,16 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Managers
 {
-    [IgnoreScanning]
     public class CacheManager : ICacheManager
     {
-        public CacheManager(IServiceProvider serviceProvider, IEnumerable<KeyValuePair<CacheType, Type>> cacheServices = null)
+        public CacheManager(IServiceProvider serviceProvider, IEnumerable<KeyValuePair<CacheType, Type>> cacheServices)
         {
+            this.serviceProvider = serviceProvider;
             if(cacheServices != null)
             {
                 dictionary = new ConcurrentDictionary<CacheType, Type>(cacheServices);
                 return;
             }
-
-            dictionary = new ConcurrentDictionary<CacheType, Type>();
-
-            this.serviceProvider = serviceProvider;
         }
 
         Type IReadOnlyDictionary<CacheType, Type>.this[CacheType key] => dictionary[key];
@@ -46,7 +42,9 @@ namespace DNI.Core.Services.Managers
         {
             if(TryGetValue(cacheType, out var cacheService))
             {
-                return serviceProvider.GetService(cacheService) as ICacheService;
+                var type = Type.GetType(cacheService.FullName);
+                var s =  serviceProvider.GetService(type);
+                return s as ICacheService;
             }
 
             return default;

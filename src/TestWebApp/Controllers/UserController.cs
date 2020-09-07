@@ -1,10 +1,14 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Attributes;
+using DNI.Core.Shared.Enumerations;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TestWebApp.Controllers
 {
@@ -15,6 +19,7 @@ namespace TestWebApp.Controllers
         private readonly IModelEncryptionProvider encryptionService;
         private readonly IJsonTokenService jsonTokenService;
         private readonly IRepositoryOptions repositoryOptions;
+        private readonly ICacheManager cacheManager;
 
         public UserController(
             IMediatorProvider mediator, 
@@ -22,17 +27,19 @@ namespace TestWebApp.Controllers
             IRepository<User> userRepository,
             IModelEncryptionProvider encryptionService,
             IJsonTokenService jsonTokenService,
-            IRepositoryOptions repositoryOptions) 
+            IRepositoryOptions repositoryOptions,
+            ICacheManager cacheManager) 
             : base(mediator, mapperProvider)
         {
             this.userRepository = userRepository;
             this.encryptionService = encryptionService;
             this.jsonTokenService = jsonTokenService;
             this.repositoryOptions = repositoryOptions;
+            this.cacheManager = cacheManager;
         }
 
         [Version("1.0", "1.9")]
-        public ActionResult Hello()
+        public async Task<ActionResult> Hello()
         {
             var encryptedUser = encryptionService
                 .Encrypt(new User { 
@@ -65,6 +72,12 @@ namespace TestWebApp.Controllers
             savedUser = userRepository.Query.FirstOrDefault(user => user.FirstName == encryptedUser.FirstName);
 
             decryptedUser = encryptionService.Decrypt(savedUser);
+
+            var distributedCache = cacheManager.GetAsyncCacheService(CacheType.DistributedCache);
+
+            await distributedCache.SetAsync("decryptedUser", decryptedUser, CancellationToken.None);
+
+            var decrypted = await distributedCache.GetAsync<User>("decryptedUser", CancellationToken.None);
 
             return Ok(decryptedUser);
         }
