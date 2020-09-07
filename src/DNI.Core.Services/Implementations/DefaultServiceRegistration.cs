@@ -11,6 +11,9 @@ using DNI.Core.Shared.Attributes;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.IO;
+using DNI.Core.Shared.Enumerations;
+using DNI.Core.Contracts.Services;
+using DNI.Core.Services.Implementations.Cache;
 
 namespace DNI.Core.Services.Implementations
 {
@@ -40,6 +43,10 @@ namespace DNI.Core.Services.Implementations
                 .AddSingleton<RecyclableMemoryStreamManager>()
                 .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
                 .AddSingleton<ISystemClock, SystemClock>()
+                .AddSingleton<ICacheManager>(serviceProvider => {                    
+                    return new CacheManager(serviceProvider, 
+                        new [] { KeyValuePair.Create(CacheType.DistributedCache, typeof(DistributedCacheService)) });
+                })
                 .AddSingleton<IValueGeneratorManager>(serviceProvider =>  { 
                     var customValueGenerators = serviceProvider.GetService<IEnumerable<KeyValuePair<string, Type>>>(); 
                     var valueGeneratorManager = new ValueGeneratorManager(generatorKeyValuePairs); 

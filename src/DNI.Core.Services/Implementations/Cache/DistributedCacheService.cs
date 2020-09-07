@@ -2,6 +2,7 @@
 using DNI.Core.Contracts.Providers;
 using DNI.Core.Services.Abstractions;
 using DNI.Core.Services.Extensions;
+using DNI.Core.Shared.Attributes;
 using MessagePack;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations.Cache
 {
+    [IgnoreScanning]
     public class DistributedCacheService : AsyncCacheServiceBase
     {
         public DistributedCacheService(
