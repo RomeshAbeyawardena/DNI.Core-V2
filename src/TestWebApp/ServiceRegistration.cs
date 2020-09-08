@@ -9,6 +9,7 @@ using System.Reflection;
 using DNI.Core.Shared.Enumerations;
 using System.Security.Authentication;
 using System.Runtime.Intrinsics.X86;
+using System.Reactive.Subjects;
 
 namespace TestWebApp
 {
@@ -19,7 +20,9 @@ namespace TestWebApp
             Action<IDefinition<Assembly>> assemblyDefinitions = assemblyDefinitions =>
                     assemblyDefinitions.DescribeAssembly<Startup>();
 
-            services.RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
+            services
+                .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
+                .RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
                     var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
                     dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);},
                     options => { 
