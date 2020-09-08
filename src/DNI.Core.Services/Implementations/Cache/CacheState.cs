@@ -69,6 +69,11 @@ namespace DNI.Core.Services.Implementations.Cache
             return false;    
         }
 
+        public IDisposable OnStageItemChanged(Action<ICacheStateItem<TState>> onValueChanged)
+        {
+            return cacheStateItemSubject.Subscribe(onValueChanged);
+        }
+
         private readonly ConcurrentDictionary<string, TState> dictionary;
         private readonly ISubject<ICacheStateItem<TState>> cacheStateItemSubject;
     }
