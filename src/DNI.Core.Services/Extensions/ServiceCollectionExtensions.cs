@@ -19,6 +19,8 @@ using System.Diagnostics;
 using DNI.Core.Services.Implementations;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using DNI.Core.Services.Implementations.Cache;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -83,6 +85,13 @@ namespace DNI.Core.Services.Extensions
                 respositoryOptions,
                 dbContextOptionsBuilder,
                 entitiesArray);
+        }
+
+        public static IServiceCollection RegisterCacheState<TState>(this IServiceCollection services)
+        {
+            services.TryAddSingleton<ICacheState<TState>, CacheState<TState>>();
+
+            return services;
         }
 
         public static IServiceCollection RegisterServices(

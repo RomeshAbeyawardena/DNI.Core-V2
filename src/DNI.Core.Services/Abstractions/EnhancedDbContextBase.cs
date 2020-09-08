@@ -105,6 +105,6 @@ namespace DNI.Core.Services.Abstractions
             return valueGeneratorDictionary;
         }
 
-        private ISubject<EntityEntry> entityEntrySubject;
+        private readonly ISubject<EntityEntry> entityEntrySubject;
     }
 }

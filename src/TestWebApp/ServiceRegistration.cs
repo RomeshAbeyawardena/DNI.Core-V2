@@ -28,6 +28,7 @@ namespace TestWebApp
                         options.UseDbContextPools = true;
                         options.PoolSize = 256; })
                 .RegisterServices(BuildSecurityProfiles)
+                .RegisterCacheState<DateTimeOffset>()
                 .RegisterAutoMapperProviders(assemblyDefinitions)
                 .RegisterMediatrProviders(assemblyDefinitions);
         }
