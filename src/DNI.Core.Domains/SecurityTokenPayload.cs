@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace DNI.Core.Domains
 {
+    [MessagePack.MessagePackObject(true)]
     public class SecurityTokenPayload : ISecurityTokenPayload
     {
         public string Issuer { get; set; }

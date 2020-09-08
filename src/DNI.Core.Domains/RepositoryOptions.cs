@@ -2,6 +2,7 @@
 
 namespace DNI.Core.Domains
 {
+    [MessagePack.MessagePackObject(true)]
     public class RepositoryOptions : IRepositoryOptions
     {
         public bool EnableTracking { get; set; }

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace DNI.Core.Domains
 {
+    [MessagePack.MessagePackObject(true)]
     public class EncryptionProfile : IEncryptionProfile
     {
         public IEnumerable<byte> Key { get; set; }

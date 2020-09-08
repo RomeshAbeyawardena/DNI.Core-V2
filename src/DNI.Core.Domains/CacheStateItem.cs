@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Domains
 {
+    public static class CacheStateItem
+    {
+        public static ICacheStateItem<TState> Create<TState>(string key, TState state)
+        {
+            return new CacheStateItem<TState>(key, state);
+        }
+    }
+
+    [MessagePack.MessagePackObject(true)]
     public class CacheStateItem<TState> : ICacheStateItem<TState>
     {
         public static implicit operator KeyValuePair<string, TState>(CacheStateItem<TState> value)
@@ -16,15 +25,11 @@ namespace DNI.Core.Domains
 
         public static implicit operator CacheStateItem<TState>(KeyValuePair<string, TState> value)
         {
-            return new CacheStateItem<TState>
-            {
-                Key = value.Key,
-                State = value.Value
-            };
+            return new CacheStateItem<TState>(value.Key, value.Value);
         }
 
-        public string Key { get; set; }
-        public TState State  { get; set; }
+        public string Key { get; }
+        public TState State  { get; }
 
         public override bool Equals(object obj)
         {
@@ -45,6 +50,12 @@ namespace DNI.Core.Domains
         {
             return cacheStateItem.Key == Key
                 && cacheStateItem.State.Equals(State);
+        }
+
+        internal CacheStateItem(string key, TState state)
+        {
+            Key = key;
+            State = state;
         }
     }
 }

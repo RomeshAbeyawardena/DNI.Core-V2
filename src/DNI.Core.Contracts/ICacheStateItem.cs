@@ -8,7 +8,7 @@ namespace DNI.Core.Contracts
 {
     public interface ICacheStateItem<TState>
     {
-        public string Key { get; set; }
-        public TState State  { get; set; }
+        public string Key { get; }
+        public TState State  { get; }
     }
 }

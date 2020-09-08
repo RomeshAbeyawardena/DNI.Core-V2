@@ -2,6 +2,7 @@
 
 namespace DNI.Core.Domains
 {
+    [MessagePack.MessagePackObject(true)]
     public struct Version
     {
         public static Version Zero => new Version();
