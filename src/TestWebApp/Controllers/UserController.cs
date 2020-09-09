@@ -38,6 +38,7 @@ namespace TestWebApp.Controllers
             this.encryptionService = encryptionService;
             this.jsonTokenService = jsonTokenService;
             this.repositoryOptions = repositoryOptions;
+
             this.cacheManager = cacheManager;
         }
 
