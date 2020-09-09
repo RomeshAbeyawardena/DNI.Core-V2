@@ -16,6 +16,7 @@ using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Implementations.Cache;
 using Microsoft.Extensions.Caching.Distributed;
 using DNI.Core.Services.Builders;
+using System.Reactive.Subjects;
 
 namespace DNI.Core.Services.Implementations
 {
@@ -43,6 +44,7 @@ namespace DNI.Core.Services.Implementations
 
             
             services
+                .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
                 .AddSingleton<RecyclableMemoryStreamManager>()
                 .AddSingleton<DistributedCacheService>()
                 .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
