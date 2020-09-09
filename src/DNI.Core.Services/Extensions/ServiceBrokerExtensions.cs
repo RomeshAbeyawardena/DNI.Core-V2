@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Services.Abstractions;
+using DNI.Core.Services.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +11,11 @@ namespace DNI.Core.Services.Extensions
     {
         public static IEnumerable<IServiceRegistration> GetServiceRegistrations(this IServiceBroker serviceBroker)
         {
-            Func<Type, bool> findinterfaceExpression = type => type.GetInterfaces().Any(interfaceType => interfaceType == typeof(IServiceRegistration));
-            var filteredAssemblies = serviceBroker.Assemblies
-                .Where(a => a.GetTypes().Any(findinterfaceExpression));
+            var serviceRegistrationTypes = ServiceCollector.Default.Collect<IServiceRegistration>(serviceBroker.Assemblies.ToArray());
 
-            foreach (var assembly in filteredAssemblies)
+            foreach(var serviceRegistrationType in serviceRegistrationTypes)
             {
-                foreach(var type in assembly.GetTypes().Where(findinterfaceExpression))
-                {
-                    if(type == typeof(ServiceRegistration))
-                        continue;
-
-                    yield return Activator.CreateInstance(type) as IServiceRegistration;
-                }
+                yield return Activator.CreateInstance(serviceRegistrationType) as IServiceRegistration;
             }
         }
     }

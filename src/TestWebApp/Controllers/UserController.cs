@@ -15,6 +15,7 @@ namespace TestWebApp.Controllers
 
     public class UserController : ApiController
     {
+        private readonly IServiceCollector serviceCollector;
         private readonly IRepository<User> userRepository;
         private readonly IModelEncryptionProvider encryptionService;
         private readonly IJsonTokenService jsonTokenService;
@@ -22,6 +23,7 @@ namespace TestWebApp.Controllers
         private readonly ICacheManager cacheManager;
 
         public UserController(
+            IServiceCollector serviceCollector,
             IMediatorProvider mediator, 
             IMapperProvider mapperProvider, 
             IRepository<User> userRepository,
@@ -31,6 +33,7 @@ namespace TestWebApp.Controllers
             ICacheManager cacheManager) 
             : base(mediator, mapperProvider)
         {
+            this.serviceCollector = serviceCollector;
             this.userRepository = userRepository;
             this.encryptionService = encryptionService;
             this.jsonTokenService = jsonTokenService;
