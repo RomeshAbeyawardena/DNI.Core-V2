@@ -17,7 +17,7 @@ namespace TestWebApp
     {
         public void RegisterServices(IServiceCollection services)
         {
-            Action<IDefinition<Assembly>> assemblyDefinitions = assemblyDefinitions =>
+            Action<IDefinition<Assembly>> AssemblyDefinitions = assemblyDefinitions =>
                     assemblyDefinitions.DescribeAssembly<Startup>();
 
             services
@@ -32,8 +32,8 @@ namespace TestWebApp
                         options.PoolSize = 256; })
                 .RegisterServices(BuildSecurityProfiles)
                 .RegisterCacheState<DateTimeOffset>()
-                .RegisterAutoMapperProviders(assemblyDefinitions)
-                .RegisterMediatrProviders(assemblyDefinitions);
+                .RegisterAutoMapperProviders(AssemblyDefinitions)
+                .RegisterMediatrProviders(AssemblyDefinitions);
         }
 
         

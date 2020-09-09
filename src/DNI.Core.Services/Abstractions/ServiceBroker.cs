@@ -9,7 +9,7 @@ namespace DNI.Core.Services.Abstractions
 {
     public abstract class ServiceBroker : IServiceBroker
     {
-        public ServiceBroker(Action<IDefinition<Assembly>> defineAssemblyDefinitions)
+        protected ServiceBroker(Action<IDefinition<Assembly>> defineAssemblyDefinitions)
         {
             var assemblyDefinitions = AssemblyDefinition.Default;
             defineAssemblyDefinitions(assemblyDefinitions);
