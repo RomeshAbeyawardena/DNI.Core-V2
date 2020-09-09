@@ -14,7 +14,7 @@ namespace DNI.Core.Services
             Action<IDefinition<Type>> describeTypes,
             Action finallyDelegate = null)
         {
-            var exceptionTypeDescriber = new TypeDefinition();
+            var exceptionTypeDescriber = TypeDefinition.Default;
             describeTypes(exceptionTypeDescriber);
             try
             {
@@ -42,7 +42,7 @@ namespace DNI.Core.Services
             Action finallyDelegate = null)
             where T: class
         {
-            var exceptionTypeDescriber = new TypeDefinition();
+            var exceptionTypeDescriber = TypeDefinition.Default;
             describeTypes(exceptionTypeDescriber);
             try
             {

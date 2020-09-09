@@ -11,7 +11,7 @@ namespace DNI.Core.Services.Abstractions
     {
         public ServiceBroker(Action<IDefinition<Assembly>> defineAssemblyDefinitions)
         {
-            var assemblyDefinitions = new AssemblyDefinition();
+            var assemblyDefinitions = AssemblyDefinition.Default;
             defineAssemblyDefinitions(assemblyDefinitions);
             Assemblies = assemblyDefinitions.Definitions;
         }

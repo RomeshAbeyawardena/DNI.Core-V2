@@ -15,7 +15,7 @@ namespace DNI.Core.Services.Implementations
 
         public IEnumerable<Type> Collect<TService>(Action<IDefinition<Assembly>> describeAssemblies)
         {
-            var assemblyDefinition = new AssemblyDefinition();
+            var assemblyDefinition = AssemblyDefinition.Default;
             describeAssemblies(assemblyDefinition);
             return Collect<TService>(assemblyDefinition.Definitions.ToArray());
         }
@@ -50,5 +50,18 @@ namespace DNI.Core.Services.Implementations
                 && (type.IsAssignableFrom(serviceType)
                     || type.GetInterfaces().Any(@interface => @interface == serviceType)));
         }
+
+        public IEnumerable<Type> Collect<TService>(IEnumerable<Type> types)
+        {
+            return Collect(typeof(TService), types.ToArray());
+        }
+
+        public IEnumerable<Type> Collect<TService>(Action<IDefinition<Type>> describeTypes)
+        {
+            var typeDefinition = TypeDefinition.Default;
+            describeTypes(typeDefinition);
+            return Collect<TService>(typeDefinition.ToArray());
+        }
+
     }
 }

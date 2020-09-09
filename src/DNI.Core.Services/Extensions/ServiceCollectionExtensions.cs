@@ -101,12 +101,26 @@ namespace DNI.Core.Services.Extensions
             Action<DistributedCacheEntryOptions> configureDistributedCacheEntryOptions = null,
             Action<MessagePack.MessagePackSerializerOptions> configureMessagePackSerializerOptions = null,
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
+            Action<IDefinition<Assembly>> scanAssembliesForGenerators = null,
             Action<Scrutor.ITypeSourceSelector> scannerConfiguration = null)
         {
             
             if(generatorKeyValuePairs != null)
             {
                 services.AddSingleton(generatorKeyValuePairs);
+            }
+            else if (scanAssembliesForGenerators != null)
+            {
+                var generatorKeyValuePairsList = new List<KeyValuePair<string, Type>>();
+                var assemblyDefinitions =  AssemblyDefinition.Default;
+                scanAssembliesForGenerators(assemblyDefinitions);
+                foreach(var serviceType in assemblyDefinitions.CollectServices<IValueGenerator>())
+                {
+                    services.AddSingleton(serviceType);
+                    generatorKeyValuePairsList.Add(KeyValuePair.Create(serviceType.FullName, serviceType));
+                }
+
+                generatorKeyValuePairs = generatorKeyValuePairsList.ToArray();
             }
             
             var messagePackSerializerOptions = MessagePack.MessagePackSerializerOptions.Standard;
@@ -181,6 +195,20 @@ namespace DNI.Core.Services.Extensions
 
         }
 
+        public static IEnumerable<KeyValuePair<string, Type>> ScanAndRegisterGenerators(Type serviceType, IServiceCollection services)
+        {
+            var valueGeneratorConcreteTypes = AssemblyDefinition.Default.Add(Assembly.GetAssembly(serviceType)).CollectServices<IValueGenerator>();
+
+            foreach(var valueGeneratorConcreteType in valueGeneratorConcreteTypes)
+            {
+                services.AddSingleton(valueGeneratorConcreteType);
+            }
+
+            return valueGeneratorConcreteTypes
+                .Select(valueGenerator => new KeyValuePair<string, Type>(valueGenerator.FullName, valueGenerator));
+
+        }
+
         public static IServiceCollection RegisterAutoMapperProviders(
             this IServiceCollection services, 
             Action<IDefinition<Assembly>> obtainAssemblyDefinitions,
@@ -188,7 +216,7 @@ namespace DNI.Core.Services.Extensions
         {
             services.AddSingleton<IMapperProvider, AutoMapperProvider>();
 
-            var assemblyDefinitions = new AssemblyDefinition();
+            var assemblyDefinitions = AssemblyDefinition.Default;
             obtainAssemblyDefinitions(assemblyDefinitions);
 
             if(configureAutomapper != null)
@@ -210,7 +238,7 @@ namespace DNI.Core.Services.Extensions
         {
             services.AddSingleton<IMediatorProvider, MediatrProvider>();
 
-            var assemblyDefinitions = new AssemblyDefinition();
+            var assemblyDefinitions = AssemblyDefinition.Default;
             obtainAssemblyDefinitions(assemblyDefinitions);
             return services.AddMediatR(
                 assemblyDefinitions.Definitions.ToArray(), 

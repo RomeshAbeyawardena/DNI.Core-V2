@@ -11,6 +11,8 @@ namespace DNI.Core.Contracts
     {
         IEnumerable<Type> Collect(Type serviceType, params Type[] serviceTypes);
         IEnumerable<Type> Collect(Type serviceType, params Assembly[] assemblies);
+        IEnumerable<Type> Collect<TService>(IEnumerable<Type> types);
+        IEnumerable<Type> Collect<TService>(Action<IDefinition<Type>> describeTypes);
         IEnumerable<Type> Collect<TService>(params Assembly[] assemblies);
         IEnumerable<Type> Collect<TService>(Action<IDefinition<Assembly>> describeAssemblies);
     }

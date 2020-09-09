@@ -65,7 +65,7 @@ namespace DNI.Core.Services.Handlers
             Action<IDefinition<Type>> exceptionTypes,
             Action finallyBlock = null)
         {
-            var typeDefinitions = new TypeDefinition();
+            var typeDefinitions = TypeDefinition.Default;
             exceptionTypes.Invoke(typeDefinitions);
             return await TryAsync<TParameter, TResult>(parameter, tryBlock, catchBlock, finallyBlock, typeDefinitions.ToArray());
         }
@@ -119,7 +119,7 @@ namespace DNI.Core.Services.Handlers
 
         public void Try(Action tryBlock, Action<Exception> catchBlock, Action<IDefinition<Type>> exceptionTypes, Action finallyBlock = null)
         {
-            var typeDefinition = new TypeDefinition();
+            var typeDefinition = TypeDefinition.Default;
             exceptionTypes(typeDefinition);
 
             Try(tryBlock, catchBlock, finallyBlock, typeDefinition.Definitions.ToArray());
@@ -133,7 +133,7 @@ namespace DNI.Core.Services.Handlers
             Action<IDefinition<Type>> exceptionTypes,
             Action finallyBlock = null)
         {
-            var typeDefinition = new TypeDefinition();
+            var typeDefinition = TypeDefinition.Default;
             exceptionTypes(typeDefinition);
 
             return Try(parameter, tryBlock, catchBlock, finallyBlock, typeDefinition.Definitions.ToArray());
@@ -150,7 +150,7 @@ namespace DNI.Core.Services.Handlers
 
         public async Task TryAsync<TParameter>(TParameter parameter, Func<TParameter, Task> tryBlock, Func<Exception, Task> catchBlock, Action<IDefinition<Type>> exceptionTypes, Action finallyBlock = null)
         {
-            var typeDefinitions = new TypeDefinition();
+            var typeDefinitions = TypeDefinition.Default;
 
             exceptionTypes(typeDefinitions);
 
