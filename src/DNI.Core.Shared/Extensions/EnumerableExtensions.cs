@@ -31,6 +31,14 @@ namespace DNI.Core.Shared.Extensions
             return list[index];
         }
 
+        public static IEnumerable<T> RemoveAt<T>(this IEnumerable<T> values, int index)
+        {
+            var valueList = values.ToList();
+            valueList.RemoveAt(index);
+            return valueList;
+        }
+        
+
         public static void ForEach<T>(this IEnumerable<T> items, Action<T> forEachAction)
         {
             foreach (var item in items)
