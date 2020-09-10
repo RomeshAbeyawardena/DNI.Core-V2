@@ -9,11 +9,13 @@ namespace DNI.Core.Contracts
 {
     public interface IServiceCollector
     {
-        IEnumerable<Type> Collect(Type serviceType, params Type[] serviceTypes);
-        IEnumerable<Type> Collect(Type serviceType, params Assembly[] assemblies);
+        Func<Type, bool> ServiceFilter { get; }
+
+        IEnumerable<Type> Collect(Type serviceType, IEnumerable<Type> serviceTypes);
+        IEnumerable<Type> Collect(Type serviceType, IEnumerable<Assembly> assemblies);
         IEnumerable<Type> Collect<TService>(IEnumerable<Type> types);
         IEnumerable<Type> Collect<TService>(Action<IDefinition<Type>> describeTypes);
-        IEnumerable<Type> Collect<TService>(params Assembly[] assemblies);
+        IEnumerable<Type> Collect<TService>(IEnumerable<Assembly> assemblies);
         IEnumerable<Type> Collect<TService>(Action<IDefinition<Assembly>> describeAssemblies);
     }
 }

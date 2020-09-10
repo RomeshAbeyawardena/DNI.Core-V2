@@ -13,6 +13,18 @@ namespace DNI.Core.Services.Implementations
     {
         public static IServiceCollector Default => new ServiceCollector();
 
+        public ServiceCollector()
+        {
+
+        }
+
+        public ServiceCollector(Func<Type, bool> serviceFilter)
+        {
+            ServiceFilter = serviceFilter;
+        }
+
+        public Func<Type, bool> ServiceFilter { get; }
+
         public IEnumerable<Type> Collect<TService>(Action<IDefinition<Assembly>> describeAssemblies)
         {
             var assemblyDefinition = AssemblyDefinition.Default;
@@ -20,7 +32,7 @@ namespace DNI.Core.Services.Implementations
             return Collect<TService>(assemblyDefinition.Definitions.ToArray());
         }
 
-        public IEnumerable<Type> Collect(Type serviceType, params Assembly[] assemblies)
+        public IEnumerable<Type> Collect(Type serviceType, IEnumerable<Assembly> assemblies)
         {
             var collectedServiceList = new List<Type>();
             foreach(var assembly in assemblies)
@@ -31,7 +43,7 @@ namespace DNI.Core.Services.Implementations
             return collectedServiceList;
         }
 
-        public IEnumerable<Type> Collect<TService>(params Assembly[] assemblies)
+        public IEnumerable<Type> Collect<TService>(IEnumerable<Assembly> assemblies)
         {
             var serviceType = typeof(TService);
 
@@ -43,12 +55,12 @@ namespace DNI.Core.Services.Implementations
             return Collect(serviceType, assemblies);
         }
 
-        public IEnumerable<Type> Collect(Type serviceType, params Type[] serviceTypes)
+        public IEnumerable<Type> Collect(Type serviceType, IEnumerable<Type> serviceTypes)
         {
-            return serviceTypes.Where(type => type.IsAbstract == false
+            return serviceTypes.Where(ServiceFilter ?? (type => type.IsAbstract == false
                 && type.IsClass 
                 && (type.IsAssignableFrom(serviceType)
-                    || type.GetInterfaces().Any(@interface => @interface == serviceType)));
+                    || type.GetInterfaces().Any(@interface => @interface == serviceType))));
         }
 
         public IEnumerable<Type> Collect<TService>(IEnumerable<Type> types)
