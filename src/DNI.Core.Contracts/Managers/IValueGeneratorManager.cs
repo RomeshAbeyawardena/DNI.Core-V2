@@ -1,10 +1,11 @@
-﻿using System;
+﻿using DNI.Core.Contracts.Factories;
+using System;
 using System.Collections.Generic;
 
 namespace DNI.Core.Contracts.Managers
 {
-    public interface IValueGeneratorManager: IReadOnlyDictionary<string, Type>
+    public interface IValueGeneratorManager: IImplementationServiceFactory<string, IValueGenerator>
     {
-        void AppendValueGenerators(IEnumerable<KeyValuePair<string, Type>> valueKeyPairs);
+        
     }
 }

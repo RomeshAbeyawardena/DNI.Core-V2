@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using DNI.Core.Contracts.Factories;
+using System.Collections.Generic;
 
 namespace DNI.Core.Contracts.Managers
 {
-    public interface IEncryptionProfileManager : IReadOnlyDictionary<Shared.Enumerations.EncryptionClassification, IEncryptionProfile>
+    public interface IEncryptionProfileManager : IImplementationFactory<Shared.Enumerations.EncryptionClassification, IEncryptionProfile>
     {
         
     }

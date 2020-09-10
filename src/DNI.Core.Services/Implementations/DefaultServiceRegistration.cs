@@ -17,6 +17,7 @@ using DNI.Core.Services.Implementations.Cache;
 using Microsoft.Extensions.Caching.Distributed;
 using DNI.Core.Services.Builders;
 using System.Reactive.Subjects;
+using DNI.Core.Shared.Extensions;
 
 namespace DNI.Core.Services.Implementations
 {
@@ -42,7 +43,6 @@ namespace DNI.Core.Services.Implementations
             
             var generatorKeyValuePairs = Extensions.ServiceCollectionExtensions.ScanAndRegisterGenerators<RepositoryOptions>(services);
 
-            
             services
                 .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
                 .AddSingleton(TypeCollector.Default)
@@ -57,11 +57,13 @@ namespace DNI.Core.Services.Implementations
                 })
                 .AddSingleton<IValueGeneratorManager>(serviceProvider =>  { 
                     var customValueGenerators = serviceProvider.GetService<IEnumerable<KeyValuePair<string, Type>>>(); 
-                    var valueGeneratorManager = new ValueGeneratorManager(generatorKeyValuePairs); 
+
                     if(customValueGenerators != null)
-                    {
-                        valueGeneratorManager.AppendValueGenerators(customValueGenerators);
+                    { 
+                        generatorKeyValuePairs = generatorKeyValuePairs.Append(customValueGenerators);
                     }
+
+                    var valueGeneratorManager = new ValueGeneratorManager(serviceProvider, generatorKeyValuePairs); 
                     return valueGeneratorManager;
                 })
                 .Scan(scan => scan.FromAssemblyOf<RepositoryOptions>()
