@@ -4,6 +4,7 @@ using DNI.Core.Services.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace DNI.Core.Services.Implementations
         }
 
         private TypeCollector()
+            : this(type => type.IsAbstract == false
+                && type.IsClass)
         {
 
         }
@@ -63,10 +66,14 @@ namespace DNI.Core.Services.Implementations
 
         public IEnumerable<Type> Collect(Type serviceType, IEnumerable<Type> serviceTypes)
         {
-            return serviceTypes.Where(Filter ?? (type => type.IsAbstract == false
-                && type.IsClass 
-                && (type.IsAssignableFrom(serviceType)
-                    || type.GetInterfaces().Any(@interface => @interface == serviceType))));
+            Func<Type, bool> conditionExpression = type => (type.IsAssignableFrom(serviceType)
+                    || type.GetInterfaces().Any(@interface => @interface == serviceType));
+
+            var filter = (Filter == null) 
+                ? conditionExpression 
+                : Delegate.Combine(Filter, conditionExpression) as Func<Type, bool>;
+
+            return serviceTypes.Where(filter);
         }
 
         public IEnumerable<Type> Collect<TService>(IEnumerable<Type> types)
