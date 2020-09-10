@@ -5,13 +5,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNI.Core.Contracts
+namespace DNI.Core.Contracts.Collectors
 {
-    public interface IServiceCollector
+    public interface ITypeCollector : ICollector<Type>
     {
-        Func<Type, bool> ServiceFilter { get; }
-
-        IEnumerable<Type> Collect(Type serviceType, IEnumerable<Type> serviceTypes);
         IEnumerable<Type> Collect(Type serviceType, IEnumerable<Assembly> assemblies);
         IEnumerable<Type> Collect<TService>(IEnumerable<Type> types);
         IEnumerable<Type> Collect<TService>(Action<IDefinition<Type>> describeTypes);

@@ -183,7 +183,7 @@ namespace DNI.Core.Services.Extensions
 
         public static IEnumerable<KeyValuePair<string, Type>> ScanAndRegisterGenerators<T>(IServiceCollection services)
         {
-            var valueGeneratorConcreteTypes = ServiceCollector.Default.Collect<IValueGenerator>(describe => describe.DescribeAssembly<T>());
+            var valueGeneratorConcreteTypes = TypeCollector.Default.Collect<IValueGenerator>(describe => describe.DescribeAssembly<T>());
 
             foreach(var valueGeneratorConcreteType in valueGeneratorConcreteTypes)
             {

@@ -11,7 +11,7 @@ namespace DNI.Core.Services.Extensions
     {
         public static IEnumerable<IServiceRegistration> GetServiceRegistrations(this IServiceBroker serviceBroker)
         {
-            var serviceRegistrationTypes = ServiceCollector.Default.Collect<IServiceRegistration>(serviceBroker.Assemblies.ToArray());
+            var serviceRegistrationTypes = TypeCollector.Default.Collect<IServiceRegistration>(serviceBroker.Assemblies.ToArray());
 
             foreach(var serviceRegistrationType in serviceRegistrationTypes)
             {

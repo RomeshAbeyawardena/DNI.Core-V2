@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Collectors;
 using DNI.Core.Services.Implementations;
 using System;
 using System.Collections.Generic;
@@ -9,34 +10,34 @@ namespace DNI.Core.Services.Extensions
 {
     public static class DefinitionExtensions
     {
-        public static IEnumerable<Type> CollectServices<TService>(this IDefinition<Assembly> descriptor, IServiceCollector serviceCollectorInstance = null)
+        public static IEnumerable<Type> CollectServices<TService>(this IDefinition<Assembly> descriptor, ITypeCollector typeCollectorInstance = null)
         {
             if(descriptor == null)
             {
                 throw new ArgumentNullException(nameof(descriptor));
             }
 
-            if(serviceCollectorInstance == null)
+            if(typeCollectorInstance == null)
             {
-                serviceCollectorInstance = ServiceCollector.Default;
+                typeCollectorInstance = TypeCollector.Default;
             }
 
-            return serviceCollectorInstance.Collect<TService>(descriptor.Definitions.ToArray());
+            return typeCollectorInstance.Collect<TService>(descriptor.Definitions.ToArray());
         }
 
-        public static IEnumerable<Type> CollectServices<TService>(this IDefinition<Type> descriptor, IServiceCollector serviceCollectorInstance = null)
+        public static IEnumerable<Type> CollectServices<TService>(this IDefinition<Type> descriptor, ITypeCollector typeCollectorInstance = null)
         {
             if(descriptor == null)
             {
                 throw new ArgumentNullException(nameof(descriptor));
             }
 
-            if(serviceCollectorInstance == null)
+            if(typeCollectorInstance == null)
             {
-                serviceCollectorInstance = ServiceCollector.Default;
+                typeCollectorInstance = TypeCollector.Default;
             }
 
-            return serviceCollectorInstance.Collect<TService>(descriptor.Definitions.ToArray());
+            return typeCollectorInstance.Collect<TService>(descriptor.Definitions.ToArray());
         }
 
         public static IDefinition<Type> DescribeType<T>(this IDefinition<Type> descriptor)

@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Collectors;
 using DNI.Core.Services.Definitions;
 using System;
 using System.Collections.Generic;
@@ -9,21 +10,26 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations
 {
-    public class ServiceCollector : IServiceCollector
+    public sealed class TypeCollector : ITypeCollector
     {
-        public static IServiceCollector Default => new ServiceCollector();
+        public static ITypeCollector Default => new TypeCollector();
 
-        public ServiceCollector()
+        public static ITypeCollector Create(Func<Type, bool> serviceFilter)
+        {
+            return new TypeCollector(serviceFilter);
+        }
+
+        private TypeCollector()
         {
 
         }
 
-        public ServiceCollector(Func<Type, bool> serviceFilter)
+        private TypeCollector(Func<Type, bool> serviceFilter)
         {
-            ServiceFilter = serviceFilter;
+            Filter = serviceFilter;
         }
 
-        public Func<Type, bool> ServiceFilter { get; }
+        public Func<Type, bool> Filter { get; }
 
         public IEnumerable<Type> Collect<TService>(Action<IDefinition<Assembly>> describeAssemblies)
         {
@@ -57,7 +63,7 @@ namespace DNI.Core.Services.Implementations
 
         public IEnumerable<Type> Collect(Type serviceType, IEnumerable<Type> serviceTypes)
         {
-            return serviceTypes.Where(ServiceFilter ?? (type => type.IsAbstract == false
+            return serviceTypes.Where(Filter ?? (type => type.IsAbstract == false
                 && type.IsClass 
                 && (type.IsAssignableFrom(serviceType)
                     || type.GetInterfaces().Any(@interface => @interface == serviceType))));
