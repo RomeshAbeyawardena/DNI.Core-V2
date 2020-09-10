@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DNI.Core.Contracts
+namespace DNI.Core.Contracts.ApplicationSettings
 {
     public interface IConsoleApplicationSettings
     {
