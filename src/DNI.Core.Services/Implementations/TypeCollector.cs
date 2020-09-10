@@ -1,6 +1,8 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Collectors;
 using DNI.Core.Services.Definitions;
+using DNI.Core.Services.Extensions;
+using DNI.Core.Shared.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,12 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Implementations
 {
-    public sealed class TypeCollector : ITypeCollector
+    [IgnoreScanning]
+    public class TypeCollector : ITypeCollector
     {
         public static ITypeCollector Default => new TypeCollector();
 
-        public static ITypeCollector Create(Func<Type, bool> serviceFilter)
+        public static ITypeCollector Create(Expression<Func<Type, bool>> serviceFilter)
         {
             return new TypeCollector(serviceFilter);
         }
@@ -27,12 +30,12 @@ namespace DNI.Core.Services.Implementations
 
         }
 
-        private TypeCollector(Func<Type, bool> serviceFilter)
+        private TypeCollector(Expression<Func<Type, bool>> serviceFilter)
         {
             Filter = serviceFilter;
         }
 
-        public Func<Type, bool> Filter { get; }
+        public Expression<Func<Type, bool>> Filter { get; }
 
         public IEnumerable<Type> Collect<TService>(Action<IDefinition<Assembly>> describeAssemblies)
         {
@@ -66,12 +69,12 @@ namespace DNI.Core.Services.Implementations
 
         public IEnumerable<Type> Collect(Type serviceType, IEnumerable<Type> serviceTypes)
         {
-            Func<Type, bool> conditionExpression = type => (type.IsAssignableFrom(serviceType)
+            Expression<Func<Type, bool>> conditionExpression = type => (type.IsAssignableFrom(serviceType)
                     || type.GetInterfaces().Any(@interface => @interface == serviceType));
 
             var filter = (Filter == null) 
-                ? conditionExpression 
-                : Delegate.Combine(Filter, conditionExpression) as Func<Type, bool>;
+                ? conditionExpression.Compile()
+                : Filter.Combine(conditionExpression);
 
             return serviceTypes.Where(filter);
         }

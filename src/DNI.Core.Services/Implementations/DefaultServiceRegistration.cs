@@ -45,6 +45,7 @@ namespace DNI.Core.Services.Implementations
             
             services
                 .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
+                .AddSingleton(TypeCollector.Default)
                 .AddSingleton<RecyclableMemoryStreamManager>()
                 .AddSingleton<DistributedCacheService>()
                 .AddSingleton<ISecurityTokenValidator>(new JwtSecurityTokenHandler())
