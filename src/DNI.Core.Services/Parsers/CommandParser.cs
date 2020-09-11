@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace DNI.Core.Services.Parsers
 {
+    [IgnoreScanning]
     public class CommandParser<TApplicationSettings> : ICommandParser
         where TApplicationSettings : IConsoleApplicationSettings
     {

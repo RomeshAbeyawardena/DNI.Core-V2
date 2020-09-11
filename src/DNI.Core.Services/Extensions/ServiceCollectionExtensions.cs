@@ -24,6 +24,7 @@ using DNI.Core.Services.Implementations.Cache;
 using DNI.Core.Services.Parsers;
 using DNI.Core.Contracts.ApplicationSettings;
 using DNI.Core.Contracts.Parser;
+using DNI.Core.Domains;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -174,9 +175,17 @@ namespace DNI.Core.Services.Extensions
             return services;
         }
 
-        public static IServiceCollection RegisterCommandParser<TApplicationSettings>(this IServiceCollection services)
+        public static IServiceCollection RegisterCommandParser<TApplicationSettings>(this IServiceCollection services, 
+            IInputParserOptions inputParserOptions = default)
             where TApplicationSettings : IConsoleApplicationSettings
         {
+            services
+                .TryAddSingleton(inputParserOptions == null 
+                ? InputParserOptions.Default 
+                : inputParserOptions);
+            
+            services.TryAddSingleton<IInputParser, InputParser>();
+
             services
                 .TryAddSingleton<ICommandParser, CommandParser<TApplicationSettings>>();
 
