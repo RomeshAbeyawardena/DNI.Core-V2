@@ -1,11 +1,12 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Parser;
 using DNI.Core.Domains;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DNI.Core.Services.Parsers
 {
-    public class InputParser
+    public class InputParser : IInputParser
     {
         public InputParser(IInputParserOptions inputParserOptions)
         {

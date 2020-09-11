@@ -177,7 +177,8 @@ namespace DNI.Core.Services.Extensions
         public static IServiceCollection RegisterCommandParser<TApplicationSettings>(this IServiceCollection services)
             where TApplicationSettings : IConsoleApplicationSettings
         {
-            services.TryAddSingleton<ICommandParser, CommandParser<TApplicationSettings>>();
+            services
+                .TryAddSingleton<ICommandParser, CommandParser<TApplicationSettings>>();
 
             return services;
         }
