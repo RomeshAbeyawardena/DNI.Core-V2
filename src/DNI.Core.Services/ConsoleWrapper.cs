@@ -92,6 +92,26 @@ namespace DNI.Core.Services
             return loggerFactory.GetOrCreateLogger<TCategory>();
         }
 
+        public string ReadLine()
+        {
+            return Console.ReadLine();
+        }
+
+        public ConsoleKeyInfo ReadKey(bool intercept)
+        {
+            return Console.ReadKey(intercept);
+        }
+
+        public Task<ConsoleKeyInfo> ReadKeyAsync(bool intercept)
+        {
+            return Task.FromResult(ReadKey(intercept));
+        }
+
+        public Task<string> ReadLineAsync()
+        {
+            return Task.FromResult(ReadLine());
+        }
+
         private readonly StringBuilder writingPoolStringBuilder;
         private readonly ILoggerCacheFactory loggerFactory;
     }
