@@ -51,7 +51,7 @@ namespace DNI.Core.Services.Abstractions
             return dictionary.TryGetValue(key, out value);
         }
 
-        private readonly ConcurrentDictionary<TKey, TValue> dictionary;
+        protected readonly ConcurrentDictionary<TKey, TValue> dictionary;
         
     }
 
@@ -79,6 +79,6 @@ namespace DNI.Core.Services.Abstractions
         }
 
 
-        private readonly IServiceProvider serviceProvider;
+        protected readonly IServiceProvider serviceProvider;
     }
 }
