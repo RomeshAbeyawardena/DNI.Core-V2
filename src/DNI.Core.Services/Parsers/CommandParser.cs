@@ -4,11 +4,8 @@ using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Parser;
 using DNI.Core.Domains;
 using DNI.Core.Shared.Extensions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Parsers
 {

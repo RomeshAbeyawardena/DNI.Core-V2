@@ -1,8 +1,6 @@
 ﻿using DNI.Core.Contracts.Factories;
 using DNI.Core.Contracts.Services;
 using DNI.Core.Shared.Enumerations;
-using System;
-using System.Collections.Generic;
 
 namespace DNI.Core.Contracts.Managers
 {

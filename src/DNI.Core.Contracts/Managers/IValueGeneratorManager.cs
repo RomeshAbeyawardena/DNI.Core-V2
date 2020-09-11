@@ -1,6 +1,4 @@
 ﻿using DNI.Core.Contracts.Factories;
-using System;
-using System.Collections.Generic;
 
 namespace DNI.Core.Contracts.Managers
 {

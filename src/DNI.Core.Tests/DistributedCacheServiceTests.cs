@@ -7,11 +7,7 @@ using Moq;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-
-using DNI.Core.Shared.Extensions;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
