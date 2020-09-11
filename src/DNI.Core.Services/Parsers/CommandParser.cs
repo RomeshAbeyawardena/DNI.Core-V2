@@ -3,6 +3,7 @@ using DNI.Core.Contracts.ApplicationSettings;
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Parser;
 using DNI.Core.Domains;
+using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace DNI.Core.Services.Parsers
     public class CommandParser<TApplicationSettings> : ICommandParser
         where TApplicationSettings : IConsoleApplicationSettings
     {
+
         public CommandParser(TApplicationSettings applicationSettings, IInputParser inputParser, ICommandManager commandManager)
         {
             this.applicationSettings = applicationSettings;

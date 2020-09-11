@@ -21,6 +21,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using DNI.Core.Services.Implementations.Cache;
+using DNI.Core.Services.Parsers;
+using DNI.Core.Contracts.ApplicationSettings;
+using DNI.Core.Contracts.Parser;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -167,6 +170,14 @@ namespace DNI.Core.Services.Extensions
                     Debug.WriteLine("{0}: {1}", service.ServiceType.Name, service.ImplementationType.Name);
                 }
             }
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterCommandParser<TApplicationSettings>(this IServiceCollection services)
+            where TApplicationSettings : IConsoleApplicationSettings
+        {
+            services.TryAddSingleton<ICommandParser, CommandParser<TApplicationSettings>>();
 
             return services;
         }
