@@ -16,42 +16,42 @@ namespace DNI.Core.Services.Abstractions
         {
             if(dictionaryProvider != null)
             {
-                dictionary = new ConcurrentDictionary<TKey, TValue>(dictionaryProvider);
+                Dictionary = new ConcurrentDictionary<TKey, TValue>(dictionaryProvider);
                 return;
             }
 
-            dictionary = new ConcurrentDictionary<TKey, TValue>();
+            Dictionary = new ConcurrentDictionary<TKey, TValue>();
         }
 
-        TValue IReadOnlyDictionary<TKey, TValue>.this[TKey key] => dictionary[key];
+        TValue IReadOnlyDictionary<TKey, TValue>.this[TKey key] => Dictionary[key];
 
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Dictionary.Keys;
 
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Dictionary.Values;
 
-        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => dictionary.Count;
+        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => Dictionary.Count;
 
         bool IReadOnlyDictionary<TKey, TValue>.ContainsKey(TKey key)
         {
-            return dictionary.ContainsKey(key);
+            return Dictionary.ContainsKey(key);
         }
 
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            return dictionary.GetEnumerator();
+            return Dictionary.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return dictionary.GetEnumerator();
+            return Dictionary.GetEnumerator();
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        bool IReadOnlyDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
-            return dictionary.TryGetValue(key, out value);
+            return Dictionary.TryGetValue(key, out value);
         }
 
-        protected readonly ConcurrentDictionary<TKey, TValue> dictionary;
+        protected ConcurrentDictionary<TKey, TValue> Dictionary { get; }
         
     }
 
@@ -62,16 +62,15 @@ namespace DNI.Core.Services.Abstractions
             IEnumerable<KeyValuePair<TKey, Type>> dictionaryProvider)
             : base(dictionaryProvider)
         {
-            this.serviceProvider = serviceProvider;
+            ServiceProvider = serviceProvider;
         }
-        
         
         public bool TryGetImplementation(TKey key, out TGenericImplementation implementation)
         {
             implementation = default;
-            if(TryGetValue(key, out var serviceType))
+            if(Dictionary.TryGetValue(key, out var serviceType))
             {
-                implementation = (TGenericImplementation) serviceProvider.GetService(serviceType);
+                implementation = (TGenericImplementation) ServiceProvider.GetService(serviceType);
                 return true;
             }
 
@@ -79,6 +78,6 @@ namespace DNI.Core.Services.Abstractions
         }
 
 
-        protected readonly IServiceProvider serviceProvider;
+        protected IServiceProvider ServiceProvider { get; }
     }
 }

@@ -21,12 +21,12 @@ namespace DNI.Core.Services.Implementations.Factories
         {
             var categoryType = typeof(TCategory);
 
-            if(TryGetValue(categoryType, out var logger))
+            if(Dictionary.TryGetValue(categoryType, out var logger))
             {
                 return (ILogger<TCategory>) logger;
             }
 
-            if(dictionary.TryAdd(categoryType, loggerFactory.CreateLogger<TCategory>()))
+            if(Dictionary.TryAdd(categoryType, loggerFactory.CreateLogger<TCategory>()))
             {
                 return GetOrCreateLogger<TCategory>();
             }
