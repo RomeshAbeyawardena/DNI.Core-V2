@@ -72,6 +72,23 @@ namespace DNI.Core.Services
             WriteLine<TCategory>(format, logToConsole, logLevel, args);
             return Task.CompletedTask;
         }
+        
+        public Task<string> ReadSecureStringAsync(bool interceptKeyPresses)
+        {
+            var stringBuilder = new StringBuilder();
+            ConsoleKeyInfo currentKey;
+
+            while((currentKey = Console.ReadKey(interceptKeyPresses)).Key != ConsoleKey.Enter)
+            {
+                if(currentKey.Key == ConsoleKey.Backspace)
+                {
+                    stringBuilder.Remove(stringBuilder.Length - 1, 1);
+                }
+                stringBuilder.Append(currentKey.KeyChar);
+            }
+
+            return Task.FromResult(stringBuilder.ToString());
+        }
 
         private ILogger<TCategory> GetLogger<TCategory>()
         {

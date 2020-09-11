@@ -19,7 +19,7 @@ namespace DNI.Core.Contracts
     {
         void Write(string format, params object[] args);
         void WriteLine<TCategory>(string format, bool logToConsole = false, LogLevel logLevel = default, params object[] args);
-
+        Task<string> ReadSecureStringAsync(bool interceptKeyPresses);
         Task WriteAsync<TCategory>(string format, params object[] args);
         Task WriteLineAsync<TCategory>(string format, bool logToConsole = false, LogLevel logLevel = default, params object[] args);
     }
