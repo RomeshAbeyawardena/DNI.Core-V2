@@ -26,9 +26,11 @@ namespace DNI.Core.Tests
         {
             memoryStreamProviderMock = new Mock<IMemoryStreamProvider>();
             distributedCacheMock = new Mock<IDistributedCache>();
+            jsonStreamSerializerProviderMock = new Mock<IJsonStreamSerializerProvider>();
+
             distributedCacheService = new DistributedCacheService(memoryStreamProviderMock.Object,
-                new ExceptionHandler(), distributedCacheMock.Object, DistributedCacheEntryOptions, 
-                new JsonSerializerOptions(), MessagePackSerializerOptions.Standard);
+                new ExceptionHandler(), distributedCacheMock.Object, jsonStreamSerializerProviderMock.Object, 
+                DistributedCacheEntryOptions, MessagePackSerializerOptions.Standard);
         }
 
         [Test]
@@ -103,6 +105,7 @@ namespace DNI.Core.Tests
             }
         }
 
+        private Mock<IJsonStreamSerializerProvider> jsonStreamSerializerProviderMock;
         private Mock<IMemoryStreamProvider> memoryStreamProviderMock;
         private Mock<IDistributedCache> distributedCacheMock;
         private DistributedCacheService distributedCacheService;

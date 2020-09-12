@@ -20,10 +20,10 @@ namespace DNI.Core.Services.Implementations.Cache
             IMemoryStreamProvider memoryStreamProvider,
             IExceptionHandler exceptionHandler,
             IDistributedCache distributedCache,
+            IJsonStreamSerializerProvider jsonStreamSerializerProvider,
             DistributedCacheEntryOptions distributedCacheEntryOptions,
-            JsonSerializerOptions jsonSerializerOptions,
             MessagePackSerializerOptions messagePackSerializerOptions)
-            : base(memoryStreamProvider, jsonSerializerOptions, messagePackSerializerOptions)
+            : base(memoryStreamProvider, jsonStreamSerializerProvider, messagePackSerializerOptions)
         {
             this.exceptionHandler = exceptionHandler;
             this.distributedCache = distributedCache;

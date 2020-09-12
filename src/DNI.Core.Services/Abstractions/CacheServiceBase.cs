@@ -2,7 +2,8 @@
 using DNI.Core.Contracts.Services;
 using MessagePack;
 using System.Collections.Generic;
-using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,11 +12,11 @@ namespace DNI.Core.Services.Abstractions
     public abstract class CacheServiceBase : ICacheService
     {
         protected CacheServiceBase(IMemoryStreamProvider memoryStreamProvider,
-            JsonSerializerOptions jsonSerializerOptions,
+            IJsonStreamSerializerProvider jsonStreamSerializerProvider,
             MessagePackSerializerOptions messagePackSerializerOptions)
         {
             this.memoryStreamProvider = memoryStreamProvider;
-            this.jsonSerializerOptions = jsonSerializerOptions;
+            this.jsonStreamSerializerProvider = jsonStreamSerializerProvider;
             this.messagePackSerializerOptions = messagePackSerializerOptions;
         }
 
@@ -37,7 +38,7 @@ namespace DNI.Core.Services.Abstractions
                 }
                 else
                 { 
-                    await JsonSerializer.SerializeAsync(messageStream, value, jsonSerializerOptions);
+                    await jsonStreamSerializerProvider.SerializeStreamAsync(messageStream, value);
                 }
 
                 return messageStream.ToArray();
@@ -54,14 +55,14 @@ namespace DNI.Core.Services.Abstractions
                 }
                 else
                 {
-                    return await JsonSerializer.DeserializeAsync<T>(memoryStream, jsonSerializerOptions, cancellationToken);
+                    return await jsonStreamSerializerProvider.DeserializeStreamAsync<T>(memoryStream);
                 }
 
             }
         }
 
         private readonly IMemoryStreamProvider memoryStreamProvider;
-        private readonly JsonSerializerOptions jsonSerializerOptions;
+        private readonly IJsonStreamSerializerProvider jsonStreamSerializerProvider;
         private readonly MessagePackSerializerOptions messagePackSerializerOptions;
     }
 }

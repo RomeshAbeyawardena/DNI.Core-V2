@@ -26,6 +26,7 @@ using DNI.Core.Contracts.ApplicationSettings;
 using DNI.Core.Contracts.Parser;
 using DNI.Core.Domains;
 using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace DNI.Core.Services.Extensions
 {
@@ -104,7 +105,7 @@ namespace DNI.Core.Services.Extensions
             Action<IServiceProvider, IEncryptionProfileDictionaryBuilder> buildSecurityProfiles = null,
             Action<MemoryDistributedCacheOptions> configureDistrubutedCacheOptions = null,
             Action<DistributedCacheEntryOptions> configureDistributedCacheEntryOptions = null,
-            Action<JsonSerializerOptions> configureJsonSerializerOptions = null,
+            Action<JsonSerializerSettings> configureJsonSerializerOptions = null,
             Action<MessagePack.MessagePackSerializerOptions> configureMessagePackSerializerOptions = null,
             IEnumerable<KeyValuePair<string, Type>> generatorKeyValuePairs = null,
             Action<IDefinition<Assembly>> scanAssembliesForGenerators = null,
@@ -129,7 +130,7 @@ namespace DNI.Core.Services.Extensions
                 generatorKeyValuePairs = generatorKeyValuePairsList.ToArray();
             }
             
-            var jsonSerializerOptions = new JsonSerializerOptions();
+            var jsonSerializerOptions = new JsonSerializerSettings();
 
             configureJsonSerializerOptions?.Invoke(jsonSerializerOptions);
 

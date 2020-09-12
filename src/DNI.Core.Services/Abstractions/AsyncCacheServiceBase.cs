@@ -12,9 +12,11 @@ namespace DNI.Core.Services.Abstractions
     public abstract class AsyncCacheServiceBase : CacheServiceBase, IAsyncCacheService
     {
         protected AsyncCacheServiceBase(IMemoryStreamProvider memoryStreamProvider,
-            JsonSerializerOptions jsonSerializerOptions,
+            IJsonStreamSerializerProvider jsonStreamSerializerProvider,
             MessagePackSerializerOptions messagePackSerializerOptions) 
-            : base(memoryStreamProvider, jsonSerializerOptions, messagePackSerializerOptions)
+            : base(memoryStreamProvider, 
+                  jsonStreamSerializerProvider,
+                  messagePackSerializerOptions)
         {
         }
 

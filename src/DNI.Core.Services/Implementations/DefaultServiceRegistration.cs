@@ -16,6 +16,7 @@ using DNI.Core.Services.Implementations.Cache;
 using DNI.Core.Services.Builders;
 using System.Reactive.Subjects;
 using DNI.Core.Shared.Extensions;
+using Newtonsoft.Json;
 
 namespace DNI.Core.Services.Implementations
 {
@@ -43,6 +44,13 @@ namespace DNI.Core.Services.Implementations
 
             services
                 .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
+                .AddSingleton(serviceProvider => { 
+                    var jsonSerializerSettings = serviceProvider.GetService<JsonSerializerSettings>();
+                    if(jsonSerializerSettings == null)
+                        return JsonSerializer.CreateDefault();
+                    
+                    return JsonSerializer.Create(jsonSerializerSettings);
+                })
                 .AddSingleton(TypeCollector.Default)
                 .AddSingleton<RecyclableMemoryStreamManager>()
                 .AddSingleton<DistributedCacheService>()
