@@ -7,6 +7,7 @@ using MessagePack;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,15 +21,16 @@ namespace DNI.Core.Services.Implementations.Cache
             IExceptionHandler exceptionHandler,
             IDistributedCache distributedCache,
             DistributedCacheEntryOptions distributedCacheEntryOptions,
+            JsonSerializerOptions jsonSerializerOptions,
             MessagePackSerializerOptions messagePackSerializerOptions)
-            : base(memoryStreamProvider, messagePackSerializerOptions)
+            : base(memoryStreamProvider, jsonSerializerOptions, messagePackSerializerOptions)
         {
             this.exceptionHandler = exceptionHandler;
             this.distributedCache = distributedCache;
             this.distributedCacheEntryOptions = distributedCacheEntryOptions;
         }
 
-        public override async Task<IAttempt<T>> GetAsync<T>(string key, CancellationToken cancellationToken)
+        public override async Task<IAttempt<T>> GetAsync<T>(string key, CancellationToken cancellationToken, bool useMessagePack = true)
         {
             return await exceptionHandler.TryAsync(key, async (key) =>
             {
@@ -37,14 +39,14 @@ namespace DNI.Core.Services.Implementations.Cache
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                var value = await distributedCache.GetAsync(key);
+                var value = await distributedCache.GetAsync(key, cancellationToken);
 
-                if (value == null || value.Length < 0)
+                if (value == null || value.Length < 1)
                 {
                     throw new NullReferenceException($"Cache value for '{key}' not available");
                 }
 
-                return CreateAttempt(await DeserializeAsync<T>(value, cancellationToken));
+                return CreateAttempt(await DeserializeAsync<T>(value, cancellationToken, useMessagePack));
             }, (exception) =>
             {
                 var attempt = CreateAttempt<T>(exception);
@@ -54,7 +56,7 @@ namespace DNI.Core.Services.Implementations.Cache
                .DescribeType<MessagePackSerializationException>());
         }
 
-        public override async Task<IAttempt<T>> SetAsync<T>(string key, T value, CancellationToken cancellationToken)
+        public override async Task<IAttempt<T>> SetAsync<T>(string key, T value, CancellationToken cancellationToken, bool useMessagePack = true)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -68,7 +70,7 @@ namespace DNI.Core.Services.Implementations.Cache
 
             return await exceptionHandler.TryAsync(key, async (key) =>
             {
-                var serializedValue = await SerializeAsync(value, cancellationToken);
+                var serializedValue = await SerializeAsync(value, cancellationToken, useMessagePack);
                 await distributedCache.SetAsync(key, serializedValue.ToArray(), distributedCacheEntryOptions, cancellationToken);
                 return CreateAttempt(value);
             }, exception => Task.FromResult(CreateAttempt<T>(exception)), exceptionTypes => exceptionTypes.DescribeType<NullReferenceException>()

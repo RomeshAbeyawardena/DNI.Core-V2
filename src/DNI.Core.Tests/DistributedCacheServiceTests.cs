@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace DNI.Core.Tests
 {
@@ -26,7 +27,8 @@ namespace DNI.Core.Tests
             memoryStreamProviderMock = new Mock<IMemoryStreamProvider>();
             distributedCacheMock = new Mock<IDistributedCache>();
             distributedCacheService = new DistributedCacheService(memoryStreamProviderMock.Object,
-                new ExceptionHandler(), distributedCacheMock.Object, DistributedCacheEntryOptions, MessagePackSerializerOptions.Standard);
+                new ExceptionHandler(), distributedCacheMock.Object, DistributedCacheEntryOptions, 
+                new JsonSerializerOptions(), MessagePackSerializerOptions.Standard);
         }
 
         [Test]
