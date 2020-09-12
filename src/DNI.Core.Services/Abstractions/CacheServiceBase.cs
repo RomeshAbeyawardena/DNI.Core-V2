@@ -38,7 +38,7 @@ namespace DNI.Core.Services.Abstractions
                 }
                 else
                 { 
-                    await jsonStreamSerializerProvider.SerializeStreamAsync(messageStream, value);
+                    await jsonStreamSerializerProvider.SerializeStreamAsync(messageStream, value, cancellationToken);
                 }
 
                 return messageStream.ToArray();
@@ -55,7 +55,7 @@ namespace DNI.Core.Services.Abstractions
                 }
                 else
                 {
-                    return await jsonStreamSerializerProvider.DeserializeStreamAsync<T>(memoryStream);
+                    return await jsonStreamSerializerProvider.DeserializeStreamAsync<T>(memoryStream, cancellationToken);
                 }
 
             }

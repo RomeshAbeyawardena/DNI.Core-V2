@@ -15,7 +15,7 @@ using System.Text.Json;
 namespace DNI.Core.Tests
 {
     [TestFixture]
-    public class DistributedCacheServiceTests
+    public partial class DistributedCacheServiceTests
     {
         private DistributedCacheEntryOptions DistributedCacheEntryOptions => new DistributedCacheEntryOptions { 
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15) 
@@ -74,35 +74,6 @@ namespace DNI.Core.Tests
             Assert.IsNotNull(attempt.Result);
 
             Assert.AreEqual(expectedUser, attempt.Result);
-        }
-
-        [MessagePackObject(true)]
-        public class User
-        {
-            public int Id { get; set; }
-            public string EmailAddress { get; set; }
-            public string Surname { get; set; }
-
-            public override bool Equals(object obj)
-            {
-                if(obj is User user)
-                {
-                    return Equals(user);
-                }
-                return base.Equals(obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(Id, EmailAddress, Surname);
-            }
-
-            private bool Equals(User user)
-            {
-                return user.EmailAddress.Equals(EmailAddress)
-                    && user.Id == Id
-                    && user.Surname.Equals(Surname);
-            }
         }
 
         private Mock<IJsonStreamSerializerProvider> jsonStreamSerializerProviderMock;

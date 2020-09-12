@@ -6,30 +6,53 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DNI.Core.Services.Providers
 {
-    public class JsonStreamSerializerProvider : IJsonStreamSerializerProvider
+    public sealed class JsonStreamSerializerProvider : IJsonStreamSerializerProvider
     {
         public JsonStreamSerializerProvider(JsonSerializer jsonSerializer)
         {
             this.jsonSerializer = jsonSerializer;
         }
 
-        public Task<T> DeserializeStreamAsync<T>(Stream stream)
+        public Task<T> DeserializeStreamAsync<T>(Stream stream, CancellationToken cancellationToken)
         {
-            var dataReader = new BsonDataReader(stream);
-            return Task.FromResult(jsonSerializer.Deserialize<T>(dataReader));
+            streamReader = new StreamReader(stream);
+            jsonTextReader = new JsonTextReader(streamReader);
+            return Task.FromResult(jsonSerializer.Deserialize<T>(jsonTextReader));
         }
 
-        public Task SerializeStreamAsync<T>(Stream stream, T value)
+        public async Task SerializeStreamAsync<T>(Stream stream, T value, CancellationToken cancellationToken)
         {
-            var dataWriter = new BsonDataWriter(stream);
-            jsonSerializer.Serialize(dataWriter, value);
-            return Task.CompletedTask;
+            streamWriter = new StreamWriter(stream);
+            jsonSerializer.Serialize(streamWriter, value);
+            await streamWriter.FlushAsync();
+        }
+
+        public void Dispose()
+        {
+            streamWriter?.Dispose();
+            streamReader?.DiscardBufferedData();
+            streamReader?.Dispose();
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if(streamWriter != null)
+            { 
+                await streamWriter.DisposeAsync();
+            }
+
+            Dispose();
         }
 
         private readonly JsonSerializer jsonSerializer;
+        private StreamReader streamReader;
+        private JsonTextReader jsonTextReader;
+        private StreamWriter streamWriter;
     }
+
 }

@@ -1,10 +1,10 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Contracts.Providers;
-using DNI.Core.Shared.Extensions;
 using DNI.Core.Services.Extensions;
 using DNI.Core.Services.Implementations.Generators;
 using DNI.Core.Shared.Enumerations;
+using DNI.Core.Shared.Extensions;
 using DNI.Core.Tests.Generators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,7 +77,7 @@ namespace DNI.Core.Tests
             SetUp();
 
             Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, 
-                (serviceProvider, builder) => builder.Add(EncryptionClassification.Personal, encryptionProfileBuilder));
+                (serviceProvider, builder) => builder.Add(EncryptionClassification.Personal, EncryptionProfileBuilder));
             serviceProvider = services.BuildServiceProvider();
 
              encryptionProfileManager = serviceProvider.GetService<IEncryptionProfileManager>();
@@ -87,7 +87,7 @@ namespace DNI.Core.Tests
             Assert.IsNotNull(actualEncryptionProfile);
         }
 
-        private IEncryptionProfile encryptionProfileBuilder(IEncryptionProfile encryptionProfile)
+        private IEncryptionProfile EncryptionProfileBuilder(IEncryptionProfile encryptionProfile)
         {
             encryptionProfile.Key = Array.Empty<byte>();
             return encryptionProfile;
@@ -105,7 +105,7 @@ namespace DNI.Core.Tests
         [Test]
         public void RegisterAutoMapperProviders()
         {
-            Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, (serviceProvider, builder) => builder.Add(EncryptionClassification.Personal, encryptionProfileBuilder));
+            Services.Extensions.ServiceCollectionExtensions.RegisterServices(services, (serviceProvider, builder) => builder.Add(EncryptionClassification.Personal, EncryptionProfileBuilder));
 
             Services.Extensions.ServiceCollectionExtensions
                     .RegisterAutoMapperProviders(services, assembly => assembly.DescribeAssembly<ServiceCollectionExtensionTests
