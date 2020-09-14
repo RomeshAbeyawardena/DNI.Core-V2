@@ -1,13 +1,6 @@
-﻿using DNI.Core.Contracts;
-using DNI.Core.Contracts.Managers;
-using Microsoft.Extensions.DependencyInjection;
+﻿using DNI.Core.Contracts.Managers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Domains
 {

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using DNI.Core.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace TestWebApp
 {
@@ -15,6 +17,10 @@ namespace TestWebApp
             services
                 .AddSingleton<ApplicationSettings>()
                 .RegisterServiceBroker<AppServiceBroker>()
+                .AddLogging(loggerBuilder => loggerBuilder
+                .AddConsole()
+                .AddDatabase<SiteDbContext>(options => options
+                    .ConfigureDatabaseLogManagers<DatabaseLogManager>()))
                 .AddControllers();
 
         }

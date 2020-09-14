@@ -1,14 +1,7 @@
 ﻿using DNI.Core.Domains;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using DNI.Core.Services.Extensions;
 using DNI.Core.Contracts.Managers;
 
 namespace DNI.Core.Extensions
@@ -22,29 +15,18 @@ namespace DNI.Core.Extensions
 
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            PrepareServices(rootServiceProvider);
             DatabaseLogManager.Log(DatabaseLogManager
                 .Convert<TCategoryName, TState>(logLevel, eventId, state, exception, formatter));
         }
     }
 
-    public class DatabaseLogger : ILogger
+    public class DatabaseLogger : ILogger, IDisposable
     {
         public DatabaseLogger(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
         {
-            var databaseLogManagerType = typeof(IDatabaseLogManager<>);
-            var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
-
-            var genericDatabaseLogManagerType = databaseLogManagerType.MakeGenericType(databaseLoggerOptions.LogTableType);
-
-            var genericDatabaseLogStatusManagerType = 
-                databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.LogStatusTableType);
-
-            var service1 =  serviceProvider.GetService(genericDatabaseLogManagerType);
-            var service2 = serviceProvider.GetService(genericDatabaseLogStatusManagerType);
-
-            DatabaseLogManager = service1 as IDatabaseLogManager;
-            databaseLogStatusManager = service2 as IDatabaseLogStatusManager;
-            
+            this.rootServiceProvider = serviceProvider;
+            this.databaseLoggerOptions = databaseLoggerOptions;
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -54,9 +36,10 @@ namespace DNI.Core.Extensions
 
         public bool IsEnabled(LogLevel logLevel)
         {
+            PrepareServices(rootServiceProvider);
             if(databaseLogStatusManager == null)
             {
-                return true;
+                return false;
             }
 
             return databaseLogStatusManager.IsEnabled(logLevel);
@@ -64,6 +47,7 @@ namespace DNI.Core.Extensions
 
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
+            PrepareServices(rootServiceProvider);
             if(DatabaseLogManager == null)
             { 
                 return;
@@ -73,9 +57,42 @@ namespace DNI.Core.Extensions
                 DatabaseLogManager.Convert(logLevel, eventId, state, exception, formatter));
         }
 
+        
+        internal void PrepareServices(IServiceProvider serviceProvider)
+        {
+            scopedServiceProvider = serviceProvider.CreateScope();
+            var databaseLogManagerType = typeof(IDatabaseLogManager<>);
+            var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
 
-        protected IDatabaseLogManager DatabaseLogManager { get; }
+            var genericDatabaseLogManagerType = databaseLogManagerType.MakeGenericType(databaseLoggerOptions.LogTableType);
 
-        private readonly IDatabaseLogStatusManager databaseLogStatusManager;
+            DatabaseLogManager =  ServiceProvider.GetService(genericDatabaseLogManagerType) as IDatabaseLogManager;
+            
+            if(databaseLoggerOptions.LogStatusTableType != null)
+            { 
+                var genericDatabaseLogStatusManagerType = 
+                    databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.LogStatusTableType);
+
+                databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool gc)
+        {
+            scopedServiceProvider.Dispose();
+        }
+
+        protected IDatabaseLogManager DatabaseLogManager { get; private set; }
+        protected IServiceProvider ServiceProvider => scopedServiceProvider.ServiceProvider;
+        private IDatabaseLogStatusManager databaseLogStatusManager;
+        private IServiceScope scopedServiceProvider;
+        internal readonly IServiceProvider rootServiceProvider;
+        private readonly DatabaseLoggerOptions databaseLoggerOptions;
     }
 }

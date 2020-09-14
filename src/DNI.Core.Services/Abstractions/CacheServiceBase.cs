@@ -2,8 +2,6 @@
 using DNI.Core.Contracts.Services;
 using MessagePack;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using System.Threading;
 using System.Threading.Tasks;
 

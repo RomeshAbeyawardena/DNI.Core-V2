@@ -1,13 +1,10 @@
-﻿using DNI.Core.Contracts.Providers;
-using DNI.Core.Services.Providers;
-using Moq;
+﻿using DNI.Core.Services.Providers;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

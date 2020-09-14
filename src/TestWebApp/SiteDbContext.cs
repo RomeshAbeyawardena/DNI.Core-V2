@@ -17,6 +17,13 @@ namespace TestWebApp
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Log> Logs { get; set; }
+    }
+
+    public class Log
+    {
+        [Key]
+        public int Id { get; set; }
     }
 
     [MessagePack.MessagePackObject(true)]

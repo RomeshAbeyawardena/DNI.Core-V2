@@ -25,7 +25,6 @@ using DNI.Core.Services.Parsers;
 using DNI.Core.Contracts.ApplicationSettings;
 using DNI.Core.Contracts.Parser;
 using DNI.Core.Domains;
-using System.Text.Json;
 using Newtonsoft.Json;
 
 namespace DNI.Core.Services.Extensions

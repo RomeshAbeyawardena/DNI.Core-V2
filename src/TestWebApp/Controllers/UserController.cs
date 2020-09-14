@@ -6,6 +6,7 @@ using DNI.Core.Contracts.Services;
 using DNI.Core.Services.Attributes;
 using DNI.Core.Shared.Enumerations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
@@ -16,6 +17,7 @@ namespace TestWebApp.Controllers
 
     public class UserController : ApiController
     {
+        private readonly ILogger<UserController> loggger;
         private readonly ITypeCollector serviceCollector;
         private readonly IRepository<User> userRepository;
         private readonly IModelEncryptionProvider encryptionService;
@@ -24,6 +26,7 @@ namespace TestWebApp.Controllers
         private readonly ICacheManager cacheManager;
 
         public UserController(
+            ILogger<UserController> loggger,
             ITypeCollector serviceCollector,
             IMediatorProvider mediator, 
             IMapperProvider mapperProvider, 
@@ -34,6 +37,7 @@ namespace TestWebApp.Controllers
             ICacheManager cacheManager) 
             : base(mediator, mapperProvider)
         {
+            this.loggger = loggger;
             this.serviceCollector = serviceCollector;
             this.userRepository = userRepository;
             this.encryptionService = encryptionService;
@@ -90,6 +94,7 @@ namespace TestWebApp.Controllers
         [Version("2.0", "2.9"), ActionName("Hello")]
         public ActionResult HelloV2()
         {
+            loggger.LogInformation("test");
             return Ok("Hello v2");
         }
 

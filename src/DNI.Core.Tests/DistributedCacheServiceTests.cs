@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using System.Text.Json;
 
 namespace DNI.Core.Tests
 {

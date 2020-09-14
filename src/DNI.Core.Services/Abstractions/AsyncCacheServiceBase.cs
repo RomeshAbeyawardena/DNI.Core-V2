@@ -3,7 +3,6 @@ using DNI.Core.Contracts.Providers;
 using DNI.Core.Contracts.Services;
 using MessagePack;
 using System;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 

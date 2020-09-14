@@ -1,14 +1,9 @@
 ﻿using DNI.Core.Contracts.Managers;
 using DNI.Core.Domains;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DNI.Core.Extensions
 {
@@ -30,19 +25,44 @@ namespace DNI.Core.Extensions
                     .MakeGenericType(databaseLoggerOptions.LogTableType);
 
             services
-                .TryAddTransient(genericDatabaseLogManagerInterfaceType, databaseLoggerOptions.DatabaseLogManagerType); 
+                .TryAddTransient(genericDatabaseLogManagerInterfaceType, databaseLoggerOptions.DatabaseLogManagerType);
 
 
-            if(databaseLoggerOptions.LogStatusTableType != null)
-            { 
-                
+            if (databaseLoggerOptions.LogStatusTableType != null)
+            {
+
                 var databaseLogStatusManagerInterfaceType = typeof(IDatabaseLogStatusManager<>);
                 var genericDatabaseLogStatusManagerInterfaceType = databaseLogStatusManagerInterfaceType
                         .MakeGenericType(databaseLoggerOptions.LogStatusTableType);
-                    services.TryAddTransient(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType);
+                services.TryAddTransient(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType);
             }
 
             return services;
+        }
+
+        /// <summary>
+        /// Adds a database logger to the current list of loggers
+        /// </summary>
+        /// <typeparam name="TDbContext"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="configure"></param>
+        /// <returns></returns>
+        public static ILoggingBuilder AddDatabase<TDbContext>(this ILoggingBuilder builder, Action<DatabaseLoggerOptions> configure)
+        {
+            var databaseLoggerOptions = new DatabaseLoggerOptions();
+            databaseLoggerOptions.ConfigureLoggingDbContext<TDbContext>();
+            configure(databaseLoggerOptions);
+
+            RegisterDatabaseLogging<TDbContext>(builder.Services, databaseLoggerOptions);
+
+            return AddProvider<DatabaseLoggerProvider>(builder);
+        }
+
+        public static ILoggingBuilder AddProvider<T>(this ILoggingBuilder builder)
+            where T : class, ILoggerProvider
+        {
+            builder.Services.AddTransient<ILoggerProvider, T>();
+            return builder;
         }
     }
 }
