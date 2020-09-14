@@ -32,14 +32,18 @@ namespace DNI.Core.Extensions
         public DatabaseLogger(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
         {
             var databaseLogManagerType = typeof(IDatabaseLogManager<>);
-            var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager);
+            var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
 
             var genericDatabaseLogManagerType = databaseLogManagerType.MakeGenericType(databaseLoggerOptions.LogTableType);
 
-            var genericDatabaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
+            var genericDatabaseLogStatusManagerType = 
+                databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.LogStatusTableType);
 
-            DatabaseLogManager =  (IDatabaseLogManager) serviceProvider.GetService(genericDatabaseLogStatusManagerType);
-            databaseLogStatusManager = (IDatabaseLogStatusManager) serviceProvider.GetService(genericDatabaseLogManagerType);
+            var service1 =  serviceProvider.GetService(genericDatabaseLogManagerType);
+            var service2 = serviceProvider.GetService(genericDatabaseLogStatusManagerType);
+
+            DatabaseLogManager = service1 as IDatabaseLogManager;
+            databaseLogStatusManager = service2 as IDatabaseLogStatusManager;
             
         }
 

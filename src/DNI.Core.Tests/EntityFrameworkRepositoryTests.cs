@@ -27,7 +27,9 @@ namespace DNI.Core.Tests
             dbContextOptions = DbContextOptionsTestBuilder
                 .Build(services => services
                     .AddSingleton(valueGeneratorProviderMock.Object)
-                    .AddSingleton<IRepositoryOptions>(new RepositoryOptions()));
+                    .AddSingleton<IRepositoryOptions>(new RepositoryOptions()),
+                    out var serviceProvider);
+
             testDbContext = new TestDbContext(dbContextOptions);
             sut = new EntityFrameworkRepository<TestDbContext, User>(testDbContext, RepositoryOptionsBuilder.Build(RepositoryOptionsBuilder.Default));
         }

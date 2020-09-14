@@ -1,6 +1,7 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Domains;
 using DNI.Core.Extensions;
+using DNI.Core.Extensions.Managers;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DNI.Core.Tests
@@ -25,6 +28,7 @@ namespace DNI.Core.Tests
         public string State { get; set; }
         public string Message { get; set; }
         public string FormattedMessage { get; set; }
+        public string Category { get; internal set; }
     }
 
     public class LogStatus
@@ -35,6 +39,69 @@ namespace DNI.Core.Tests
         public bool Active { get; set; }
     }
 
+    public class TestDatabaseStatusLogManager : DatabaseLogStatusManagerBase<LogStatus>
+    {
+        public TestDatabaseStatusLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) : base(serviceProvider, databaseLoggerOptions)
+        {
+        }
+
+        public override bool IsEnabled(LogLevel logLevel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<bool> IsEnabledAsync(LogLevel logLevel)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class TestDatabaseLogManager : DatabaseLogManagerBase<Log>
+    {
+        public TestDatabaseLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) 
+            : base(serviceProvider, databaseLoggerOptions)
+        {
+        }
+
+        public override Log Convert<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            return new Log()
+            {
+                Category = typeof(TState).FullName,
+                LogLevelId = (int)logLevel,
+                EventId = eventId.Name,
+                State = JsonSerializer.Serialize(state),
+                Message = exception.Message,
+                FormattedMessage = formatter(state, exception)
+            };
+        }
+
+        public override Log Convert<TCategory, TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
+            return new Log()
+            {
+                Category = typeof(TCategory).FullName,
+                LogLevelId = (int)logLevel,
+                EventId = eventId.Name,
+                State = JsonSerializer.Serialize(state),
+                Message = exception.Message,
+                FormattedMessage = formatter(state, exception)
+            };
+        }
+
+        public override void Log(Log logEntry)
+        {
+            Logs.Add(logEntry);
+            DbContext.SaveChanges();
+        }
+
+        public override async Task LogAsync(Log logEntry, CancellationToken cancellationToken)
+        {
+            Logs.Add(logEntry);
+            await DbContext.SaveChangesAsync();
+        }
+    }
+
     [TestFixture]
     public class DatabaseLoggerTests
     {
@@ -43,22 +110,23 @@ namespace DNI.Core.Tests
         public void SetUp()
         {
             repositoryOptionsMock = new Mock<IRepositoryOptions>();
-            var dbContextOptions = DbContextOptionsTestBuilder.Build(services => services.AddSingleton(repositoryOptionsMock.Object));
-            //SetUp code here
+            
             databaseLoggerOptions = new DatabaseLoggerOptions();
             
-            databaseLoggerOptions.ConfigureLogStatusTable<LogStatus>(
-                logEnabled => logEnabled.Level,
-                logEnabled => logEnabled.Active);
 
-            databaseLoggerOptions.ConfigureLogTable<Log>(
-                log => log.LogLevelId,
-                log => log.EventId,
-                log => log.State,
-                log => log.Message,
-                log => log.FormattedMessage);
+            databaseLoggerOptions
+                .ConfigureLoggingDbContext<TestDbContext>()
+                .ConfigureDatabaseLogManagers<TestDatabaseLogManager, TestDatabaseStatusLogManager>();
+
+
+            var dbContextOptions = DbContextOptionsTestBuilder.Build(services => services
+            .AddSingleton(repositoryOptionsMock.Object)
+            .AddTransient(services => testDbContext)
+            .RegisterDatabaseLogging<TestDbContext>(databaseLoggerOptions), out var serviceProvider);
+            //SetUp code here
+            
             testDbContext = new TestDbContext(dbContextOptions);
-            sut = new DatabaseLogger<TestDbContext>(testDbContext,
+            sut = new DatabaseLogger<TestDbContext>(serviceProvider,
                 databaseLoggerOptions);
         }
 
@@ -70,7 +138,8 @@ namespace DNI.Core.Tests
             testDbContext.Add(new LogStatus { Id = 3, Level = 3, Active = true });
             testDbContext.Add(new LogStatus { Id = 4, Level = 4, Active = true });
             testDbContext.SaveChanges();
-            sut.IsEnabled(LogLevel.Information);
+
+            Assert.IsTrue(sut.IsEnabled(LogLevel.Information));
         }
 
         [Test]
@@ -79,6 +148,9 @@ namespace DNI.Core.Tests
             //Test code here
             sut.Log(LogLevel.Information, new EventId(1000,"Format Exception"), this,
                 new FormatException(), format);
+
+            Assert.AreEqual(1,
+                testDbContext.Set<Log>().Count());
         }
 
         private string format(DatabaseLoggerTests arg1, Exception arg2)

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace DNI.Core.Extensions.Managers
 {
     public abstract class DatabaseLogManagerBase<TLog> : IDatabaseLogManager<TLog>
+        , IDatabaseLogManager
         where TLog: class
     {
         protected DatabaseLogManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
@@ -20,17 +21,20 @@ namespace DNI.Core.Extensions.Managers
             Logs = DbContext.Set<TLog>();
         }
 
-        public abstract void Log(TLog logEntry);
-
-        public abstract Task LogAsync(TLog logEntry, CancellationToken cancellationToken);
-
         public abstract TLog Convert<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
 
         public abstract TLog Convert<TCategory, TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
 
-        object IDatabaseLogManager.Convert<TCategory, TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        public abstract void Log(TLog logEntry);
+        public abstract Task LogAsync(TLog logEntry, CancellationToken cancellationToken);
+
+        void IDatabaseLogManager.Log(object logEntry)
         {
-            return Convert<TCategory, TState>(logLevel, eventId, state, exception, formatter);
+            Log(logEntry as TLog);
+        }
+        Task IDatabaseLogManager.LogAsync(object logEntry, CancellationToken cancellationToken)
+        {
+            return LogAsync(logEntry as TLog, cancellationToken);
         }
 
         object IDatabaseLogManager.Convert<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
@@ -38,14 +42,9 @@ namespace DNI.Core.Extensions.Managers
             return Convert(logLevel, eventId, state, exception, formatter);
         }
 
-        void IDatabaseLogManager.Log(object logEntry)
+        object IDatabaseLogManager.Convert<TCategory, TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            Log(logEntry as TLog);
-        }
-
-        Task IDatabaseLogManager.LogAsync(object logEntry, CancellationToken cancellationToken)
-        {
-            return LogAsync(logEntry as TLog, cancellationToken);
+            return Convert<TCategory, TState>(logLevel, eventId, state, exception, formatter);
         }
 
         protected DbContext DbContext { get; }

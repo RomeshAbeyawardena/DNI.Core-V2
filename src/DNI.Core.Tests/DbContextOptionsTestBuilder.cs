@@ -6,11 +6,12 @@ namespace DNI.Core.Tests
 {
     public static class DbContextOptionsTestBuilder
     {
-        public static DbContextOptions Build(Func<IServiceCollection, IServiceCollection> serviceConfiguration)
+        public static DbContextOptions Build(Func<IServiceCollection, IServiceCollection> serviceConfiguration, out IServiceProvider serviceProvider)
         {
+            serviceProvider = BuildServiceProvider(services => serviceConfiguration(services
+                    .AddEntityFrameworkInMemoryDatabase()));
             return new DbContextOptionsBuilder()
-                .UseInternalServiceProvider(BuildServiceProvider(services => serviceConfiguration(services
-                    .AddEntityFrameworkInMemoryDatabase())))
+                .UseInternalServiceProvider(serviceProvider)
                 .UseInMemoryDatabase("TestDb").Options;
         }
 

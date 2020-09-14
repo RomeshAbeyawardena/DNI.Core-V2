@@ -13,33 +13,74 @@ namespace DNI.Core.Domains
 {
     public class DatabaseLoggerOptions
     {
-        public void ConfigureLoggingDbContext<TDbContext>()
+        public DatabaseLoggerOptions ConfigureLoggingDbContext<TDbContext>()
         {
             LoggingDbContext = typeof(TDbContext);
+            return this;
         }
 
-        public void ConfigureLogTable<TLog>()
+        public DatabaseLoggerOptions ConfigureLogTable<TLog>()
         {
-            LogTableType = typeof(TLog);
+            return ConfigureLogTable(typeof(TLog));
         }
 
-        public void ConfigureLogStatusTable<TLogStatus>()
+        public DatabaseLoggerOptions ConfigureLogStatusTable(Type logStatus)
         {
-            LogStatusTableType = typeof(TLogStatus);
+            LogStatusTableType = logStatus;
+            return this;
         }
 
-        public void ConfigureDatabaseLogManagers<TDatabaseLogManager>()
+        public DatabaseLoggerOptions ConfigureLogTable(Type log)
+        {
+            LogTableType = log;
+            return this;
+        }
+
+        public DatabaseLoggerOptions ConfigureLogStatusTable<TLogStatus>()
+        {
+            return ConfigureLogStatusTable(typeof(TLogStatus));
+        }
+
+
+        public DatabaseLoggerOptions ConfigureDatabaseLogManagers<TDatabaseLogManager>()
             where TDatabaseLogManager : IDatabaseLogManager
         {
             DatabaseLogManagerType = typeof(TDatabaseLogManager);
+
+            if(LogTableType == null)
+            {
+                var interfaceTypes = DatabaseLogManagerType.GetInterfaces();
+                var logTableType = interfaceTypes.FirstOrDefault()
+                    .GenericTypeArguments
+                    .FirstOrDefault();
+
+                ConfigureLogTable(logTableType);
+            }
+
+
+            return this;
         }
 
-        public void ConfigureDatabaseLogManagers<TDatabaseLogManager, TDatabaseLogStatusManager>()
+        public DatabaseLoggerOptions ConfigureDatabaseLogManagers<TDatabaseLogManager, TDatabaseLogStatusManager>()
             where TDatabaseLogManager : IDatabaseLogManager
             where TDatabaseLogStatusManager : IDatabaseLogStatusManager
         {
             ConfigureDatabaseLogManagers<TDatabaseLogManager>();
-            DatabaseLogStatusManagerType = typeof(IDatabaseLogStatusManager);
+            DatabaseLogStatusManagerType = typeof(TDatabaseLogStatusManager);
+
+            if(LogStatusTableType == null)
+            {
+                var interfaceTypes = DatabaseLogStatusManagerType.GetInterfaces();
+                var logTableStatusType = interfaceTypes.FirstOrDefault()
+                    .GenericTypeArguments
+                    .FirstOrDefault();
+
+                if(logTableStatusType != null)
+                { 
+                    ConfigureLogStatusTable(logTableStatusType);
+                }
+            }
+            return this;
         }
 
         public Type DatabaseLogManagerType { get; private set; }

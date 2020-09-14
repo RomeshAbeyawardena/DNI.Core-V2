@@ -20,20 +20,28 @@ namespace DNI.Core.Extensions
             return loggerType.MakeGenericType(databaseLoggerOptions.LoggingDbContext);
         }
 
-        public static IServiceCollection RegisterDatabaseLogging<TDbContext>(IServiceCollection services, DatabaseLoggerOptions databaseLoggerOptions)
+        public static IServiceCollection RegisterDatabaseLogging<TDbContext>(this IServiceCollection services, DatabaseLoggerOptions databaseLoggerOptions)
         {
+            services.TryAddSingleton(databaseLoggerOptions);
             services.TryAddTransient(databaseLoggerOptions.GetGenericType());
 
             var databaseLogManagerInterfaceType = typeof(IDatabaseLogManager<>);
-            var databaseLogStatusManagerInterfaceType = typeof(IDatabaseLogStatusManager<>);
+            var genericDatabaseLogManagerInterfaceType = databaseLogManagerInterfaceType
+                    .MakeGenericType(databaseLoggerOptions.LogTableType);
 
-            services.TryAddTransient(
-                databaseLogManagerInterfaceType.MakeGenericType(databaseLoggerOptions.LogTableType), 
-                databaseLoggerOptions.DatabaseLogManagerType);
-            services.TryAddTransient(
-                databaseLogStatusManagerInterfaceType.MakeGenericType(databaseLoggerOptions.LogStatusTableType),
-                databaseLoggerOptions.DatabaseLogStatusManagerType);
-            
+            services
+                .TryAddTransient(genericDatabaseLogManagerInterfaceType, databaseLoggerOptions.DatabaseLogManagerType); 
+
+
+            if(databaseLoggerOptions.LogStatusTableType != null)
+            { 
+                
+                var databaseLogStatusManagerInterfaceType = typeof(IDatabaseLogStatusManager<>);
+                var genericDatabaseLogStatusManagerInterfaceType = databaseLogStatusManagerInterfaceType
+                        .MakeGenericType(databaseLoggerOptions.LogStatusTableType);
+                    services.TryAddTransient(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType);
+            }
+
             return services;
         }
     }
