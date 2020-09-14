@@ -47,7 +47,8 @@ namespace DNI.Core.Tests
 
         public override bool IsEnabled(LogLevel logLevel)
         {
-            throw new NotImplementedException();
+            var logLevelId = (int) logLevel;
+            return LogStatuses.Any(logStatus => logStatus.Level == logLevelId && logStatus.Active);
         }
 
         public override Task<bool> IsEnabledAsync(LogLevel logLevel)
