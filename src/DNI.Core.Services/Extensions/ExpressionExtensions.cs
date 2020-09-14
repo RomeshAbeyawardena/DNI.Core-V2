@@ -5,7 +5,7 @@ namespace DNI.Core.Services.Extensions
 {
     public static class ExpressionExtensions
     {
-        internal class ParameterReplacer : ExpressionVisitor
+        public class ParameterReplacer : ExpressionVisitor
         {
             private readonly ParameterExpression parameter;
 
@@ -14,7 +14,7 @@ namespace DNI.Core.Services.Extensions
                 return base.VisitParameter(parameter);
             }
 
-            internal ParameterReplacer(ParameterExpression parameter)
+            public ParameterReplacer(ParameterExpression parameter)
             {
                 this.parameter = parameter;
             }
