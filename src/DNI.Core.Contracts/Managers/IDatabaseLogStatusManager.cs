@@ -14,6 +14,7 @@ namespace DNI.Core.Contracts.Managers
     }
 
     public interface IDatabaseLogStatusManager<TLogStatus> : IDatabaseLogStatusManager
+        where TLogStatus : class
     {
         
     }

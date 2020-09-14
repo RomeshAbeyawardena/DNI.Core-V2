@@ -1,4 +1,6 @@
 ﻿using DNI.Core.Contracts.Managers;
+using DNI.Core.Domains;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,21 +11,19 @@ using System.Threading.Tasks;
 namespace DNI.Core.Extensions.Managers
 {
     public abstract class DatabaseLogStatusManagerBase<TLogStatus> : IDatabaseLogStatusManager<TLogStatus>
+        where TLogStatus : class
     {
-        protected DatabaseLogManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
+        protected DatabaseLogStatusManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
         {
             DbContext = serviceProvider.GetService(databaseLoggerOptions.LoggingDbContext) as DbContext;
-            Logs = DbContext.Set<TLog>();
+            LogStatuses = DbContext.Set<TLogStatus>();
         }
 
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsEnabled(LogLevel logLevel);
 
-        public Task<bool> IsEnabledAsync(LogLevel logLevel)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<bool> IsEnabledAsync(LogLevel logLevel);
+
+        protected DbContext DbContext { get; }
+        protected DbSet<TLogStatus> LogStatuses { get; }
     }
 }

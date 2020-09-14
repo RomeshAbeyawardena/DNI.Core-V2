@@ -22,7 +22,8 @@ namespace DNI.Core.Extensions
 
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            base.Log(logLevel, eventId, state, exception, formatter);
+            DatabaseLogManager.Log(DatabaseLogManager
+                .Convert<TCategoryName, TState>(logLevel, eventId, state, exception, formatter));
         }
     }
 
@@ -31,10 +32,14 @@ namespace DNI.Core.Extensions
         public DatabaseLogger(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
         {
             var databaseLogManagerType = typeof(IDatabaseLogManager<>);
+            var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager);
 
             var genericDatabaseLogManagerType = databaseLogManagerType.MakeGenericType(databaseLoggerOptions.LogTableType);
-            databaseLogManager =  (IDatabaseLogManager) serviceProvider.GetService(genericDatabaseLogManagerType);
 
+            var genericDatabaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
+
+            DatabaseLogManager =  (IDatabaseLogManager) serviceProvider.GetService(genericDatabaseLogStatusManagerType);
+            databaseLogStatusManager = (IDatabaseLogStatusManager) serviceProvider.GetService(genericDatabaseLogManagerType);
             
         }
 
@@ -45,25 +50,28 @@ namespace DNI.Core.Extensions
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            
-            return true;
+            if(databaseLogStatusManager == null)
+            {
+                return true;
+            }
+
+            return databaseLogStatusManager.IsEnabled(logLevel);
         }
 
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            databaseLogManager.Log(
-                databaseLogManager.Convert(logLevel, eventId, state, exception, formatter));
+            if(DatabaseLogManager == null)
+            { 
+                return;
+            }
+
+            DatabaseLogManager.Log(
+                DatabaseLogManager.Convert(logLevel, eventId, state, exception, formatter));
         }
 
-        private void SetProperty(Type type, object instance, 
-            string propertyName, object value)
-        {
-            var memberInfo = type.GetProperty(propertyName);
 
-            memberInfo.SetValue(instance, value);
-        }
-        
-        private readonly IDatabaseLogManager databaseLogManager;
-        private readonly DatabaseLoggerOptions databaseLoggerOptions;
+        protected IDatabaseLogManager DatabaseLogManager { get; }
+
+        private readonly IDatabaseLogStatusManager databaseLogStatusManager;
     }
 }

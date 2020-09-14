@@ -1,4 +1,5 @@
-﻿using DNI.Core.Domains;
+﻿using DNI.Core.Contracts.Managers;
+using DNI.Core.Domains;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,19 +19,22 @@ namespace DNI.Core.Extensions
             var loggerType = typeof(DatabaseLogger<>);
             return loggerType.MakeGenericType(databaseLoggerOptions.LoggingDbContext);
         }
+
         public static IServiceCollection RegisterDatabaseLogging<TDbContext>(IServiceCollection services, DatabaseLoggerOptions databaseLoggerOptions)
         {
             services.TryAddTransient(databaseLoggerOptions.GetGenericType());
 
+            var databaseLogManagerInterfaceType = typeof(IDatabaseLogManager<>);
+            var databaseLogStatusManagerInterfaceType = typeof(IDatabaseLogStatusManager<>);
+
+            services.TryAddTransient(
+                databaseLogManagerInterfaceType.MakeGenericType(databaseLoggerOptions.LogTableType), 
+                databaseLoggerOptions.DatabaseLogManagerType);
+            services.TryAddTransient(
+                databaseLogStatusManagerInterfaceType.MakeGenericType(databaseLoggerOptions.LogStatusTableType),
+                databaseLoggerOptions.DatabaseLogStatusManagerType);
+            
             return services;
         }
-
-         public static IQueryable Query(this DbContext context, string entityName) =>
-            context.Query(context.Model.FindEntityType(entityName).ClrType);
-
-        internal static readonly MethodInfo SetMethod = typeof(DbContext).GetMethod(nameof(DbContext.Set));
-
-        public static IQueryable Query(this DbContext context, Type entityType) =>
-            (IQueryable)SetMethod.MakeGenericMethod(entityType).Invoke(context, null);
     }
 }

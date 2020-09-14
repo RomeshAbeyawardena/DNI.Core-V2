@@ -20,7 +20,6 @@ namespace DNI.Core.Extensions
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         private IServiceProvider serviceProvider;

@@ -1,4 +1,5 @@
 ﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,23 @@ namespace DNI.Core.Domains
         {
             LogStatusTableType = typeof(TLogStatus);
         }
+
+        public void ConfigureDatabaseLogManagers<TDatabaseLogManager>()
+            where TDatabaseLogManager : IDatabaseLogManager
+        {
+            DatabaseLogManagerType = typeof(TDatabaseLogManager);
+        }
+
+        public void ConfigureDatabaseLogManagers<TDatabaseLogManager, TDatabaseLogStatusManager>()
+            where TDatabaseLogManager : IDatabaseLogManager
+            where TDatabaseLogStatusManager : IDatabaseLogStatusManager
+        {
+            ConfigureDatabaseLogManagers<TDatabaseLogManager>();
+            DatabaseLogStatusManagerType = typeof(IDatabaseLogStatusManager);
+        }
+
+        public Type DatabaseLogManagerType { get; private set; }
+        public Type DatabaseLogStatusManagerType { get; private set; }
 
         public Type LogTableType { get; private set; }
         public Type LogStatusTableType { get; private set; }
