@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.ComponentModel.DataAnnotations;
 using DNI.Core.Shared.Constants;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TestWebApp
 {
@@ -20,16 +21,19 @@ namespace TestWebApp
         public DbSet<Log> Logs { get; set; }
     }
 
+    [Table("Log")]
     public class Log
     {
         [Key]
         public int Id { get; set; }
-        public int LogLevelId { get; internal set; }
-        public int EventId { get; internal set; }
-        public string EventName { get; internal set; }
-        public string CategoryName { get; internal set; }
-        public string FormattedMessage { get; internal set; }
-        public string Message { get; internal set; }
+        public int LogLevelId { get; set; }
+        public int EventId { get; set; }
+        public string EventName { get; set; }
+        public string CategoryName { get; set; }
+        public string Message { get; set; }
+
+        [GeneratedDefaultValue(Generators.DateTimeOffSetValueGenerator)]
+        public string Created { get; set; }
     }
 
     [MessagePack.MessagePackObject(true)]

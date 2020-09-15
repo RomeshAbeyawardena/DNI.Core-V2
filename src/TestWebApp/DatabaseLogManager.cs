@@ -1,4 +1,5 @@
-﻿using DNI.Core.Domains;
+﻿using DNI.Core.Contracts;
+using DNI.Core.Domains;
 using DNI.Core.Extensions.Managers;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,9 +10,7 @@ namespace TestWebApp
 {
     public class DatabaseLogManager : DatabaseLogManagerBase<Log>
     {
-        public DatabaseLogManager(
-            IServiceProvider serviceProvider, 
-            DatabaseLoggerOptions databaseLoggerOptions) 
+        public DatabaseLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) 
             : base(serviceProvider, databaseLoggerOptions)
         {
         }
@@ -48,18 +47,6 @@ namespace TestWebApp
                 CategoryName = typeof(TCategory).FullName,
                 Message = formatter(state, exception)
             };
-        }
-
-        public override void Log(Log logEntry)
-        {
-            Logs.Add(logEntry);
-            DbContext.SaveChanges();
-        }
-
-        public override Task LogAsync(Log logEntry, CancellationToken cancellationToken)
-        {
-            Logs.Add(logEntry);
-            return DbContext.SaveChangesAsync();
         }
     }
 }

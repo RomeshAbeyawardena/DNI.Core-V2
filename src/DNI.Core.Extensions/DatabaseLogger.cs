@@ -16,8 +16,11 @@ namespace DNI.Core.Extensions
         public override void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             PrepareServices(rootServiceProvider);
-            DatabaseLogManager.Log(DatabaseLogManager
-                .Convert<TCategoryName, TState>(logLevel, eventId, state, exception, formatter));
+
+            var logItem = DatabaseLogManager
+                .Convert<TCategoryName, TState>(logLevel, eventId, state, exception, formatter);
+
+            DatabaseLogManager.Log(logItem);
         }
     }
 
@@ -53,8 +56,8 @@ namespace DNI.Core.Extensions
                 return;
             }
 
-            DatabaseLogManager.Log(
-                DatabaseLogManager.Convert(logLevel, eventId, state, exception, formatter));
+            var convertedLogItem = DatabaseLogManager.Convert(logLevel, eventId, state, exception, formatter);
+            DatabaseLogManager.Log(convertedLogItem);
         }
 
         
@@ -92,7 +95,7 @@ namespace DNI.Core.Extensions
 
         protected virtual void Dispose(bool gc)
         {
-            scopedServiceProvider.Dispose();
+            scopedServiceProvider?.Dispose();
         }
 
         protected IDatabaseLogManager DatabaseLogManager { get; private set; }

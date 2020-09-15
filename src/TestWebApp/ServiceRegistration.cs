@@ -24,7 +24,8 @@ namespace TestWebApp
                 .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
                 .RegisterRepositories<SiteDbContext>((serviceProvider, dbContextOptions) => {
                     var applicationSettings = serviceProvider.GetRequiredService<ApplicationSettings>();
-                    dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);},
+                        dbContextOptions.UseSqlServer(applicationSettings.DefaultConnectionString);
+                    },
                     options => { 
                         options.SingulariseTableNames = true;
                         options.EnableTracking = false; 
