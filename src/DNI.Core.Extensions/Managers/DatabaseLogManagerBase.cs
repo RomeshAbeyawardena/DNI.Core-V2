@@ -9,16 +9,17 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Extensions.Managers
 {
-    public abstract class DatabaseLogManagerBase<TLog> : IDatabaseLogManager<TLog>, 
+    public abstract class DatabaseLogManagerBase<TLog> : DatabaseEntityManagerBase<TLog>, IDatabaseLogManager<TLog>, 
         IDatabaseLogManager
         where TLog: class
     {
-        protected DatabaseLogManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions, IDapperContext<TLog> dapperContext = null)
+        protected DatabaseLogManagerBase(
+            IServiceProvider serviceProvider, 
+            DatabaseLoggerOptions databaseLoggerOptions, 
+            IDapperContext<TLog> dapperContext = null)
+            : base(serviceProvider, databaseLoggerOptions, dapperContext)
         {
-            var dbContext = serviceProvider.GetService(databaseLoggerOptions.LoggingDbContext) as DbContext;
-            LogRepository = dapperContext == null 
-                ? new DapperContext<TLog>(dbContext.Database.GetDbConnection())
-                : dapperContext; 
+            
         }
 
         public abstract TLog Convert<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
@@ -27,12 +28,12 @@ namespace DNI.Core.Extensions.Managers
 
         public virtual void Log(TLog logEntry)
         {
-            LogRepository.Insert(logEntry, false);
+            Context.Insert(logEntry, false);
         }
 
         public virtual Task LogAsync(TLog logEntry, CancellationToken cancellationToken)
         {
-            LogRepository.Insert(logEntry, false);
+            Context.Insert(logEntry, false);
             return Task.CompletedTask;
         }
 
@@ -55,7 +56,5 @@ namespace DNI.Core.Extensions.Managers
         {
             return Convert<TCategory, TState>(logLevel, eventId, state, exception, formatter);
         }
-
-        protected IDapperContext<TLog> LogRepository { get; }
     }
 }

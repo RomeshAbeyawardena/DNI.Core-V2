@@ -37,14 +37,15 @@ namespace DNI.Core.Tests
 
     public class TestDatabaseStatusLogManager : DatabaseLogStatusManagerBase<LogStatus>
     {
-        public TestDatabaseStatusLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) : base(serviceProvider, databaseLoggerOptions)
+        public TestDatabaseStatusLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) 
+            : base(serviceProvider, databaseLoggerOptions)
         {
         }
 
         public override bool IsEnabled(LogLevel logLevel)
         {
             var logLevelId = (int) logLevel;
-            return LogStatuses.Any(logStatus => logStatus.Level == logLevelId && logStatus.Active);
+            return Context.GetValue<TValue>();
         }
 
         public override Task<bool> IsEnabledAsync(LogLevel logLevel)
