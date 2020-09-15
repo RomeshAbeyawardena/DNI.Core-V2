@@ -1,4 +1,5 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using Dapper;
+using Dapper.Contrib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,19 +17,20 @@ namespace DNI.Core.Extensions
             this.dbConnection = dbConnection;
         }
 
-        public void Insert(T value, bool useTransaction, int timeout = 3000)
+        public long Insert(T value, bool useTransaction, int timeout = 3000)
         {
-            if(dbConnection.State != ConnectionState.Open)
-            {
-                dbConnection.Open();
-            }
+            EnsureConnectionIsReady();
+            PrepareTransaction(useTransaction);
+            return dbConnection.Insert(value, transaction, timeout);
+        }
 
-            if (useTransaction && transaction == null)
-            {
-                transaction = dbConnection.BeginTransaction();
-            }
-
-            dbConnection.Insert(value, transaction, timeout);
+        public int Execute(string sql, T parameters, bool useTransaction, int timeout = 3000)
+        {
+            EnsureConnectionIsReady();
+            PrepareTransaction(useTransaction);
+            var commandDefinition = new CommandDefinition(sql, parameters, transaction, timeout);
+            
+            return dbConnection.Execute(commandDefinition);
         }
 
         public void Rollback()
@@ -41,6 +43,34 @@ namespace DNI.Core.Extensions
         {
             transaction.Commit();
             ResetTransaction();
+        }
+
+        protected void EnsureConnectionIsReady()
+        {
+            if(!TryPrepareConnection())
+            {
+                throw new DataException("Database connection not ready");
+            }
+
+        }
+
+        protected bool TryPrepareConnection()
+        {
+            if(dbConnection.State != ConnectionState.Open)
+            {
+                dbConnection.Open();
+            }
+
+            return dbConnection.State == ConnectionState.Open;
+        }
+
+        protected void PrepareTransaction(bool useTransaction)
+        {
+            if (useTransaction && transaction == null)
+            {
+                transaction = dbConnection.BeginTransaction();
+            }
+
         }
 
         protected void ResetTransaction()

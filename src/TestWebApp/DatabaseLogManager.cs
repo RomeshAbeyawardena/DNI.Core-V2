@@ -48,5 +48,14 @@ namespace TestWebApp
                 Message = formatter(state, exception)
             };
         }
+
+        public override void Log(Log logEntry)
+        {
+            base.LogRepository.Execute("EXECUTE [Utility].[usp_Log] @logLevelId" +
+                                                            ",@eventId" +
+                                                            ",@eventName" +
+                                                            ",@categoryName" +
+                                                            ",@message", logEntry, false);
+        }
     }
 }

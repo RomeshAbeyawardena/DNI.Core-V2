@@ -3,9 +3,8 @@ using DNI.Core.Shared.Attributes;
 using DNI.Core.Shared.Enumerations;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.ComponentModel.DataAnnotations;
 using DNI.Core.Shared.Constants;
-using System.ComponentModel.DataAnnotations.Schema;
+using Dapper.Contrib.Extensions;
 
 namespace TestWebApp
 {
@@ -33,6 +32,7 @@ namespace TestWebApp
         public string Message { get; set; }
 
         [GeneratedDefaultValue(Generators.DateTimeOffSetValueGenerator)]
+        [Computed]
         public string Created { get; set; }
     }
 
