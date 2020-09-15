@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts.Managers;
 using DNI.Core.Domains;
+using DNI.Core.Extensions.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,21 @@ namespace DNI.Core.Extensions
                 var genericDatabaseLogStatusManagerInterfaceType = databaseLogStatusManagerInterfaceType
                         .MakeGenericType(databaseLoggerOptions.LogStatusTableType);
                 services.TryAddTransient(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType);
+            }
+
+            if(databaseLoggerOptions.LogStatusManagerConfiguration != null)
+            {
+                services.TryAddSingleton(serviceProvider => databaseLoggerOptions.LogStatusManagerConfiguration);
+
+                var defaultLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
+                var defaultLogStatusManagerImplementationType = typeof(DefaultConfigurationLogStatusManager<>);
+
+                var genericDefaultLogStatusManagerType = defaultLogStatusManagerType
+                    .MakeGenericType(databaseLoggerOptions.ConfigurationType);
+
+                var genericDefaultLogStatusManagerImplementationType = defaultLogStatusManagerImplementationType
+                    .MakeGenericType(databaseLoggerOptions.ConfigurationType);
+                services.TryAddSingleton(genericDefaultLogStatusManagerType, genericDefaultLogStatusManagerImplementationType);
             }
 
             return services;

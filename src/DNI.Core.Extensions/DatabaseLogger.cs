@@ -75,6 +75,13 @@ namespace DNI.Core.Extensions
 
                 databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
             }
+            else if (databaseLoggerOptions.ConfigurationType != null)
+            {
+                var genericDatabaseLogStatusManagerType = 
+                    databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.ConfigurationType);
+
+                databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
+            }
         }
 
         public void Dispose()

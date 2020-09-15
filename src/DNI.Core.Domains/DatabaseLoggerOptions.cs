@@ -1,4 +1,5 @@
-﻿using DNI.Core.Contracts.Managers;
+﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Managers;
 using System;
 using System.Linq;
 
@@ -76,9 +77,20 @@ namespace DNI.Core.Domains
             return this;
         }
 
+        public DatabaseLoggerOptions ConfigureLogStatusManager<TConfiguration>(
+            Func<IServiceProvider, TConfiguration> configuration)
+            where TConfiguration : ILogStatusConfiguration
+        {
+            LogStatusManagerConfiguration = serviceProvider => configuration(serviceProvider);
+            ConfigurationType = typeof(TConfiguration);
+            return this;
+        }
+
+        public Func<IServiceProvider, ILogStatusConfiguration> LogStatusManagerConfiguration;
         public Type DatabaseLogManagerType { get; private set; }
         public Type DatabaseLogStatusManagerType { get; private set; }
 
+        public Type ConfigurationType { get; private set; }
         public Type LogTableType { get; private set; }
         public Type LogStatusTableType { get; private set; }
         public Type LoggingDbContext { get; private set; }

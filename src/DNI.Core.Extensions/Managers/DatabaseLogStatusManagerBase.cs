@@ -10,10 +10,16 @@ namespace DNI.Core.Extensions.Managers
     public abstract class DatabaseLogStatusManagerBase<TLogStatus> : IDatabaseLogStatusManager<TLogStatus>
         where TLogStatus : class
     {
-        protected DatabaseLogStatusManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
+        protected DatabaseLogStatusManagerBase(
+            IServiceProvider serviceProvider, 
+            DatabaseLoggerOptions databaseLoggerOptions, 
+            bool configureDataServices = true)
         {
-            DbContext = serviceProvider.GetService(databaseLoggerOptions.LoggingDbContext) as DbContext;
-            LogStatuses = DbContext.Set<TLogStatus>();
+            if(configureDataServices)
+            { 
+                DbContext = serviceProvider.GetService(databaseLoggerOptions.LoggingDbContext) as DbContext;
+                LogStatuses = DbContext.Set<TLogStatus>();
+            }
         }
 
         public abstract bool IsEnabled(LogLevel logLevel);

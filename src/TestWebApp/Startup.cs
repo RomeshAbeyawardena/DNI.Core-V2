@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DNI.Core.Extensions;
 using Microsoft.Extensions.Logging;
+using DNI.Core.Contracts;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace TestWebApp
 {
@@ -20,9 +23,20 @@ namespace TestWebApp
                 .AddLogging(loggerBuilder => loggerBuilder
                 .AddConsole()
                 .AddDatabase<SiteDbContext>(options => options
-                    .ConfigureDatabaseLogManagers<DatabaseLogManager>()))
+                    .ConfigureDatabaseLogManagers<DatabaseLogManager>()
+                    .ConfigureLogStatusManager(serviceProvider => new LogConfiguration(serviceProvider.GetService<IConfiguration>()))))
                 .AddControllers();
 
+        }
+
+        public class LogConfiguration : ILogStatusConfiguration
+        {
+            public LogConfiguration(IConfiguration configuration)
+            {
+                configuration.Bind(this);
+            }
+
+            public IDictionary<LogLevel, bool> LogStatus { get; }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -23,7 +23,14 @@ namespace TestWebApp
             Exception exception, 
             Func<TState, Exception, string> formatter)
         {
-            throw new NotImplementedException();
+            return new Log
+            {
+                LogLevelId = (int)logLevel,
+                EventId = eventId.Id,
+                EventName = eventId.Name,
+                CategoryName = typeof(TState).FullName,
+                Message = formatter(state, exception)
+            };
         }
 
         public override Log Convert<TCategory, TState>(
@@ -33,17 +40,26 @@ namespace TestWebApp
             Exception exception, 
             Func<TState, Exception, string> formatter)
         {
-            throw new NotImplementedException();
+            return new Log
+            {
+                LogLevelId = (int)logLevel,
+                EventId = eventId.Id,
+                EventName = eventId.Name,
+                CategoryName = typeof(TCategory).FullName,
+                Message = formatter(state, exception)
+            };
         }
 
         public override void Log(Log logEntry)
         {
-            throw new NotImplementedException();
+            Logs.Add(logEntry);
+            DbContext.SaveChanges();
         }
 
         public override Task LogAsync(Log logEntry, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Logs.Add(logEntry);
+            return DbContext.SaveChangesAsync();
         }
     }
 }

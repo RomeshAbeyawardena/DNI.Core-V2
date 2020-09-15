@@ -24,6 +24,12 @@ namespace TestWebApp
     {
         [Key]
         public int Id { get; set; }
+        public int LogLevelId { get; internal set; }
+        public int EventId { get; internal set; }
+        public string EventName { get; internal set; }
+        public string CategoryName { get; internal set; }
+        public string FormattedMessage { get; internal set; }
+        public string Message { get; internal set; }
     }
 
     [MessagePack.MessagePackObject(true)]
