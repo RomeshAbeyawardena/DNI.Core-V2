@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using DNI.Core.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Extensions
 {
-    public class DapperContext<T> : IDisposable
+    public class DapperContext<T> : IDapperContext<T>
         where T: class
     {
         public DapperContext(IDbConnection dbConnection)
@@ -101,6 +102,16 @@ namespace DNI.Core.Extensions
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        long IDapperContext.Insert(object value, bool useTransaction, int timeout)
+        {
+            return Insert(value as T, useTransaction, timeout);
+        }
+
+        int IDapperContext.Execute(string sql, object parameters, bool useTransaction, int timeout)
+        {
+            return Execute(sql, parameters as T, useTransaction, timeout);
         }
 
         private readonly IDbConnection dbConnection;

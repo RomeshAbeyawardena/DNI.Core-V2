@@ -55,8 +55,8 @@ namespace DNI.Core.Tests
 
     public class TestDatabaseLogManager : DatabaseLogManagerBase<Log>
     {
-        public TestDatabaseLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) 
-            : base(serviceProvider, databaseLoggerOptions)
+        public TestDatabaseLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions, IDapperContext<Log> dapperContext) 
+            : base(serviceProvider, databaseLoggerOptions, dapperContext)
         {
         }
 
@@ -85,18 +85,6 @@ namespace DNI.Core.Tests
                 FormattedMessage = formatter(state, exception)
             };
         }
-
-        public override void Log(Log logEntry)
-        {
-            Logs.Add(logEntry);
-            DbContext.SaveChanges();
-        }
-
-        public override async Task LogAsync(Log logEntry, CancellationToken cancellationToken)
-        {
-            Logs.Add(logEntry);
-            await DbContext.SaveChangesAsync();
-        }
     }
 
     [TestFixture]
@@ -107,7 +95,7 @@ namespace DNI.Core.Tests
         public void SetUp()
         {
             repositoryOptionsMock = new Mock<IRepositoryOptions>();
-            
+            dapperContextMock = new Mock<IDapperContext<Log>>();
             databaseLoggerOptions = new DatabaseLoggerOptions();
             
 
@@ -119,6 +107,7 @@ namespace DNI.Core.Tests
             var dbContextOptions = DbContextOptionsTestBuilder.Build(services => services
             .AddSingleton(repositoryOptionsMock.Object)
             .AddTransient(services => testDbContext)
+            .AddTransient(services => dapperContextMock.Object)
             .RegisterDatabaseLogging<TestDbContext>(databaseLoggerOptions), out var serviceProvider);
             //SetUp code here
             
@@ -142,12 +131,13 @@ namespace DNI.Core.Tests
         [Test]
         public void Log()
         {
+            dapperContextMock.Setup(dapperContext => dapperContext.Insert(It.IsAny<Log>(), false, 3000))
+                .Verifiable();
+
             //Test code here
             sut.Log(LogLevel.Information, new EventId(1000,"Format Exception"), this,
                 new FormatException(), format);
-
-            Assert.AreEqual(1,
-                testDbContext.Set<Log>().Count());
+            dapperContextMock.Verify(dapperContext => dapperContext.Insert(It.IsAny<Log>(), false, 3000));
         }
 
         private string format(DatabaseLoggerTests arg1, Exception arg2)
@@ -155,6 +145,8 @@ namespace DNI.Core.Tests
             return string.Format("{0}: {1}", nameof(arg1), arg2.Message);
         }
 
+
+        private Mock<IDapperContext<Log>> dapperContextMock;
         private Mock<IRepositoryOptions> repositoryOptionsMock;
         private DatabaseLoggerOptions databaseLoggerOptions;
         private TestDbContext testDbContext;

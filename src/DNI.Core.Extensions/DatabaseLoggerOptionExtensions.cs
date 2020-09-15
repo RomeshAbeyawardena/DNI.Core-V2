@@ -1,4 +1,5 @@
-﻿using DNI.Core.Contracts.Managers;
+﻿using DNI.Core.Contracts;
+using DNI.Core.Contracts.Managers;
 using DNI.Core.Domains;
 using DNI.Core.Extensions.Managers;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,6 +73,12 @@ namespace DNI.Core.Extensions
             RegisterDatabaseLogging<TDbContext>(builder.Services, databaseLoggerOptions);
 
             return AddProvider<DatabaseLoggerProvider>(builder);
+        }
+
+        public static IServiceCollection RegisterDapperContexts(this IServiceCollection services)
+        {
+            services.TryAddScoped(typeof(IDapperContext<>), typeof(DapperContext<>));
+            return services;
         }
 
         public static ILoggingBuilder AddProvider<T>(this ILoggingBuilder builder)

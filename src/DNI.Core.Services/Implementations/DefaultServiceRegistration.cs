@@ -17,6 +17,7 @@ using DNI.Core.Services.Builders;
 using System.Reactive.Subjects;
 using DNI.Core.Shared.Extensions;
 using Newtonsoft.Json;
+using DNI.Core.Contracts;
 
 namespace DNI.Core.Services.Implementations
 {

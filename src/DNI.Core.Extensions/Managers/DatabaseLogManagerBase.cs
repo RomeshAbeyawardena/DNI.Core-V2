@@ -13,10 +13,12 @@ namespace DNI.Core.Extensions.Managers
         IDatabaseLogManager
         where TLog: class
     {
-        protected DatabaseLogManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions)
+        protected DatabaseLogManagerBase(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions, IDapperContext<TLog> dapperContext = null)
         {
             var dbContext = serviceProvider.GetService(databaseLoggerOptions.LoggingDbContext) as DbContext;
-            LogRepository = new DapperContext<TLog>(dbContext.Database.GetDbConnection()); 
+            LogRepository = dapperContext == null 
+                ? new DapperContext<TLog>(dbContext.Database.GetDbConnection())
+                : dapperContext; 
         }
 
         public abstract TLog Convert<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
@@ -54,6 +56,6 @@ namespace DNI.Core.Extensions.Managers
             return Convert<TCategory, TState>(logLevel, eventId, state, exception, formatter);
         }
 
-        protected DapperContext<TLog> LogRepository { get; }
+        protected IDapperContext<TLog> LogRepository { get; }
     }
 }
