@@ -3,12 +3,12 @@
     <Deterministic>true</Deterministic>
     <Version>1.0.0.0</Version>
     <Authors>Romesh Abeyawardena</Authors>
-    <Company>Dot Net Insights</Company>
+    <Company>DotNet Insights</Company>
     <Product>DNI.Core</Product>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <NeutralLanguage>en</NeutralLanguage>
-    <Copyright>Copyright</Copyright>
+    <Copyright>DotNet Insights 2020</Copyright>
     <License>
     </License>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Concrete extension implementations of DNI.Core.Contracts with helper methods</Description>
   </PropertyGroup>
 
   <ItemGroup>
