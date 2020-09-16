@@ -37,15 +37,15 @@ namespace DNI.Core.Tests
 
     public class TestDatabaseStatusLogManager : DatabaseLogStatusManagerBase<LogStatus>
     {
-        public TestDatabaseStatusLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions) 
-            : base(serviceProvider, databaseLoggerOptions)
+        public TestDatabaseStatusLogManager(IServiceProvider serviceProvider, DatabaseLoggerOptions databaseLoggerOptions, IDapperContext<LogStatus> dapperContext) 
+            : base(serviceProvider, databaseLoggerOptions, dapperContext)
         {
         }
 
         public override bool IsEnabled(LogLevel logLevel)
         {
             var logLevelId = (int) logLevel;
-            return Context.GetValue<TValue>();
+            return Context.Get<bool, LogLevel>("my query", logLevel);
         }
 
         public override Task<bool> IsEnabledAsync(LogLevel logLevel)
@@ -97,6 +97,7 @@ namespace DNI.Core.Tests
         {
             repositoryOptionsMock = new Mock<IRepositoryOptions>();
             dapperContextMock = new Mock<IDapperContext<Log>>();
+            dapperContextLogStatusMock = new Mock<IDapperContext<LogStatus>>();
             databaseLoggerOptions = new DatabaseLoggerOptions();
             
 
@@ -106,10 +107,11 @@ namespace DNI.Core.Tests
 
 
             var dbContextOptions = DbContextOptionsTestBuilder.Build(services => services
-            .AddSingleton(repositoryOptionsMock.Object)
-            .AddTransient(services => testDbContext)
-            .AddTransient(services => dapperContextMock.Object)
-            .RegisterDatabaseLogging<TestDbContext>(databaseLoggerOptions), out var serviceProvider);
+                .AddSingleton(repositoryOptionsMock.Object)
+                .AddTransient(services => dapperContextLogStatusMock.Object)
+                .AddTransient(services => testDbContext)
+                .AddTransient(services => dapperContextMock.Object)
+                .RegisterDatabaseLogging<TestDbContext>(databaseLoggerOptions), out var serviceProvider);
             //SetUp code here
             
             testDbContext = new TestDbContext(dbContextOptions);
@@ -125,6 +127,10 @@ namespace DNI.Core.Tests
             testDbContext.Add(new LogStatus { Id = 3, Level = 3, Active = true });
             testDbContext.Add(new LogStatus { Id = 4, Level = 4, Active = true });
             testDbContext.SaveChanges();
+
+            dapperContextLogStatusMock.Setup(dapperContext => dapperContext
+                .Get<bool, LogLevel>(It.IsAny<string>(), LogLevel.Information))
+                .Returns(true);
 
             Assert.IsTrue(sut.IsEnabled(LogLevel.Information));
         }
@@ -148,6 +154,7 @@ namespace DNI.Core.Tests
 
 
         private Mock<IDapperContext<Log>> dapperContextMock;
+        private Mock<IDapperContext<LogStatus>> dapperContextLogStatusMock;
         private Mock<IRepositoryOptions> repositoryOptionsMock;
         private DatabaseLoggerOptions databaseLoggerOptions;
         private TestDbContext testDbContext;

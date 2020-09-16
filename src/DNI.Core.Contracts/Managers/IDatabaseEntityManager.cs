@@ -12,7 +12,7 @@ namespace DNI.Core.Contracts.Managers
         new IDapperContext<TEntity> Context { get; }
     }
 
-    public interface IDatabaseEntityManager
+    public interface IDatabaseEntityManager : IDisposable
     {
         IDapperContext Context { get; }
     }

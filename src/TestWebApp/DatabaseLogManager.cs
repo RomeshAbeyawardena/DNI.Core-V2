@@ -51,7 +51,7 @@ namespace TestWebApp
 
         public override void Log(Log logEntry)
         {
-            base.LogRepository.Execute("EXECUTE [Utility].[usp_Log] @logLevelId" +
+            base.Context.Execute("EXECUTE [Utility].[usp_Log] @logLevelId" +
                                                             ",@eventId" +
                                                             ",@eventName" +
                                                             ",@categoryName" +

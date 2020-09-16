@@ -8,7 +8,7 @@ namespace DNI.Core.Extensions
 {
     public sealed class DatabaseLogger<TCategoryName> : DatabaseLogger, ILogger<TCategoryName>
     {
-        public DatabaseLogger(IServiceProvider dbContext, DatabaseLoggerOptions databaseLoggerOptions) 
+        public DatabaseLogger(IServiceProvider dbContext, DatabaseLoggerOptions databaseLoggerOptions)
             : base(dbContext, databaseLoggerOptions)
         {
         }
@@ -40,7 +40,7 @@ namespace DNI.Core.Extensions
         public bool IsEnabled(LogLevel logLevel)
         {
             PrepareServices(rootServiceProvider);
-            if(databaseLogStatusManager == null)
+            if (databaseLogStatusManager == null)
             {
                 return false;
             }
@@ -51,8 +51,8 @@ namespace DNI.Core.Extensions
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             PrepareServices(rootServiceProvider);
-            if(DatabaseLogManager == null)
-            { 
+            if (DatabaseLogManager == null)
+            {
                 return;
             }
 
@@ -60,30 +60,36 @@ namespace DNI.Core.Extensions
             DatabaseLogManager.Log(convertedLogItem);
         }
 
-        
+
         internal void PrepareServices(IServiceProvider serviceProvider)
         {
-            scopedServiceProvider = serviceProvider.CreateScope();
-            var databaseLogManagerType = typeof(IDatabaseLogManager<>);
-            var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
-
-            var genericDatabaseLogManagerType = databaseLogManagerType.MakeGenericType(databaseLoggerOptions.LogTableType);
-
-            DatabaseLogManager =  ServiceProvider.GetService(genericDatabaseLogManagerType) as IDatabaseLogManager;
-            
-            if(databaseLoggerOptions.LogStatusTableType != null)
-            { 
-                var genericDatabaseLogStatusManagerType = 
-                    databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.LogStatusTableType);
-
-                databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
-            }
-            else if (databaseLoggerOptions.ConfigurationType != null)
+            if (DatabaseLogManager == null)
             {
-                var genericDatabaseLogStatusManagerType = 
-                    databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.ConfigurationType);
+                scopedServiceProvider = serviceProvider.CreateScope();
+                var databaseLogManagerType = typeof(IDatabaseLogManager<>);
 
-                databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
+                var genericDatabaseLogManagerType = databaseLogManagerType.MakeGenericType(databaseLoggerOptions.LogTableType);
+
+                DatabaseLogManager = ServiceProvider.GetService(genericDatabaseLogManagerType) as IDatabaseLogManager;
+            }
+
+            if (databaseLogStatusManager == null)
+            {
+                var databaseLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
+                if (databaseLoggerOptions.LogStatusTableType != null)
+                {
+                    var genericDatabaseLogStatusManagerType =
+                        databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.LogStatusTableType);
+
+                    databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
+                }
+                else if (databaseLoggerOptions.ConfigurationType != null)
+                {
+                    var genericDatabaseLogStatusManagerType =
+                        databaseLogStatusManagerType.MakeGenericType(databaseLoggerOptions.ConfigurationType);
+
+                    databaseLogStatusManager = ServiceProvider.GetService(genericDatabaseLogStatusManagerType) as IDatabaseLogStatusManager;
+                }
             }
         }
 

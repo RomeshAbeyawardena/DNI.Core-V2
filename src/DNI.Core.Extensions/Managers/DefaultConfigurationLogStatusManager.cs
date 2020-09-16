@@ -14,7 +14,7 @@ namespace DNI.Core.Extensions.Managers
     {
         public DefaultConfigurationLogStatusManager(
             IServiceProvider serviceProvider, 
-            DatabaseLoggerOptions databaseLoggerOptions) : base(serviceProvider, databaseLoggerOptions, false)
+            DatabaseLoggerOptions databaseLoggerOptions) : base(serviceProvider, databaseLoggerOptions)
         {
             logStatusConfiguration =  serviceProvider.GetService(databaseLoggerOptions.ConfigurationType) as ILogStatusConfiguration;
         }
