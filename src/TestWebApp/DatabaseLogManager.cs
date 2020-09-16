@@ -51,11 +51,12 @@ namespace TestWebApp
 
         public override void Log(Log logEntry)
         {
-            base.Context.Execute("EXECUTE [Utility].[usp_Log] @logLevelId" +
-                                                            ",@eventId" +
-                                                            ",@eventName" +
-                                                            ",@categoryName" +
-                                                            ",@message", logEntry, false);
+            //base.Context.Execute("EXECUTE [Utility].[usp_Log] @logLevelId" +
+            //                                                ",@eventId" +
+            //                                                ",@eventName" +
+            //                                                ",@categoryName" +
+            //                                                ",@message", logEntry, false);
+            base.Log(logEntry);
         }
     }
 }

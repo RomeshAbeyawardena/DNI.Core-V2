@@ -41,7 +41,8 @@ namespace DNI.Core.Extensions
 
             if(databaseLoggerOptions.LogStatusManagerConfiguration != null)
             {
-                services.TryAddSingleton(serviceProvider => databaseLoggerOptions.LogStatusManagerConfiguration);
+                services.TryAddSingleton(serviceProvider => 
+                    databaseLoggerOptions.LogStatusManagerConfiguration);
 
                 var defaultLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
                 var defaultLogStatusManagerImplementationType = typeof(DefaultConfigurationLogStatusManager<>);
@@ -51,7 +52,7 @@ namespace DNI.Core.Extensions
 
                 var genericDefaultLogStatusManagerImplementationType = defaultLogStatusManagerImplementationType
                     .MakeGenericType(databaseLoggerOptions.ConfigurationType);
-                services.TryAddSingleton(genericDefaultLogStatusManagerType, genericDefaultLogStatusManagerImplementationType);
+                services.TryAddTransient(genericDefaultLogStatusManagerType, genericDefaultLogStatusManagerImplementationType);
             }
 
             return services;

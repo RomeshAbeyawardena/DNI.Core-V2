@@ -21,19 +21,20 @@ namespace DNI.Core.Extensions.Managers
 
         public override bool IsEnabled(LogLevel logLevel)
         {
-            if(logStatusConfiguration.LogStatus.TryGetValue(logLevel, out var status))
+            if(logStatusConfiguration.LogStatus == null 
+                || logStatusConfiguration.LogStatus.TryGetValue(logLevel, out var status))
             {
-                return status;
+                return true;
             }
 
-            return true;
+            return status;
         }
 
         public override Task<bool> IsEnabledAsync(LogLevel logLevel)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(IsEnabled(logLevel));
         }
 
-        private ILogStatusConfiguration logStatusConfiguration;
+        private readonly ILogStatusConfiguration logStatusConfiguration;
     }
 }

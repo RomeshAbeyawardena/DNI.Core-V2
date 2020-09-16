@@ -20,7 +20,10 @@ namespace DNI.Core.Extensions
             var logItem = DatabaseLogManager
                 .Convert<TCategoryName, TState>(logLevel, eventId, state, exception, formatter);
 
-            DatabaseLogManager.Log(logItem);
+            if (IsEnabled(logLevel))
+            {
+                DatabaseLogManager.Log(logItem);
+            }
         }
     }
 
@@ -51,7 +54,7 @@ namespace DNI.Core.Extensions
         public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             PrepareServices(rootServiceProvider);
-            if (DatabaseLogManager == null)
+            if (DatabaseLogManager == null || !IsEnabled(logLevel))
             {
                 return;
             }
