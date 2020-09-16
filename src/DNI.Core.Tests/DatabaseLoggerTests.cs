@@ -45,7 +45,7 @@ namespace DNI.Core.Tests
         public override bool IsEnabled(LogLevel logLevel)
         {
             var logLevelId = (int) logLevel;
-            return Context.Get<bool, LogLevel>("my query", logLevel);
+            return Context.Get<LogLevel, bool>("my query", logLevel);
         }
 
         public override Task<bool> IsEnabledAsync(LogLevel logLevel)
@@ -129,7 +129,7 @@ namespace DNI.Core.Tests
             testDbContext.SaveChanges();
 
             dapperContextLogStatusMock.Setup(dapperContext => dapperContext
-                .Get<bool, LogLevel>(It.IsAny<string>(), LogLevel.Information))
+                .Get<LogLevel, bool>(It.IsAny<string>(), LogLevel.Information))
                 .Returns(true);
 
             Assert.IsTrue(sut.IsEnabled(LogLevel.Information));

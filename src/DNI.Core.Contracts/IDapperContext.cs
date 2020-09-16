@@ -10,7 +10,7 @@ namespace DNI.Core.Contracts
     {
         IEnumerable<object> Query(string sql, object parameters);
         object Get(string sql, object parameters);
-        TResult Get<TResult, TParameter>(string sql, TParameter parameter);
+        TResult Get<TParameter, TResult>(string sql, TParameter parameter);
         long Insert(object value, bool useTransaction, int timeout = 3000);
         int Execute(string sql, object parameters, bool useTransaction, int timeout = 3000);
         void Rollback();

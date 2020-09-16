@@ -46,7 +46,7 @@ namespace DNI.Core.Extensions
             ResetTransaction();
         }
 
-        public TResult Get<TResult, TParameter>(string sql, TParameter parameters)
+        public TResult Get<TParameter, TResult>(string sql, TParameter parameters)
         {
             EnsureConnectionIsReady();
             return dbConnection.QueryFirst<TResult>(sql, parameters);
@@ -64,7 +64,7 @@ namespace DNI.Core.Extensions
 
         public T Get<TParameter>(string sql, TParameter parameters)
         {
-            return Get<T, TParameter>(sql, parameters);
+            return Get<TParameter, T>(sql, parameters);
         }
 
         public IEnumerable<T> Query<TParameter>(string sql, TParameter parameters)
