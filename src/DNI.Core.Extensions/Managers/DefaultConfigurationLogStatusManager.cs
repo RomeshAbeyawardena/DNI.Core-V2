@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Domains;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,13 +17,13 @@ namespace DNI.Core.Extensions.Managers
             IServiceProvider serviceProvider, 
             DatabaseLoggerOptions databaseLoggerOptions) : base(serviceProvider, databaseLoggerOptions)
         {
-            logStatusConfiguration =  serviceProvider.GetService(databaseLoggerOptions.ConfigurationType) as ILogStatusConfiguration;
+            logStatusConfiguration =  serviceProvider.GetRequiredService(typeof(ILogStatusConfiguration)) as ILogStatusConfiguration;
         }
 
         public override bool IsEnabled(LogLevel logLevel)
         {
             if(logStatusConfiguration.LogStatus == null 
-                || logStatusConfiguration.LogStatus.TryGetValue(logLevel, out var status))
+                || !logStatusConfiguration.LogStatus.TryGetValue(logLevel, out var status))
             {
                 return true;
             }

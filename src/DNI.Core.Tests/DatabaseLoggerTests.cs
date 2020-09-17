@@ -138,6 +138,10 @@ namespace DNI.Core.Tests
         [Test]
         public void Log()
         {
+            dapperContextLogStatusMock.Setup(dapperContext => dapperContext
+                .Get<LogLevel, bool>(It.IsAny<string>(), LogLevel.Information))
+                .Returns(true);
+
             dapperContextMock.Setup(dapperContext => dapperContext.Insert(It.IsAny<Log>(), false, 3000))
                 .Verifiable();
 

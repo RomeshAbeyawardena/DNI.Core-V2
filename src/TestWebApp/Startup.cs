@@ -36,7 +36,10 @@ namespace TestWebApp
                 configuration.Bind(this);
             }
 
-            public IDictionary<LogLevel, bool> LogStatus { get; }
+            //public IDictionary<string, bool> LogLevel { get; set; }
+
+            public IDictionary<LogLevel, bool> LogStatus { get; set; }
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

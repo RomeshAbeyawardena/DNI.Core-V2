@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace DNI.Core.Extensions
 {
@@ -42,7 +45,7 @@ namespace DNI.Core.Extensions
             if(databaseLoggerOptions.LogStatusManagerConfiguration != null)
             {
                 services.TryAddSingleton(serviceProvider => 
-                    databaseLoggerOptions.LogStatusManagerConfiguration);
+                    databaseLoggerOptions.LogStatusManagerConfiguration(serviceProvider));
 
                 var defaultLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
                 var defaultLogStatusManagerImplementationType = typeof(DefaultConfigurationLogStatusManager<>);
@@ -53,6 +56,11 @@ namespace DNI.Core.Extensions
                 var genericDefaultLogStatusManagerImplementationType = defaultLogStatusManagerImplementationType
                     .MakeGenericType(databaseLoggerOptions.ConfigurationType);
                 services.TryAddTransient(genericDefaultLogStatusManagerType, genericDefaultLogStatusManagerImplementationType);
+            }
+
+            foreach (var service in services)
+            {
+                Debug.WriteLine(service.ServiceType.FullName);
             }
 
             return services;
@@ -88,5 +96,6 @@ namespace DNI.Core.Extensions
             builder.Services.AddTransient<ILoggerProvider, T>();
             return builder;
         }
+
     }
 }
