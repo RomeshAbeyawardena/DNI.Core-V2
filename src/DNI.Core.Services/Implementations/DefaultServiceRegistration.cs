@@ -45,6 +45,7 @@ namespace DNI.Core.Services.Implementations
 
             services
                 .AddSingleton(typeof(ISubject<>), typeof(Subject<>))
+                .AddSingleton(typeof(IConsoleWrapper<>), typeof(ConsoleWrapper<>))
                 .AddSingleton(serviceProvider => { 
                     var jsonSerializerSettings = serviceProvider.GetService<JsonSerializerSettings>();
                     if(jsonSerializerSettings == null)

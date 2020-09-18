@@ -1,5 +1,6 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Factories;
+using DNI.Core.Shared.Attributes;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DNI.Core.Services
 {
+    [IgnoreScanning]
     public class ConsoleWrapper<TCategory> : ConsoleWrapper, IConsoleWrapper<TCategory>
     {
         public ConsoleWrapper(ILoggerCacheFactory loggerFactory)
