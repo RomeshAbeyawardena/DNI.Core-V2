@@ -2,6 +2,7 @@
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Domains;
 using DNI.Core.Extensions.Managers;
+using DNI.Core.Shared.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -20,17 +21,20 @@ namespace DNI.Core.Extensions
             return loggerType.MakeGenericType(databaseLoggerOptions.LoggingDbContext);
         }
 
-        public static IServiceCollection RegisterDatabaseLogging<TDbContext>(this IServiceCollection services, DatabaseLoggerOptions databaseLoggerOptions)
+        public static IServiceCollection RegisterDatabaseLogging<TDbContext>(
+            this IServiceCollection services, 
+            DatabaseLoggerOptions databaseLoggerOptions,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
         {
             services.TryAddSingleton(databaseLoggerOptions);
-            services.TryAddTransient(databaseLoggerOptions.GetGenericType());
+            services.TryAdd(databaseLoggerOptions.GetGenericType(), serviceLifetime);
 
             var databaseLogManagerInterfaceType = typeof(IDatabaseLogManager<>);
             var genericDatabaseLogManagerInterfaceType = databaseLogManagerInterfaceType
                     .MakeGenericType(databaseLoggerOptions.LogTableType);
 
             services
-                .TryAddTransient(genericDatabaseLogManagerInterfaceType, databaseLoggerOptions.DatabaseLogManagerType);
+                .TryAdd(genericDatabaseLogManagerInterfaceType, databaseLoggerOptions.DatabaseLogManagerType, serviceLifetime);
 
 
             if (databaseLoggerOptions.LogStatusTableType != null)
@@ -39,7 +43,7 @@ namespace DNI.Core.Extensions
                 var databaseLogStatusManagerInterfaceType = typeof(IDatabaseLogStatusManager<>);
                 var genericDatabaseLogStatusManagerInterfaceType = databaseLogStatusManagerInterfaceType
                         .MakeGenericType(databaseLoggerOptions.LogStatusTableType);
-                services.TryAddTransient(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType);
+                services.TryAdd(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType, serviceLifetime);
             }
 
             if(databaseLoggerOptions.RegisterDefaultLogStatusService 
@@ -59,7 +63,7 @@ namespace DNI.Core.Extensions
 
                 var genericDefaultLogStatusManagerImplementationType = defaultLogStatusManagerImplementationType
                     .MakeGenericType(databaseLoggerOptions.ConfigurationType);
-                services.TryAddTransient(genericDefaultLogStatusManagerType, genericDefaultLogStatusManagerImplementationType);
+                services.TryAdd(genericDefaultLogStatusManagerType, genericDefaultLogStatusManagerImplementationType, serviceLifetime);
             }
 
             foreach (var service in services)

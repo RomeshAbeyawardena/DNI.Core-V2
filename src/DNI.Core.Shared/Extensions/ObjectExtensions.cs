@@ -1,11 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DNI.Core.Shared.Extensions
 {
     public static class ObjectExtensions
     {
-        
+        public static IDictionary<string, string> ToDictionary(this object value)
+        {
+            var dictionary = new Dictionary<string, string>();
+
+            var valueType = value.GetType();
+
+            var properties = valueType.GetProperties();
+
+            foreach(var property in properties)
+            {
+                dictionary.Add(property.Name, property.GetValue(value)?.ToString());
+            }
+
+            return dictionary;
+        }
+
         public static Type DetermineType(this object value)
         {
             if(value == null)
