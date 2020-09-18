@@ -79,12 +79,22 @@ namespace DNI.Core.Domains
             return this;
         }
 
+
+
         public DatabaseLoggerOptions ConfigureLogStatusManagerFromServiceProvider<TConfiguration>(
             Func<IServiceProvider, TConfiguration> configuration)
             where TConfiguration : ILogStatusConfiguration
         {
             LogStatusManagerConfiguration = serviceProvider => configuration(serviceProvider);
+            ConfigureLogStatusManager<TConfiguration>(false);
+            return this;
+        }
+
+        public DatabaseLoggerOptions ConfigureLogStatusManager<TConfiguration>(bool registerDefaultService = true)
+            where TConfiguration : ILogStatusConfiguration
+        {
             ConfigurationType = typeof(TConfiguration);
+            RegisterDefaultLogStatusService = registerDefaultService;
             return this;
         }
 
@@ -98,10 +108,10 @@ namespace DNI.Core.Domains
             });
         }
 
+        public bool RegisterDefaultLogStatusService { get; private set; }
         public Func<IServiceProvider, ILogStatusConfiguration> LogStatusManagerConfiguration;
         public Type DatabaseLogManagerType { get; private set; }
         public Type DatabaseLogStatusManagerType { get; private set; }
-
         public Type ConfigurationType { get; private set; }
         public Type LogTableType { get; private set; }
         public Type LogStatusTableType { get; private set; }

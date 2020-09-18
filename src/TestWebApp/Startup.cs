@@ -24,7 +24,7 @@ namespace TestWebApp
                 .AddConsole()
                 .AddDatabase<SiteDbContext>(options => options
                     .ConfigureDatabaseLogManagers<DatabaseLogManager>()
-                    .ConfigureLogStatusManager(serviceProvider => new LogConfiguration(serviceProvider))))
+                    .ConfigureLogStatusManager<LogConfiguration>()))
                 .AddControllers();
 
         }

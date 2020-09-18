@@ -42,11 +42,15 @@ namespace DNI.Core.Extensions
                 services.TryAddTransient(genericDatabaseLogStatusManagerInterfaceType, databaseLoggerOptions.DatabaseLogStatusManagerType);
             }
 
-            if(databaseLoggerOptions.LogStatusManagerConfiguration != null)
+            if(databaseLoggerOptions.RegisterDefaultLogStatusService 
+                || databaseLoggerOptions.LogStatusManagerConfiguration != null)
             {
-                services.TryAddSingleton(serviceProvider => 
-                    databaseLoggerOptions.LogStatusManagerConfiguration(serviceProvider));
-
+                if(databaseLoggerOptions.RegisterDefaultLogStatusService)
+                    services.TryAddSingleton(typeof(ILogStatusConfiguration), databaseLoggerOptions.ConfigurationType);
+                else 
+                    services.TryAddSingleton(serviceProvider => 
+                        databaseLoggerOptions.LogStatusManagerConfiguration(serviceProvider));
+                
                 var defaultLogStatusManagerType = typeof(IDatabaseLogStatusManager<>);
                 var defaultLogStatusManagerImplementationType = typeof(DefaultConfigurationLogStatusManager<>);
 
