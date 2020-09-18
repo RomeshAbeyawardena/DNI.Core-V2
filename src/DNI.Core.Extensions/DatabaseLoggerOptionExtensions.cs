@@ -81,13 +81,16 @@ namespace DNI.Core.Extensions
         /// <param name="builder"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDatabase<TDbContext>(this ILoggingBuilder builder, Action<DatabaseLoggerOptions> configure)
+        public static ILoggingBuilder AddDatabase<TDbContext>(
+            this ILoggingBuilder builder, 
+            Action<DatabaseLoggerOptions> configure,
+            ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
         {
             var databaseLoggerOptions = new DatabaseLoggerOptions();
             databaseLoggerOptions.ConfigureLoggingDbContext<TDbContext>();
             configure(databaseLoggerOptions);
 
-            RegisterDatabaseLogging<TDbContext>(builder.Services, databaseLoggerOptions);
+            RegisterDatabaseLogging<TDbContext>(builder.Services, databaseLoggerOptions, serviceLifetime);
 
             return AddProvider<DatabaseLoggerProvider>(builder);
         }
