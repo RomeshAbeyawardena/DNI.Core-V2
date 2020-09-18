@@ -15,19 +15,14 @@ namespace DNI.Core.Extensions
 {
     public static class DatabaseLoggerOptionExtensions
     {
-        public static Type GetGenericType(this DatabaseLoggerOptions databaseLoggerOptions)
-        {
-            var loggerType = typeof(DatabaseLogger<>);
-            return loggerType.MakeGenericType(databaseLoggerOptions.LoggingDbContext);
-        }
-
-        public static IServiceCollection RegisterDatabaseLogging<TDbContext>(
+        
+        public static IServiceCollection RegisterDatabaseLogging (
             this IServiceCollection services, 
             DatabaseLoggerOptions databaseLoggerOptions,
             ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
         {
             services.TryAddSingleton(databaseLoggerOptions);
-            services.TryAdd(databaseLoggerOptions.GetGenericType(), serviceLifetime);
+            services.TryAdd(typeof(DatabaseLogger<>), serviceLifetime);
 
             var databaseLogManagerInterfaceType = typeof(IDatabaseLogManager<>);
             var genericDatabaseLogManagerInterfaceType = databaseLogManagerInterfaceType
@@ -81,16 +76,17 @@ namespace DNI.Core.Extensions
         /// <param name="builder"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static ILoggingBuilder AddDatabase<TDbContext>(
+        public static ILoggingBuilder AddDatabase(
             this ILoggingBuilder builder, 
+            Func<IServiceProvider, string> getConnectionString,
             Action<DatabaseLoggerOptions> configure,
             ServiceLifetime serviceLifetime = ServiceLifetime.Transient)
         {
             var databaseLoggerOptions = new DatabaseLoggerOptions();
-            databaseLoggerOptions.ConfigureLoggingDbContext<TDbContext>();
+            databaseLoggerOptions.ConfigureLoggingDatabase(getConnectionString);
             configure(databaseLoggerOptions);
 
-            RegisterDatabaseLogging<TDbContext>(builder.Services, databaseLoggerOptions, serviceLifetime);
+            RegisterDatabaseLogging(builder.Services, databaseLoggerOptions, serviceLifetime);
 
             return AddProvider<DatabaseLoggerProvider>(builder);
         }
@@ -104,7 +100,7 @@ namespace DNI.Core.Extensions
         public static ILoggingBuilder AddProvider<T>(this ILoggingBuilder builder)
             where T : class, ILoggerProvider
         {
-            builder.Services.AddTransient<ILoggerProvider, T>();
+            builder.Services.AddSingleton<ILoggerProvider, T>();
             return builder;
         }
 

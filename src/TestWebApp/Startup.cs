@@ -5,13 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DNI.Core.Extensions;
 using Microsoft.Extensions.Logging;
-using DNI.Core.Contracts;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
 namespace TestWebApp
 {
-    public class Startup
+    public partial class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -22,23 +19,12 @@ namespace TestWebApp
                 .RegisterServiceBroker<AppServiceBroker>()
                 .AddLogging(loggerBuilder => loggerBuilder
                 .AddConsole()
-                .AddDatabase<SiteDbContext>(options => options
+                .AddDatabase(
+                    serviceProvider => serviceProvider.GetRequiredService<ApplicationSettings>().DefaultConnectionString,
+                    options => options
                     .ConfigureDatabaseLogManagers<DatabaseLogManager>()
                     .ConfigureLogStatusManager<LogConfiguration>()))
                 .AddControllers();
-
-        }
-
-        public class LogConfiguration : ILogStatusConfiguration
-        {
-            public LogConfiguration(IConfiguration configuration)
-            {
-                configuration.Bind(this);
-            }
-
-            //public IDictionary<string, bool> LogLevel { get; set; }
-
-            public IDictionary<LogLevel, bool> LogStatus { get; set; }
 
         }
 

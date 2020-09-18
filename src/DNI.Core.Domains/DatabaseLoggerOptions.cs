@@ -1,17 +1,27 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Managers;
+using DNI.Core.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace DNI.Core.Domains
 {
     public class DatabaseLoggerOptions
     {
-        public DatabaseLoggerOptions ConfigureLoggingDbContext<TDbContext>()
+        public Type GetGenericType(string categoryName)
         {
-            LoggingDbContext = typeof(TDbContext);
+            var typeArgument = categoryName.GetTypeByName();
+            return typeof(ILogger<>).MakeGenericType(typeArgument);
+        }
+
+        public DatabaseLoggerOptions ConfigureLoggingDatabase(Func<IServiceProvider, string> getConnectionString)
+        {
+            ApplicationDataConfiguration = getConnectionString;
+
             return this;
         }
 
@@ -115,7 +125,6 @@ namespace DNI.Core.Domains
         public Type ConfigurationType { get; private set; }
         public Type LogTableType { get; private set; }
         public Type LogStatusTableType { get; private set; }
-        public Type LoggingDbContext { get; private set; }
-
+        public Func<IServiceProvider, string> ApplicationDataConfiguration { get; private set; }
     }
 }

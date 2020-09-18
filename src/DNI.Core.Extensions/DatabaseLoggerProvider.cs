@@ -14,7 +14,7 @@ namespace DNI.Core.Extensions
 
         public ILogger CreateLogger(string categoryName)
         {
-            var genericLoggerType = databaseLoggerOptions.GetGenericType();
+            var genericLoggerType = databaseLoggerOptions.GetGenericType(categoryName);
             return serviceProvider.GetService(genericLoggerType) as ILogger;
         }
 

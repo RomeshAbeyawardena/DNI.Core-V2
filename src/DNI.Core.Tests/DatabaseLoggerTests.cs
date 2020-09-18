@@ -101,22 +101,6 @@ namespace DNI.Core.Tests
             databaseLoggerOptions = new DatabaseLoggerOptions();
             
 
-            databaseLoggerOptions
-                .ConfigureLoggingDbContext<TestDbContext>()
-                .ConfigureDatabaseLogManagers<TestDatabaseLogManager, TestDatabaseStatusLogManager>();
-
-
-            var dbContextOptions = DbContextOptionsTestBuilder.Build(services => services
-                .AddSingleton(repositoryOptionsMock.Object)
-                .AddTransient(services => dapperContextLogStatusMock.Object)
-                .AddTransient(services => testDbContext)
-                .AddTransient(services => dapperContextMock.Object)
-                .RegisterDatabaseLogging<TestDbContext>(databaseLoggerOptions), out var serviceProvider);
-            //SetUp code here
-            
-            testDbContext = new TestDbContext(dbContextOptions);
-            sut = new DatabaseLogger<TestDbContext>(serviceProvider,
-                databaseLoggerOptions);
         }
 
         [Test]

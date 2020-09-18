@@ -1,10 +1,13 @@
 ﻿using DNI.Core.Contracts;
 using DNI.Core.Contracts.Managers;
 using DNI.Core.Domains;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -21,11 +24,8 @@ namespace DNI.Core.Extensions.Managers
         {
             if (dapperContext == null)
             {
-                var dbContext = GetServiceScope(serviceProvider)
-                        .ServiceProvider
-                        .GetService(databaseLoggerOptions.LoggingDbContext) as DbContext;
-
-                Context = new DapperContext<TEntity>(dbContext.Database.GetDbConnection());
+                dbConnection = new SqlConnection(databaseLoggerOptions.ApplicationDataConfiguration(serviceProvider));
+                Context = new DapperContext<TEntity>(dbConnection);
                 return;
             }
 
@@ -46,11 +46,13 @@ namespace DNI.Core.Extensions.Managers
             if (disposing)
             {
                 ServiceScope?.Dispose();
+                dbConnection?.Dispose();
             }
             Debug.WriteLine("Disposed", nameof(DatabaseEntityManagerBase<TEntity>));
             GC.SuppressFinalize(this);
         }
 
+        private IDbConnection dbConnection;
         private IServiceScope GetServiceScope(IServiceProvider serviceProvider) => ServiceScope ??= serviceProvider.CreateScope();
 
         private IServiceScope ServiceScope { get; set; }
